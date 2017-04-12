@@ -1,5 +1,7 @@
 //Check the collection config getResultSnippetData() function to inspect this.props.data
 
+import IconUtil from '../../util/IconUtil';
+
 class SearchSnippet extends React.Component {
 
 	constructor(props) {
@@ -66,20 +68,20 @@ class SearchSnippet extends React.Component {
 		if(this.props.data.mediaTypes) {
 			mediaTypes = this.props.data.mediaTypes.map((mt) => {
 				if(mt == 'video') {
-					return (<span className="fa fa-film fa-border text-muted" title="Video content"></span>);
+					return (<span className={IconUtil.getMimeTypeIcon('video', true, true)} title="Video content"></span>);
 				} else if(mt == 'audio') {
-					return (<span className="fa fa-headphones fa-border text-muted" title="Audio content"></span>);
+					return (<span className={IconUtil.getMimeTypeIcon('audio', true, true)} title="Audio content"></span>);
 				} else if(mt == 'image') {
-					return (<span className="fa fa-photo fa-border text-muted" title="Image content"></span>);
+					return (<span className={IconUtil.getMimeTypeIcon('image', true, true)} title="Image content"></span>);
 				}
-				return (<span className="fa fa-question fa-border text-muted" title="Unknown content"></span>);
+				return (<span className={IconUtil.getMimeTypeIcon(null, true, true)} title="Unknown content"></span>);
 			});
 		}
 
 		//if this hit represents a media fragment, show an extra icon (TODO make sure this is not ugly later on)
 		if(this.props.data.type == 'media_fragment') {
 			fragmentIcon = (
-				<span className="fa fa-puzzle-piece fa-border text-muted" title="Media fragment"></span>
+				<span className={IconUtil.getMimeTypeIcon('fragment', true, true)} title="Media fragment"></span>
 			);
 		}
 

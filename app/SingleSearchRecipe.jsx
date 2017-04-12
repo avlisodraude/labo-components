@@ -14,7 +14,6 @@ import SearchAPI from './api/SearchAPI';
 class SingleSearchRecipe extends React.Component {
 	constructor(props) {
 		super(props);
-		console.debug(this.props.recipe.ingredients);
 		var user = this.props.user || 'JaapTest';
 		var collectionId = null;
 		if(this.props.params.cids) {
@@ -114,7 +113,6 @@ class SingleSearchRecipe extends React.Component {
 		}
 
 		FlexRouter.setBrowserHistory(
-			"/recipe/" + this.props.recipe.id, //base url
 			params, //will also be stored in the browser state (cannot exceed 640k chars)
 			this.constructor.name //used as the title for the state
 		)

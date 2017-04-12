@@ -246,7 +246,7 @@ class FlexImageViewer extends React.Component {
 		addBtn.className = 'btn btn-default';
 		addBtn.onclick = this.openAnnotationForm.bind(this, annotation);
 		var addGlyph = document.createElement('span');
-		addGlyph.className = 'glyphicon glyphicon-pencil';
+		addGlyph.className = IconUtil.getUserActionIcon('annotate');
 		addBtn.appendChild(addGlyph);
 
 		//add the remove button
@@ -254,7 +254,7 @@ class FlexImageViewer extends React.Component {
 		removeBtn.className = 'btn btn-default';
 		removeBtn.onclick = this.deleteAnnotation.bind(this, annotation);
 		var removeGlyph = document.createElement('span');
-		removeGlyph.className = 'fa fa-close';
+		removeGlyph.className = IconUtil.getUserActionIcon('close');
 		removeBtn.appendChild(removeGlyph);
 
 		buttonDiv.appendChild(addBtn);

@@ -328,7 +328,7 @@ class MetadataForm extends React.Component {
 						<li key={'com__' + index}
 							className={this.state.activeCardIndex == index ? 'list-group-item active' : 'list-group-item' }
 							onClick={this.setActiveCard.bind(this, index)}>
-							<span className="fa fa-close interactive"
+							<span className={IconUtil.getUserActionIcon('remove', false, false, true)}
 								onClick={this.removeCard.bind(this, index)}>
 							</span>
 							&nbsp;
@@ -355,13 +355,13 @@ class MetadataForm extends React.Component {
 						<button className="btn btn-default" onClick={this.addEmptyCard.bind(this)}>
 							New
 							&nbsp;
-							<span className="fa fa-plus"></span>
+							<span className={IconUtil.getUserActionIcon('add')}></span>
 						</button>
 						&nbsp;
 						<button className="btn btn-default" onClick={this.saveCard.bind(this)}>
 							Save
 							&nbsp;
-							<span className="glyphicon glyphicon-floppy-disk"></span>
+							<span className={IconUtil.getUserActionIcon('save')}></span>
 						</button>
 					</div>
 				</div>
@@ -397,7 +397,8 @@ class MetadataForm extends React.Component {
 				} else {
 					delPropBtn = (
 						<td className="icon">
-							<span className="fa fa-close interactive" onClick={this.removeProperty.bind(this, i)}></span>
+							<span className={IconUtil.getUserActionIcon('remove', false, false, true)}
+								onClick={this.removeProperty.bind(this, i)}></span>
 						</td>
 					)
 					propertyField = (
@@ -456,7 +457,7 @@ class MetadataForm extends React.Component {
 			if(!this.isTemplateLocked(this.state.activeTemplate)) {
 				addPropBtn = (<div className="form-group">
 					<button className="btn btn-default" onClick={this.addProperty.bind(this)}>
-						<span className="fa fa-plus interactive"></span>
+						<span className={IconUtil.getUserActionIcon('add', false, false, true)}></span>
 					</button>
 				</div>);
 			}

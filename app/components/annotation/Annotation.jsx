@@ -1,7 +1,7 @@
 import TimeUtil from '../../util/TimeUtil';
 import AnnotationActions from '../../flux/AnnotationActions';
 import AnnotationUtil from '../../util/AnnotationUtil';
-
+import IconUtil from '../../util/IconUtil';
 /*
 Input:
 	- Annotation ID
@@ -39,9 +39,9 @@ class Annotation extends React.Component {
 		let ad = AnnotationUtil.extractAnnotationTargetDetails(this.props.annotation);
 		switch(ad.type) {
 			case 'temporal' :
-				icon = (<span className="glyphicon glyphicon-facetime-video"></span>);break;
+				icon = (<span className={IconUtil.getMimeTypeIcon('video')}></span>);break;
 			case 'spatial' :
-				icon = (<span className="glyphicon glyphicon-picture"></span>);break;
+				icon = (<span className={IconUtil.getMimeTypeIcon('image')}></span>);break;
 			default :
 				icon = null;
 		}
@@ -66,7 +66,7 @@ class Annotation extends React.Component {
 				onDoubleClick={() => {AnnotationActions.edit(this.props.annotation)}}
 				title={this.props.annotation.id}
 			>
-				<span className="fa fa-close interactive"
+				<span className={IconUtil.getUserActionIcon('remove', false, false, true)}
 					onClick={() => {AnnotationActions.delete(this.props.annotation)}}>
 				</span>
 				<span className="asset-id">{label}</span>
@@ -78,7 +78,7 @@ class Annotation extends React.Component {
 						{this.props.annotation.user})
 				</span>
 				{icon}
-				<span className="glyphicon glyphicon-play interactive"
+				<span className={IconUtil.getUserActionIcon('play', false, false, true)}
 					onClick={() => AnnotationActions.play(this.props.annotation)}>
 				</span>
 			</li>
