@@ -43,7 +43,7 @@ const CollectionAPI = {
 
 	//Fetches the list of collections via the LABO proxy (which harvests directly from CKAN)
 	listCollections: function(callback) {
-	    var url = '/api/collections';
+	    var url = _config.SEARCH_API_BASE + '/ckan/list_collections';
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -60,13 +60,13 @@ const CollectionAPI = {
 	},
 
 	getCollectionInfo : function(collectionId, callback) {
-		var url = '/api/collection/' + collectionId;
+		var url = _config.SEARCH_API_BASE + '/ckan/collection_info/' + collectionId;
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
 					var respData = JSON.parse(xhr.responseText);
-					if(!respData.error) {
+					if(respData && !respData.error) {
 						callback(respData);
 					} else {
 						callback(null);
