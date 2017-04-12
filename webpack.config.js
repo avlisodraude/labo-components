@@ -22,7 +22,7 @@ var config = {
 	module : {
 		loaders : [
 			{
-				test : /\.jsx?/,
+				test : /\.jsx?$/,
 				include : APP_DIR,
 				loader : 'babel',
 				exclude: /node_modules/
