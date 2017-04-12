@@ -17,12 +17,20 @@ var config = {
 		libraryTarget: 'umd'
 	},
 
+	plugins : [
+		new webpack.DefinePlugin({
+			'process.env': {
+				'NODE_ENV': JSON.stringify('production')
+			}
+		})
+	],
+
 	resolve: { extensions: ['', '.js', '.jsx'] },
 
 	module : {
 		loaders : [
 			{
-				test : /\.jsx?$/,
+				test : /\.jsx?/,
 				include : APP_DIR,
 				loader : 'babel',
 				exclude: /node_modules/

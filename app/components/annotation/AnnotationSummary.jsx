@@ -113,7 +113,8 @@ class AnnotationSummary extends React.Component {
 				comments = (
 					<div>
 						<a href="javascript:void(0);" onClick={this.editAnnotation.bind(this, commentList[0])}>
-							Comments: {commentList.length}&nbsp;<span className="glyphicon glyphicon-comment"></span>
+							Comments: {commentList.length}&nbsp;
+							<span className={IconUtil.getUserActionIcon('comment')}></span>
 						</a>
 					</div>
 				)
@@ -127,7 +128,8 @@ class AnnotationSummary extends React.Component {
 				links = (
 					<div>
 						<a href="javascript:void(0);" onClick={this.editAnnotation.bind(this, linkList[0])}>
-							Links: {linkList.length}&nbsp;<span className="glyphicon glyphicon-comment"></span>
+							Links: {linkList.length}&nbsp;
+							<span className={IconUtil.getUserActionIcon('link')}></span>
 						</a>
 					</div>
 				)

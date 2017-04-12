@@ -1,6 +1,7 @@
 import Annotation from './Annotation';
 import AnnotationAPI from '../../api/AnnotationAPI';
 import AnnotationUtil from '../../util/AnnotationUtil';
+import IconUtil from '../../util/IconUtil';
 
 import AnnotationActions from '../../flux/AnnotationActions';
 import AppAnnotationStore from '../../flux/AnnotationStore';
@@ -96,7 +97,8 @@ class AnnotationList extends React.Component {
 			<div>
 				<button className={this.state.annotations.length > 0 ? 'btn btn-danger' : 'btn btn-default'}
 					onClick={this.toggleAnnotations.bind(this)}>
-					Saved annotations&nbsp;{this.state.annotations.length}&nbsp;<span className="glyphicon glyphicon-comment"></span>
+					Saved annotations&nbsp;{this.state.annotations.length}&nbsp;
+					<span className={IconUtil.getUserActionIcon('annotate')}></span>
 				</button>
 				<br/>
 				{annotationList}

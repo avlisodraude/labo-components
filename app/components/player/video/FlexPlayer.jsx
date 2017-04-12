@@ -15,6 +15,7 @@ import AnnotationSummary from '../../annotation/AnnotationSummary';
 
 import TimeUtil from '../../../util/TimeUtil';
 import AnnotationUtil from '../../../util/AnnotationUtil';
+import IconUtil from '../../../util/IconUtil';
 
 import FlexBox from '../../FlexBox';
 
@@ -633,7 +634,7 @@ class FlexPlayer extends React.Component {
 								<button className="btn btn-default" type="button"
 									title="Add annotation to the whole video (SHIFT+A)"
 									onClick={this.editMediaObjectAnnotation.bind(this)}>
-									<span className="glyphicon glyphicon-film"></span>
+									<span className={IconUtil.getUserActionIcon('annotate')}></span>
 								</button>
 							</div>
 							&nbsp;
@@ -641,7 +642,7 @@ class FlexPlayer extends React.Component {
 								<button className="btn btn-default" type="button"
 									title="Delete current annotation (SHIFT+D)"
 									onClick={this.deleteAnnotation.bind(this)}>
-									<span className="glyphicon glyphicon-minus"></span>
+									<span className={IconUtil.getUserActionIcon('remove')}></span>
 								</button>
 							</div>
 							&nbsp;
@@ -649,17 +650,17 @@ class FlexPlayer extends React.Component {
 								<button className="btn btn-default" type="button"
 									title="Save segment (SHIFT+S)"
 									onClick={this.saveSegment.bind(this)}>
-									<span className="glyphicon glyphicon-floppy-disk"></span>
+									<span className={IconUtil.getUserActionIcon('save')}></span>
 								</button>
 								<button className="btn btn-default" type="button"
 									title="New segment (SHIFT+N)"
 									onClick={this.newSegment.bind(this)}>
-									<span className="fa fa-plus"></span>
+									<span className={IconUtil.getUserActionIcon('add')}></span>
 								</button>
 								<button className="btn btn-default" type="button"
 									title="New segment from currently active segment (CTRL+N)"
 									onClick={this.newSegmentFromLast.bind(this)}>
-									<span className="glyphicon glyphicon-triangle-right"></span>
+									<span className={IconUtil.getUserActionIcon('next')}></span>
 								</button>
 							</div>
 						</div>

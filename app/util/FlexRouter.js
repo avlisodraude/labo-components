@@ -29,8 +29,8 @@ const FlexRouter = {
 		return arr[0] + "//" + arr[2];
 	},
 
-	setBrowserHistory : function(baseUrl, params, stateTitle) {
-		let url = baseUrl;
+	setBrowserHistory : function(params, stateTitle) {
+		let url = document.location.pathname;
 		if(params && typeof(params) == 'object' && Object.keys(params).length > 0) {
 			let paramList = [];
 			for(let p in params) {

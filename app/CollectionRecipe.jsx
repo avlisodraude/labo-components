@@ -101,7 +101,6 @@ class CollectionsRecipe extends React.Component {
 			params = {cids : Object.keys(this.state.selectedCollections).join(',')};
 		}
 		FlexRouter.setBrowserHistory(
-			"/recipe/" + this.props.recipe.id,
 			params,
 			this.constructor.name
 		);

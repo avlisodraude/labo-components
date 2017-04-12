@@ -1,5 +1,6 @@
 import moment from 'moment';
 import TimeUtil from '../../../util/TimeUtil';
+import IconUtil from '../../../util/IconUtil';
 
 class SegmentationControls extends React.Component {
 
@@ -85,7 +86,7 @@ class SegmentationControls extends React.Component {
 			playStartBtn = (
 				<button className="btn btn-default" type="button" onClick={this.playStart.bind(this)}
 					title="When you press this, the player will skip to the defined start point (SHIFT+i)">
-					&nbsp;<span className="glyphicon glyphicon-play"></span>
+					&nbsp;<span className={IconUtil.getUserActionIcon('play')}></span>
 				</button>
 			)
 		}
@@ -93,7 +94,7 @@ class SegmentationControls extends React.Component {
 			playEndBtn = (
 				<button className="btn btn-default" type="button" onClick={this.playEnd.bind(this)}
 					title="When you press this, the player will skip to the defined end point (SHIFT+o)">
-					&nbsp;<span className="glyphicon glyphicon-play"></span>
+					&nbsp;<span className={IconUtil.getUserActionIcon('play')}></span>
 				</button>
 			)
 		}
