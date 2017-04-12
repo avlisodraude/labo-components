@@ -13,7 +13,7 @@ var config = {
 		path: BUILD_DIR,
 		publicPath: '/static/dist/',
 		filename: 'labo-components.js',
-		library: 'labo-components',
+		library: 'labo',
 		libraryTarget: 'umd'
 	},
 
