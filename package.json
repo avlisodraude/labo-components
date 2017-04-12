@@ -1,12 +1,12 @@
 {
   "name": "labo-components",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "B&G UI components",
   "main": "webpack.config.js",
   "scripts": {
     "babel": "babel app -d lib",
     "build": "webpack -p --progress",
-    "postinstall" : "npm run build"
+    "prepublish" : "npm run build"
   },
   "repository": {
     "type": "git",
