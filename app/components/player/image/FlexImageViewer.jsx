@@ -3,7 +3,6 @@ Currently uses:
 	- https://openseadragon.github.io
 	- https://github.com/picturae/openseadragonselection
 
-
 	TODO
 		- check out the flexplayer to see how to update annotations here
 		- check out ViewDir!: https://viewdir.github.io/
@@ -12,11 +11,10 @@ Currently uses:
 import AnnotationAPI from '../../../api/AnnotationAPI';
 import AnnotationUtil from '../../../util/AnnotationUtil';
 import IDUtil from '../../../util/IDUtil';
+import IconUtil from '../../../util/IconUtil';
 
 import AnnotationActions from '../../../flux/AnnotationActions';
 import AppAnnotationStore from '../../../flux/AnnotationStore';
-
-
 
 class FlexImageViewer extends React.Component {
 
@@ -254,7 +252,7 @@ class FlexImageViewer extends React.Component {
 		removeBtn.className = 'btn btn-default';
 		removeBtn.onclick = this.deleteAnnotation.bind(this, annotation);
 		var removeGlyph = document.createElement('span');
-		removeGlyph.className = IconUtil.getUserActionIcon('close');
+		removeGlyph.className = IconUtil.getUserActionIcon('remove');
 		removeBtn.appendChild(removeGlyph);
 
 		buttonDiv.appendChild(addBtn);
