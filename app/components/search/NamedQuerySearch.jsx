@@ -1,9 +1,11 @@
 import CollectionUtil from '../../util/CollectionUtil';
-import FlexHits from './FlexHits';
+import SearchHit from './SearchHit';
 import NamedQuerySelector from '../collection/NamedQuerySelector';
 import SearchPluginAPI from '../../api/SearchPluginAPI';
 import SPARQLPluginResultMapper from '../../util/SPARQLPluginResultMapper';
 
+//TODO this component hasn't been used in a very long time, so it's probably outdated (May 23 2017)
+//this component therefore does not have a proper ID yet
 class NamedQuerySearch extends React.Component {
 
 	constructor(props) {
@@ -112,7 +114,7 @@ class NamedQuerySearch extends React.Component {
 				let items = this.state.currentOutput.map((result, index) => {
 					console.debug(result);
 					return (
-						<FlexHits
+						<SearchHit
 							key={'__' + index}
 							result={result}
 							collectionConfig={this.state.collectionConfig}

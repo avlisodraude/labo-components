@@ -27,6 +27,7 @@ class QueryFactory extends React.Component {
 			openQueries : [], //TODO this should listen to something like: loadedQueries
 			openQueryData : {}
 		}
+		this.CLASS_PREFIX = 'qf';
 	}
 
 	//this loads default queries for the this.props.initialCollections
@@ -127,7 +128,7 @@ class QueryFactory extends React.Component {
 
 	getEmptyCell() {
 		return (
-			<div className="cell" style={{textAlign : 'center', height : 'inherit'}}>
+			<div className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)} style={{textAlign : 'center', height : 'inherit'}}>
 				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
 					Add query&nbsp;<i className="fa fa-plus"></i>
 				</button>
@@ -167,7 +168,7 @@ class QueryFactory extends React.Component {
 				title = queryData.collectionConfig.collectionInfo.title;
 			}
 			return (
-				<div className="cell">
+				<div className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)}>
 					<h5>
 						{'Query #' + (index + 1) + ' (' + queryData.collectionConfig.collectionInfo.title + ')'}
 						&nbsp;
@@ -185,7 +186,7 @@ class QueryFactory extends React.Component {
 						searchAPI={_config.SEARCH_API_BASE}
 						itemDetailsPath={this.props.itemDetailsPath}
 						aggregationView={this.props.aggregationView}
-						timeSlider={this.props.timeSlider}
+						dateRangeSelector={this.props.dateRangeSelector}
 						searchParams={null} //TODO when ComparativeSearchRecipe knows how to store all q's in the URL
 						onOutput={this.onComponentOutput.bind(this)}/>
 				</div>
@@ -197,17 +198,15 @@ class QueryFactory extends React.Component {
 
 
 		queryGrid = (
-			<div className="query-grid">
+			<div className={IDUtil.cssClassName('grid', this.CLASS_PREFIX)}>
 				{cells}
 			</div>
 		)
 
 		return (
-			<div className="row">
+			<div className={IDUtil.cssClassName('query-factory')}>
 				{collectionModal}
-				<div className="col-md-12">
-					{queryGrid}
-				</div>
+				{queryGrid}
 			</div>
 		)
 	}

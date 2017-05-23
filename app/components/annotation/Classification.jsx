@@ -1,3 +1,10 @@
+import IDUtil from '../../util/IDUtil';
+
+/*
+HTML markup & CSS attributes:
+	- regular span => .bg__classification
+*/
+
 class Classification extends React.Component {
 
 	constructor(props) {
@@ -5,24 +12,26 @@ class Classification extends React.Component {
 	}
 
 	render() {
-		let csClass = 'label label-success tag';
+		let classNames = ['label'];
 		switch(this.props.classification.vocabulary) {
 			case 'DBpedia':
-				csClass = 'label label-danger tag';
+				classNames.push('label-danger');
 				break;
 			case 'UNESCO':
-				csClass = 'label label-warning tag';
+				classNames.push('label-warning');
 				break;
 			case 'custom':
-				csClass = 'label label-primary tag';
+				classNames.push('label-primary');
 				break;
 			default:
-				csClass = 'label label-default tag';
+				classNames.push('label-success');
 				break;
 		}
+		classNames.push(IDUtil.cssClassName('classification'));
+
 		return (
 			<span
-				className={csClass}
+				className={classNames.join(' ')}
 				title={this.props.classification.id ? this.props.classification.id : 'Custom annotation'}>
 				{this.props.classification.label}
 				{this.props.children}

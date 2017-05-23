@@ -1,0 +1,15 @@
+/* then import the default bootstrap overrides made for this component library */
+
+@import "./_bootstrap-overrides.scss";
+
+/* import bootstrap SASS first, since some variables are reused in _component-variables.scss */
+
+@import "../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+/* then import the component variables */
+
+@import "./_variables.scss";
+
+/* finally import the actual component styles that use the component variables, you can change the variables at the top */
+
+@import "./_components.scss";

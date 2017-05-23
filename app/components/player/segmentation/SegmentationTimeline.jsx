@@ -1,4 +1,5 @@
 import TimeUtil from '../../../util/TimeUtil';
+import IDUtil from '../../../util/IDUtil';
 
 class SegmentationTimeline extends React.Component {
 
@@ -100,8 +101,9 @@ class SegmentationTimeline extends React.Component {
 
 	render() {
 		return (
-			<div id={'timebar__' + this.props.mediaObject.id} className="timebar">
-				<canvas id={'timebar_canvas__' + this.props.mediaObject.id} width="300" height="50" onClick={this.seek.bind(this)}>
+			<div id={'timebar__' + this.props.mediaObject.id} className={IDUtil.cssClassName('segmentation-timeline')}>
+				<canvas id={'timebar_canvas__' + this.props.mediaObject.id} width="300" height="50"
+					onClick={this.seek.bind(this)}>
 				</canvas>
 			</div>
 		)

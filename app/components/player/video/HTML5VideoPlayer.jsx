@@ -6,6 +6,7 @@ Implement the following:
 
 */
 import PlayerAPI from '../PlayerAPI';
+import IDUtil from '../../../util/IDUtil';
 
 class HTML5VideoPlayer extends React.Component {
 
@@ -47,7 +48,8 @@ class HTML5VideoPlayer extends React.Component {
 
 	render() {
 		return (
-			<video id={'video_player__' + this.props.mediaObject.id} controls>
+			<video className={IDUtil.cssClassName('html5-video-player')}
+				id={'video_player__' + this.props.mediaObject.id} controls>
 				<source src={this.props.mediaObject.url}></source>
 			</video>
 		)

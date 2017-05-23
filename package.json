@@ -1,6 +1,6 @@
 {
   "name": "labo-components",
-  "version": "1.0.9",
+  "version": "1.0.12",
   "description": "B&G UI components",
   "main": "webpack.config.js",
   "scripts": {
@@ -31,7 +31,8 @@
     "moment": "^2.14.1",
     "mousetrap": "^1.6.0",
     "openseadragon": "^2.2.1",
-    "react-autosuggest": "^3.9.0"
+    "react-autosuggest": "^3.9.0",
+    "bootstrap-sass": "^3.3.7"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",

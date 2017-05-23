@@ -1,6 +1,7 @@
 //Check the collection config getResultSnippetData() function to inspect this.props.data
 
 import IconUtil from '../../util/IconUtil';
+import IDUtil from '../../util/IDUtil';
 
 class SearchSnippet extends React.Component {
 
@@ -85,8 +86,11 @@ class SearchSnippet extends React.Component {
 			);
 		}
 
+		//generate main classes
+		let classNames = ['media', IDUtil.cssClassName('search-snippet')]
+
 		return (
-			<div className="media">
+			<div className={classNames.join(' ')}>
 				<div className="media-left">
 					<a href="#">
 						{poster}

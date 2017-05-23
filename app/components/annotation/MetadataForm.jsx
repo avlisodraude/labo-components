@@ -1,3 +1,4 @@
+import IDUtil from '../../util/IDUtil';
 import IconUtil from '../../util/IconUtil';
 
 /*
@@ -6,12 +7,19 @@ Goal:
 This component is the way for any crowd to add metadata in the form of key value pairs (and later also entities?)
 It is based on the idea of 'information cards' from editortool.linkedtv.eu
 
-NOTE: this components is quite complex...
-
 TODO:
 	- validate the config that is passed, see the metadata block in e.g. arttube-item-details.json
 	- gracefully deal with the fact that the template is not stored in the annotation (which makes it impossible to fill
 	the dropdown box with the template that was used to create the annotation)
+
+Input:
+	- TODO
+
+Output:
+	- TODO
+
+HTML markup & CSS attributes:
+	- regular div => .bg__information-card-form
 */
 
 class MetadataForm extends React.Component {
@@ -26,6 +34,7 @@ class MetadataForm extends React.Component {
 			templates : this.determinePossibleTemplates(), //list of templates
 			singleCardMode : this.determineSingleCardMode()
 		}
+		this.CLASS_PREFIX = 'icf';
 	}
 
 	componentDidMount() {
@@ -396,7 +405,7 @@ class MetadataForm extends React.Component {
 					)
 				} else {
 					delPropBtn = (
-						<td className="icon">
+						<td className={IDUtil.cssClassName('icon', this.CLASS_PREFIX)}>
 							<span className={IconUtil.getUserActionIcon('remove', false, false, true)}
 								onClick={this.removeProperty.bind(this, i)}></span>
 						</td>
@@ -409,11 +418,11 @@ class MetadataForm extends React.Component {
 
 				//assemble the elements into the eventual form
 				return (
-					<tr key={'prop__' + i} className="card-table-row">
-						<td className="key">
+					<tr key={'prop__' + i} className={IDUtil.cssClassName('card-table-row', this.CLASS_PREFIX)}>
+						<td className={IDUtil.cssClassName('key', this.CLASS_PREFIX)}>
 							{propertyField}
 						</td>
-						<td className="value">
+						<td className={IDUtil.cssClassName('value', this.CLASS_PREFIX)}>
 							{inputField}
 						</td>
 						{delPropBtn}
@@ -467,7 +476,7 @@ class MetadataForm extends React.Component {
 					{templateSelect}
 					<form>
 						<h4>Edit card</h4>
-						<table className='card-table'>
+						<table className={IDUtil.cssClassName('card-table', this.CLASS_PREFIX)}>
 							<tbody>
 								{formRows}
 							</tbody>
@@ -479,7 +488,7 @@ class MetadataForm extends React.Component {
 		}
 
 		return (
-			<div key="form__comment">
+			<div className={IDUtil.cssClassName('information-card-form')}>
 				<br/>
 				<div className="row">
 					<div className="col-md-12">

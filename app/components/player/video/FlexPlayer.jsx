@@ -13,6 +13,7 @@ import SegmentationControls from '../segmentation/SegmentationControls';
 import AnnotationTimeline from '../annotation/AnnotationTimeline';
 import AnnotationSummary from '../../annotation/AnnotationSummary';
 
+import IDUtil from '../../../util/IDUtil';
 import TimeUtil from '../../../util/TimeUtil';
 import AnnotationUtil from '../../../util/AnnotationUtil';
 import IconUtil from '../../../util/IconUtil';
@@ -623,7 +624,7 @@ class FlexPlayer extends React.Component {
 		}
 
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('flex-player')}>
 				<div className="row">
 					<div className="col-md-7" style={{overflowX : 'auto'}}>
 						<div>

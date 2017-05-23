@@ -1,3 +1,5 @@
+import IDUtil from '../util/IDUtil';
+
 //TODO the header sucks a bit, make it better
 class FlexBox extends React.Component {
 	constructor(props) {
@@ -5,6 +7,7 @@ class FlexBox extends React.Component {
 		this.state = {
 			visible: true
 		}
+		this.CLASS_PREFIX = 'fb';
 	}
 
 	toggle() {
@@ -17,15 +20,24 @@ class FlexBox extends React.Component {
 		let header = (
 			<div className="row fb-header" onClick={this.toggle.bind(this)}>
 				<div className="col-md-12">
-					<div className={this.state.visible ? 'fb-open' : 'fb-closed'}>
+					<div className={
+							this.state.visible ?
+								IDUtil.cssClassName('open', this.CLASS_PREFIX) :
+								IDUtil.cssClassName('closed', this.CLASS_PREFIX)
+						}>
 						{this.props.title}&nbsp;
 					</div>
 				</div>
 			</div>
 		)
 
+		//the component's css class names
+		let classNames = [IDUtil.cssClassName('flex-box')]
+		if(!this.state.visible) {
+			classNames.push('closed')
+		}
 		return (
-			<div className={this.state.visible ? 'flex-box' : 'flex-box closed'}>
+			<div className={classNames.join(' ')}>
 				{header}
 				<div style={{display : this.state.visible ? 'block' : 'none'}}>
 					{this.props.children}

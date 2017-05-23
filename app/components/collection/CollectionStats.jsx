@@ -1,3 +1,5 @@
+import IDUtil from '../../util/IDUtil';
+
 class CollectionStats extends React.Component {
 
 	constructor(props) {
@@ -82,7 +84,7 @@ class CollectionStats extends React.Component {
 
 		}
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('collection-stats')}>
 				<h4>Documents in collection: {stats.totalDocs}</h4>
 				<p>
 				In the tabs below it is possible to inspect the (types of) metadata fields that are available per document type in the collection index.

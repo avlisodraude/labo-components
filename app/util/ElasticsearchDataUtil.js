@@ -66,7 +66,7 @@ const ElasticsearchDataUtil = {
 		return null;
 	},
 
-	/* ----------------------------- Used by: FlexAggregationBox, FlexAggregationList, FlexTimeSlider ------------ */
+	/* ----------------------------- Used by: AggregationBox, AggregationList, DateRangeSelector ------------ */
 
 	getAggregationTitle(aggrId, configuredAggregations) {
 		let title = null;

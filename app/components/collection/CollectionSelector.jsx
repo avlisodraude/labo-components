@@ -1,5 +1,7 @@
 import CollectionAPI from '../../api/CollectionAPI';
 import CollectionUtil from '../../util/CollectionUtil';
+import IDUtil from '../../util/IDUtil';
+
 /*
 
 TODO:
@@ -18,6 +20,7 @@ class CollectionSelector extends React.Component {
 			activeCollection: '',
 			collectionList : null
 		}
+		this.CLASS_PREFIX = 'cls';
 	}
 
 	componentDidMount() {
@@ -70,10 +73,11 @@ class CollectionSelector extends React.Component {
 	}
 
 	render() {
-		let collectionSelect = null;
-		let collectionBrowser = null;
+		let markup = null;
 
 		if(this.state.collectionList) {
+			let collectionSelect = null;
+			let collectionBrowser = null;
 
 			//the collection selection part
 			if(this.props.showSelect) {
@@ -112,9 +116,10 @@ class CollectionSelector extends React.Component {
 						image = <img src={tmp}/>
 					}
 					return (
-						<div className="collection" onClick={this.selectCollection.bind(this, collection.index)}>
+						<div className={IDUtil.cssClassName('collection', this.CLASS_PREFIX)}
+							onClick={this.selectCollection.bind(this, collection.index)}>
 							{image}
-							<div className="caption">
+							<div className={IDUtil.cssClassName('caption', this.CLASS_PREFIX)}>
 								<h4>{collection.title}</h4>
 								<p>{collection.organization.title}</p>
 							</div>
@@ -129,7 +134,7 @@ class CollectionSelector extends React.Component {
 				)
 			}
 
-			return (
+			markup =(
 				<div className="row">
 					<div className="col-md-12">
 						{collectionSelect}
@@ -138,8 +143,15 @@ class CollectionSelector extends React.Component {
 				</div>
 			)
 		} else {
-			return (<h3 key="collection_list_loading">Loading collection list...</h3>)
+			markup = (<h3>Loading collection list...</h3>)
 		}
+
+		//always return everything wrapped in an identifyable div
+		return (
+			<div className={IDUtil.cssClassName('collection-selector')}>
+				{markup}
+			</div>
+		)
 	}
 
 };

@@ -1,4 +1,5 @@
 import PlayerAPI from '../PlayerAPI';
+import IDUtil from '../../../util/IDUtil';
 
 //key: cp1KvUB8slrOvOjg+U8melMoNwxOm/honmDwGg==
 //https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference
@@ -58,7 +59,9 @@ class JWPlayer extends React.Component {
 	}
 
 	render() {
-		return (<div id={'video_player__' + this.props.mediaObject.id}/>);
+		return (
+			<div id={'video_player__' + this.props.mediaObject.id} className={IDUtil.cssClassName('jw-player')}/>
+		);
 	}
 
 }

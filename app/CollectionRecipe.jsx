@@ -21,6 +21,7 @@ class CollectionsRecipe extends React.Component {
 			fieldAnalysisStats : null, //output from the CollectionAnalyser
 			fieldAnalysisTimeline : null //output from the CollectionAnalyser
 		}
+		this.CLASS_PREFIX = 'rcp__cl'
 	}
 
 	componentDidMount() {
@@ -183,7 +184,7 @@ class CollectionsRecipe extends React.Component {
 			});
 			collectionBlock = (
 				<FlexBox title="Selected collections">
-					<div className="flex-input-area">
+					<div className={IDUtil.cssClassName('input-area', this.CLASS_PREFIX)}>
 						<div className="text-right">
 							<button className="btn btn-primary"	onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
 								Add collection&nbsp;<i className="fa fa-plus"></i>
@@ -269,7 +270,7 @@ class CollectionsRecipe extends React.Component {
 
 			analysisBlock = (
 				<FlexBox title="Collection analysis">
-					<div className="flex-input-area">
+					<div className={IDUtil.cssClassName('input-area', this.CLASS_PREFIX)}>
 						<div className="row">
 							<div className="col-md-12">
 								{collectionAnalyser}
@@ -286,25 +287,22 @@ class CollectionsRecipe extends React.Component {
 		}
 
 		return (
-			<div className="row">
+			<div className={IDUtil.cssClassName('collection-recipe')}>
 				{collectionModal}
 				{statsModal}
-				<div className="col-md-12">
-					<div className="row">
-						<div className="col-md-6">
-							{collectionBlock}
-						</div>
-						<div className="col-md-6">
-							{analysisBlock}
-						</div>
+				<div className="row">
+					<div className="col-md-6">
+						{collectionBlock}
 					</div>
-					<div className="row">
-						<div className="col-md-12">
-							{fieldAnalysisTimeline}
-						</div>
+					<div className="col-md-6">
+						{analysisBlock}
 					</div>
 				</div>
-
+				<div className="row">
+					<div className="col-md-12">
+						{fieldAnalysisTimeline}
+					</div>
+				</div>
 			</div>
 		)
 	}

@@ -1,6 +1,8 @@
 import Annotation from './Annotation';
 import AnnotationAPI from '../../api/AnnotationAPI';
+
 import AnnotationUtil from '../../util/AnnotationUtil';
+import IDUtil from '../../util/IDUtil';
 import IconUtil from '../../util/IconUtil';
 
 import AnnotationActions from '../../flux/AnnotationActions';
@@ -17,6 +19,9 @@ Input:
 
 Output/emits:
 	- nothing, this component only renders data on the screen
+
+HTML markup & CSS attributes:
+	- regular div => .bg__annotation-list
 */
 
 class AnnotationList extends React.Component {
@@ -94,7 +99,7 @@ class AnnotationList extends React.Component {
 			);
 		}
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('annotation-list')}>
 				<button className={this.state.annotations.length > 0 ? 'btn btn-danger' : 'btn btn-default'}
 					onClick={this.toggleAnnotations.bind(this)}>
 					Saved annotations&nbsp;{this.state.annotations.length}&nbsp;

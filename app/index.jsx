@@ -41,17 +41,15 @@ export {default as SearchAPI} from './api/SearchAPI';
 
 //collection components
 export {default as CollectionSelector} from './components/collection/CollectionSelector';
-export {default as NamedQuerySelector} from './components/collection/NamedQuerySelector';
 export {default as CollectionStats} from './components/collection/CollectionStats';
 export {default as CollectionAnalyser} from './components/collection/CollectionAnalyser';
 
 //search components
-export {default as ComparativeSearch} from './components/search/ComparativeSearch';
 export {default as QueryFactory} from './components/search/QueryFactory';
 export {default as QueryBuilder} from './components/search/QueryBuilder';
 export {default as SearchSnippet} from './components/search/SearchSnippet';
 export {default as ItemDetails} from './components/search/ItemDetails';
-export {default as FlexHits} from './components/search/FlexHits';
+export {default as SearchHit} from './components/search/SearchHit';
 
 //data visualisation components
 export {default as QueryComparisonLineChart} from './components/stats/QueryComparisonLineChart';

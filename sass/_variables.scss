@@ -1,0 +1,60 @@
+/*
+	Main variables of the component library.
+
+	Client applications are invited to override these by using SASS.
+
+	These clients should not use the prepackaged labo-components.css, but should generate their own CSS based on:
+	- bootstrap-sass/assets/stylesheets/bootstrap (after npm install bootstrap-sass)
+	- _bootstrap-overrides.scss
+	- _components-scss
+*/
+
+/* ---- Spacing variables ---- */
+
+$default-margin: 10px !default;
+$box-shadow-base: 5px 5px 5px !default;
+$border-radius: $border-radius-base; /* applying bootstrap variable */
+
+/* ---- Global colors (hopefully with useful semantic designations) ---- */
+
+$highlight-color: #f26c50 !default;
+$subdued-color: #888 !default;
+$subdued-hover-color: #efefef !default;
+$subdued-bg: #f8f8f8 !default;
+$fill-color: #468dcb !default;
+$border-color: #e3e3e3 !default;
+$dark-text: #333 !default;
+$list-item-color: #333 !default;
+
+/* ---- Box shadow colors ---- */
+
+$shadow-subdued: $subdued-color !default;
+$shadow-active: $fill-color !default;
+
+/* ---- Annotation ---- */
+
+$annotation-label-color: $dark-text !default;
+$annotation-frag-info-color: $fill-color !default;
+$annotation-prov-info-color: $dark-text !default;
+
+$image-overlay-bg: rgba(255,250,205, 0.2) !default;
+$image-overlay-bg-active: rgba(178,34,34, 0.2) !default;
+
+$image-overlay-border: 1px solid $subdued-color !default;
+$image-overlay-border-active: 1px solid $highlight-color !default;
+
+$image-overlay-border-radius : $border-radius !default;
+$image-overlay-border-radius-active : $border-radius !default;
+
+/* ---- Item details ---- */
+
+$metadata-table-label-color : $dark-text;
+$metadata-table-first-column-width: 125px !default;
+
+/* ---- Timeline ---- */
+
+$timeline-bg: black !default;
+
+/* ---- Modal ---- */
+
+$modal-backdrop-bg: transparant; /* overriding bootstrap variable */

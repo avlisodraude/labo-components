@@ -1,9 +1,11 @@
 import MetadataTable from './MetadataTable';
+import IDUtil from '../../util/IDUtil';
 
 class ItemDetails extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.CLASS_PREFIX = 'itd';
 	}
 
 	render() {
@@ -46,7 +48,7 @@ class ItemDetails extends React.Component {
 				}
 
 				return (
-					<div key={'media__' + index} className="media-player">
+					<div key={'media__' + index} className={IDUtil.cssClassName('media-player', this.CLASS_PREFIX)}>
 						{mediaPlayer}
 					</div>
 				);
@@ -62,7 +64,7 @@ class ItemDetails extends React.Component {
 
 			}
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('item-details')}>
 				<h4>Metadata</h4>
 				<MetadataTable data={this.props.data}/>
 				{mediaBlock}

@@ -1,5 +1,7 @@
 import SearchPluginAPI from '../../api/SearchPluginAPI.js';
 
+//TODO this component hasn't been part of the media suite in a while and should be completely revised when the time comes
+//(whenever the SPARQL API starts to really become part of the infrastructure)
 class NamedQuerySelector extends React.Component {
 
 	constructor(props) {

@@ -1,14 +1,17 @@
 import FlexRouter from '../../util/FlexRouter';
+import IDUtil from '../../util/IDUtil';
+
 import SearchSnippet from './SearchSnippet';
 import ItemDetails from './ItemDetails';
 import FlexModal from '../FlexModal';
 
-class FlexHits extends React.Component {
+class SearchHit extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			showModal : false
 		};
+		this.CLASS_PREFIX = 'sh';
 	}
 
 	//BIG TODO: there must be an overarching persistent ID system to load individual records
@@ -47,13 +50,19 @@ class FlexHits extends React.Component {
 				</FlexModal>
 			)
 		}
+		let classNames = [IDUtil.cssClassName('search-hit')];
+		if(snippet.type == 'media_fragment') {
+			classNames.push('fragment')
+		}
 		return (
-			<div key={result.resourceId} className={snippet.type == 'media_fragment' ? 'flex-hit fragment' : 'flex-hit'}>
+			<div id={result.resourceId} className={classNames.join(' ')}>
 				<div onClick={this.gotoItemDetails.bind(this, result)}>
-					<button className="btn btn-default fh-quickview"
-						onClick={this.quickView.bind(this)} title="Quick view">
-						<i className="fa fa-eye"></i>
-					</button>
+					<div className={IDUtil.cssClassName('quickview', this.CLASS_PREFIX)}>
+						<button className="btn btn-default"
+							onClick={this.quickView.bind(this)} title="Quick view">
+							<i className="fa fa-eye"></i>
+						</button>
+					</div>
 					<SearchSnippet data={snippet} searchTerm={this.props.searchTerm}/>
 				</div>
 				{modal}
@@ -63,4 +72,4 @@ class FlexHits extends React.Component {
 	}
 }
 
-export default FlexHits;
+export default SearchHit;

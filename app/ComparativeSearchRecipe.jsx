@@ -1,13 +1,13 @@
-import ComparativeSearch from './components/search/ComparativeSearch';
 import QueryFactory from './components/search/QueryFactory';
 
 import SearchAPI from './api/SearchAPI';
 
 import FlexBox from './components/FlexBox';
-import FlexHits from './components/search/FlexHits';
-import FlexPaging from './components/search/FlexPaging';
-import FlexSorting from './components/search/FlexSorting';
+import SearchHit from './components/search/SearchHit';
+import Paging from './components/search/Paging';
+import Sorting from './components/search/Sorting';
 
+import IDUtil from './util/IDUtil';
 import ElasticsearchDataUtil from './util/ElasticsearchDataUtil';
 import QueryComparisonLineChart from './components/stats/QueryComparisonLineChart';
 
@@ -162,7 +162,7 @@ class ComparativeSearchRecipe extends React.Component {
 					initialCollections={this.state.collections}
 					itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}
 					aggregationView={this.props.recipe.ingredients.aggregationView}
-					timeSlider={this.props.recipe.ingredients.timeSlider}
+					dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
 					onOutput={this.onComponentOutput.bind(this)}/>
 			</FlexBox>);
 
@@ -190,7 +190,7 @@ class ComparativeSearchRecipe extends React.Component {
 			if(searchResults && searchResults.results && searchResults.results.length > 0) {
 				//draw the paging buttons
 				if(searchResults.currentPage > 0) {
-					paging = <FlexPaging
+					paging = <Paging
 						queryId={queryId}
 						currentPage={searchResults.currentPage}
 						numPages={Math.ceil(searchResults.totalHits / this.state.pageSize)}
@@ -199,7 +199,7 @@ class ComparativeSearchRecipe extends React.Component {
 
 				//draw the sorting buttons
 				if(searchResults.params.sort) {
-					sortButtons = <FlexSorting
+					sortButtons = <Sorting
 						queryId={queryId}
 						sortResults={this.sortResults.bind(this)}
 						sortParams={searchResults.params.sort}
@@ -209,7 +209,7 @@ class ComparativeSearchRecipe extends React.Component {
 				//draw the list of search results
 				let items = searchResults.results.map((result, index) => {
 					return (
-						<FlexHits
+						<SearchHit
 							key={'__' + index}
 							result={result}
 							searchTerm={searchResults.params.term}
@@ -233,7 +233,7 @@ class ComparativeSearchRecipe extends React.Component {
 
 
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('comparative-search-recipe')}>
 				<div className="row">
 					<div className="col-md-12">
 						{searchComponent}
