@@ -6,10 +6,10 @@ import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 import IDUtil from '../../util/IDUtil';
 
 //ui controls for assembling queries
-import FlexFieldSelector from './FlexFieldSelector';
-import FlexTimeSlider from './FlexTimeSlider';
-import FlexAggregationBox from './FlexAggregationBox';
-import FlexAggregationList from './FlexAggregationList';
+//import StringFieldSelector from './StringFieldSelector';
+import DateRangeSelector from './DateRangeSelector';
+import AggregationBox from './AggregationBox';
+import AggregationList from './AggregationList';
 
 /*
 Notes about this component:
@@ -27,7 +27,7 @@ INPUT:
 	header:						Show header with collection name: yes/no
 	searchAPI: 					The search API instance to call
 	aggregationView: 			Show aggregations as a list or a box
-	timeSlider:  				Show a date/time range slider for forming date range queries
+	dateRangeSelector:  		Show a date/time range selector for forming date range queries
 	searchParams: 				Provided initial search parameters to form the initial query
 	onOutput: 					Function to call when generating output
 
@@ -62,6 +62,7 @@ class QueryBuilder extends React.Component {
 			selectedStringField : null,
 			currentPage : -1
 		}
+		this.CLASS_PREFIX = 'qb'
 	}
 
 	/*---------------------------------- COMPONENT INIT --------------------------------------*/
@@ -191,7 +192,7 @@ class QueryBuilder extends React.Component {
 	/*---------------------------------- FUNCTION THAT RECEIVES DATA FROM CHILD COMPONENTS --------------------------------------*/
 
 	onComponentOutput(componentClass, data) {
-		if(componentClass == 'FlexAggregationList' || componentClass == 'FlexAggregationBox') {
+		if(componentClass == 'AggregationList' || componentClass == 'AggregationBox') {
 			//TODO update the selected facets
 			this.setState(
 				{selectedFacets : data.selectedFacets, desiredFacets : data.desiredFacets},
@@ -210,7 +211,7 @@ class QueryBuilder extends React.Component {
 					true
 				)
 			)
-		} else if(componentClass == 'FlexTimeSlider') {
+		} else if(componentClass == 'DateRangeSelector') {
 			let df = this.state.desiredFacets;
 			if(this.state.selectedDateRange) {
 
@@ -260,7 +261,8 @@ class QueryBuilder extends React.Component {
 			} else {
 				console.debug('this is not supposed to happen! (no date range...)');
 			}
-		} else if(componentClass == 'FlexFieldSelector') {
+		} else if(componentClass == 'StringFieldSelector') {
+			/*
 			this.setState(
 				{
 					selectedStringField : data
@@ -279,7 +281,7 @@ class QueryBuilder extends React.Component {
 					this.onOutput.bind(this),
 					true
 				)
-			)
+			)*/
 		}
 	}
 
@@ -329,7 +331,7 @@ class QueryBuilder extends React.Component {
 		}
 		if(data) {
 			this.setState({
-				aggregations : data.aggregations, //for drawing the FlexAggregationBox/List
+				aggregations : data.aggregations, //for drawing the AggregationBox/List
 				totalHits : data.totalHits, //shown in the stats
 				totalUniqueHits : data.totalUniqueHits, //shown in the stats
 				currentPage : data.currentPage, //remembering the page we're at
@@ -371,7 +373,7 @@ class QueryBuilder extends React.Component {
 				})
 				if(layers) {
 					layerOptions = (
-						<div className="search-layer-options">
+						<div className={IDUtil.cssClassName('search-layers', this.CLASS_PREFIX)}>
 							{layers}
 						</div>
 					)
@@ -383,17 +385,17 @@ class QueryBuilder extends React.Component {
 				let resultStats = null;
 				let aggrView = null; //either a box or list (TODO the list might not work properly anymore!)
 				let aggregationBox = null;
-				let timeSlider = null;
+				let dateRangeSelector = null;
 
 				//populate the aggregation/facet selection area/box
 				if(this.state.aggregations) {
 					if(this.props.aggregationView == 'box') {
 						aggrView = (
-							<FlexAggregationBox
+							<AggregationBox
 								queryId={this.props.queryId}
 								aggregations={this.state.aggregations} //part of the search results
 								desiredFacets={this.state.desiredFacets} //as obtained from the collection config
-								selectedFacets={this.state.selectedFacets} //via FlexAggregationBox or FlexAggregationList
+								selectedFacets={this.state.selectedFacets} //via AggregationBox or AggregationList
 								collectionConfig={this.props.collectionConfig} //for the aggregation creator only
 								searchId={this.state.searchId} //for determining when the component should rerender
 								onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
@@ -401,11 +403,11 @@ class QueryBuilder extends React.Component {
 						)
 					} else { //just show them as a conservative list
 						aggrView = (
-							<FlexAggregationList
+							<AggregationList
 								queryId={this.props.queryId} //TODO implement in the list component
 								aggregations={this.state.aggregations} //part of the search results
 								facets={this.state.desiredFacets} //as obtained from the collection config
-								selectedFacets={this.state.selectedFacets} //via FlexAggregationBox or FlexAggregationList
+								selectedFacets={this.state.selectedFacets} //via AggregationBox or AggregationList
 								onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
 								/>
 						)
@@ -424,9 +426,9 @@ class QueryBuilder extends React.Component {
 
 					//draw the time slider
 					//FIXME it will disappear when there are no results!
-					if(this.props.timeSlider && this.state.selectedDateRange) {
-						timeSlider = (
-							<FlexTimeSlider
+					if(this.props.dateRangeSelector && this.state.selectedDateRange) {
+						dateRangeSelector = (
+							<DateRangeSelector
 								queryId={this.props.queryId}
 								collection={this.props.collectionConfig.getSearchIndex()} //for creating a guid
 								dateRange={this.state.selectedDateRange} //for activating the selected date field
@@ -448,7 +450,7 @@ class QueryBuilder extends React.Component {
 						<div className="separator"></div>
 						<div className="row">
 							<div className="col-md-12">
-								{timeSlider}
+								{dateRangeSelector}
 							</div>
 						</div>
 						<div className="separator"></div>
@@ -469,7 +471,7 @@ class QueryBuilder extends React.Component {
 
 			//render the stuff on screen
 			return (
-				<div>
+				<div className={IDUtil.cssClassName('query-builder')}>
 					{heading}
 					<div className="separator"></div>
 					<div className="row">

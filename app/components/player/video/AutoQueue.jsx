@@ -1,6 +1,7 @@
 import TimeUtil from '../../../util/TimeUtil';
 
 //TODO rewrite this class so it focuses on showing captions
+//TODO this component is currently not used anymore. Either repurpose or scrap
 class AutoQueue extends React.Component {
 
 	constructor(props) {

@@ -1,6 +1,7 @@
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 
-class FlexFieldSelector extends React.Component {
+//TODO this component is not used yet and does not have a proper component ID yet
+class StringFieldSelector extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -48,4 +49,4 @@ class FlexFieldSelector extends React.Component {
 
 }
 
-export default FlexFieldSelector;
+export default StringFieldSelector;

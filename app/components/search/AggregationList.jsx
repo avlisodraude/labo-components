@@ -1,9 +1,11 @@
+import IDUtil from '../../util/IDUtil';
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 
 //this component draws the aggregations (a.k.a. facets) and merely outputs the user selections to the parent component
-class FlexAggregationList extends React.Component {
+class AggregationList extends React.Component {
 	constructor(props) {
 		super(props);
+		this.CLASS_PREFIX = 'agl';
 	}
 
 	//communicates the selected facets back to the parent component
@@ -33,7 +35,8 @@ class FlexAggregationList extends React.Component {
 				let value = facet.date_millis ? facet.date_millis : facet.key
 				let facetId = key + '|' + value;
 				return (
-					<li key={'facet__' + index + '__' + fIndex} className="facet-item">
+					<li key={'facet__' + index + '__' + fIndex}
+						className={IDUtil.cssClassName('facet-item', this.CLASS_PREFIX)}>
 						<div className="checkbox inline">
 							<label>
 								<input id={facetId}
@@ -50,7 +53,7 @@ class FlexAggregationList extends React.Component {
 				facets.push((
 					<div key={'facet__' + index}>
 						<h5>{ElasticsearchDataUtil.getAggregationTitle(key, this.props.facets)}</h5>
-						<ul className="facet-group">
+						<ul className={IDUtil.cssClassName('facet-group', this.CLASS_PREFIX)}>
 							{options}
 						</ul>
 					</div>
@@ -59,11 +62,11 @@ class FlexAggregationList extends React.Component {
 		});
 
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('aggregation-list')}>
 				{facets}
 			</div>
 		)
 	}
 }
 
-export default FlexAggregationList;
+export default AggregationList;

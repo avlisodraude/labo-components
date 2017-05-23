@@ -1,5 +1,5 @@
 import PlayerAPI from '../PlayerAPI';
-
+import IDUtil from '../../../util/IDUtil';
 /*
 	Did this (had the old API before):
 		https://github.com/vimeo/player.js/blob/master/docs/migrate-from-froogaloop.md
@@ -50,7 +50,7 @@ class VimeoPlayer extends React.Component {
 	render() {
 		//iframe ID was altijd player_1 (wat in te vullen voor width / height?)
 		return (
-			<div id={'video_player__' + this.props.mediaObject.id}>
+			<div id={'video_player__' + this.props.mediaObject.id} className={IDUtil.cssClassName('vimeo-player')}>
 				<iframe
 					id={'player_' + this.props.mediaObject.id}
 					src={this.props.mediaObject.url}

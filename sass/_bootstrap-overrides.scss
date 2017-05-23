@@ -1,0 +1,7 @@
+/* Override your bootstrap variables here */
+
+$font-family-sans-serif: "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,sans-serif;
+
+/* This is needed for the glyphicons to work */
+
+$icon-font-path: "../node_modules/bootstrap-sass/assets/fonts/bootstrap/" !default;

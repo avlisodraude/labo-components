@@ -1,3 +1,5 @@
+import IDUtil from '../../util/IDUtil';
+
 /*
 Goal:
 	-
@@ -15,6 +17,10 @@ Output/emits:
 			- event type ('add', 'delete')
 			- the item that was added/deleted (ID + value)
 			- the list of comments ({text : 'some comment'})
+
+HTML markup & CSS attributes:
+	- regular div => .bg__comment-form
+
 */
 
 class CommentingForm extends React.Component {
@@ -73,7 +79,7 @@ class CommentingForm extends React.Component {
 		}
 
 		return (
-			<div key="form__comment">
+			<div className={IDUtil.cssClassName('comment-form')}>
 				<br/>
 				<div className="row">
 					<div className="col-md-12">

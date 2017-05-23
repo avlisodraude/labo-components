@@ -1,15 +1,28 @@
 import TimeUtil from '../../util/TimeUtil';
 import AnnotationUtil from '../../util/AnnotationUtil';
 import IconUtil from '../../util/IconUtil';
+import IDUtil from '../../util/IDUtil';
+
 import Classification from './Classification';
+
 import AnnotationActions from '../../flux/AnnotationActions';
 
-//TODO include comments & links
+/*
+Input:
+	- TODO
+
+Output:
+	- TODO
+
+HTML markup & CSS attributes:
+	- regular div => .bg__annotation-summary
+*/
 
 class AnnotationSummary extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.CLASS_PREFIX = 'ans'
 	}
 
 	editAnnotation(subAnnotation) {
@@ -79,7 +92,9 @@ class AnnotationSummary extends React.Component {
 						</li>);
 				});
 				let cardList = (
-					<ul className="card-list" key={'c__' + index} onDoubleClick={this.editAnnotation.bind(this, a)}>
+					<ul className={IDUtil.cssClassName('card-list', this.CLASS_PREFIX)}
+						key={'c__' + index}
+						onDoubleClick={this.editAnnotation.bind(this, a)}>
 						{cardItems}
 					</ul>
 				);
@@ -138,7 +153,7 @@ class AnnotationSummary extends React.Component {
 		}
 		if(cards || classifications || comments || links) {
 			return (
-				<div className="annotation-summary">
+				<div className={IDUtil.cssClassName('annotation-summary')}>
 					{title}
 					{comments}
 					{links}

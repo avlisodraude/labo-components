@@ -5,11 +5,24 @@ import MetadataForm from './MetadataForm';
 
 import AnnotationActions from '../../flux/AnnotationActions';
 import AnnotationUtil from '../../util/AnnotationUtil';
+import IDUtil from '../../util/IDUtil';
 
 //TODO this should all be changed: instead of one annotation with multiple bodies (comments, classifications, links)
 //this class should load multiple annotations related to the current target... pff lots of work...
 
 //TODO make sure to update the date modified of changed annotations
+
+/*
+Input:
+	- TODO
+
+Output/emits:
+	- TODO
+
+HTML markup & CSS attributes:
+	- regular div => .bg__annotation-box
+*/
+
 class AnnotationBox extends React.Component {
 
 	constructor(props) {
@@ -116,7 +129,7 @@ class AnnotationBox extends React.Component {
 		}, this);
 
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('annotation-box')}>
 				<ul className="nav nav-tabs">
 					{tabs}
 				</ul>

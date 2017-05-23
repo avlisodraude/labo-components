@@ -1,4 +1,5 @@
 import TimeUtil from './util/TimeUtil';
+import IDUtil from './util/IDUtil';
 import IconUtil from './util/IconUtil';
 import ComponentUtil from './util/ComponentUtil';
 
@@ -58,6 +59,7 @@ class ItemDetailsRecipe extends React.Component {
 			found : false //whether the item metadata could be found
 		}
 		this.tabListeners = false;
+		this.CLASS_PREFIX = 'rcp__id'
 	}
 
 	//starts listening to any annotation actions, triggered by the players, and fetches the item details
@@ -310,7 +312,7 @@ class ItemDetailsRecipe extends React.Component {
 						<div key={index + '__mtc'}
 							id={'__mo' + index}
 							className={this.state.activeMediaTab == index ? 'tab-pane active' : 'tab-pane'}>
-							<div className="media-player">
+							<div className={IDUtil.cssClassName('media-player', this.CLASS_PREFIX)}>
 								{mediaPlayer}
 							</div>
 						</div>
@@ -331,19 +333,21 @@ class ItemDetailsRecipe extends React.Component {
 			}
 
 			return (
-				<div className="row">
-					<div className="col-md-12">
-						<br/>
-						{mediaPanel}
-						<div className="row">
-							<div className="col-md-7">
-								{metadataPanel}
-							</div>
-							<div className="col-md-5">
-								{annotationList}
-								{annotationBox}
-							</div>
+				<div className={IDUtil.cssClassName('item-details-recipe')}>
+					<div className="row">
+						<div className="col-md-12">
 							<br/>
+							{mediaPanel}
+							<div className="row">
+								<div className="col-md-7">
+									{metadataPanel}
+								</div>
+								<div className="col-md-5">
+									{annotationList}
+									{annotationBox}
+								</div>
+								<br/>
+							</div>
 						</div>
 					</div>
 				</div>

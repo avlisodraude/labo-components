@@ -1,9 +1,11 @@
 import ComponentUtil from '../util/ComponentUtil';
+import IDUtil from '../util/IDUtil';
 
 class FlexModal extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.CLASS_PREFIX = 'fm';
 	}
 
 	componentDidMount() {
@@ -35,10 +37,11 @@ class FlexModal extends React.Component {
 		} else if(this.props.size == 'small') {
 			classNames.push('modal-sm');
 		} else { // the default is a custom class, which is actually only used in combination with float 'right'
-			classNames.push('flex-modal');
+			classNames.push(IDUtil.cssClassName('custom', this.CLASS_PREFIX));
 		}
+
 		return (
-			<div id={this.props.elementId} className="modal fade">
+			<div id={this.props.elementId} className={['modal', 'fade', IDUtil.cssClassName('flex-modal')].join(' ')}>
 				<div className={classNames.join(' ')} style={{'float' : this.props.float ? this.props.float : 'none'}}>
 					<div className="modal-content">
 						<div className="modal-header">

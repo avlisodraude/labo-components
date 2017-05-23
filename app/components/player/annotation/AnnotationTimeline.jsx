@@ -1,4 +1,5 @@
 import TimeUtil from '../../../util/TimeUtil';
+import IDUtil from '../../../util/IDUtil';
 import AnnotationUtil from '../../../util/AnnotationUtil';
 import AnnotationActions from '../../../flux/AnnotationActions';
 
@@ -175,7 +176,7 @@ class AnnotationTimeline extends React.Component {
 			currentAnnotation = currentAnnotation[0].words;
 		}
 		return (
-			<div id={'an_timebar__' + this.props.mediaObject.id} className="timebar">
+			<div id={'an_timebar__' + this.props.mediaObject.id} className={IDUtil.cssClassName('annotation-timeline')}>
 				<canvas id={'an_timebar_canvas__' + this.props.mediaObject.id} width="300" height="50"
 					onClick={this.activateAnnotation.bind(this)}
 					onDoubleClick={this.editAnnotation.bind(this)}>

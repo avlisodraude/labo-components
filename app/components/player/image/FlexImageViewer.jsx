@@ -28,6 +28,7 @@ class FlexImageViewer extends React.Component {
 			annotations : [],
 			viewerLoaded : false
 		}
+		this.CLASS_PREFIX = 'fiv';
 	}
 
 	/* --------------------------------------------------------------
@@ -212,13 +213,16 @@ class FlexImageViewer extends React.Component {
 
 	setActiveAnnotation(annotationId, event) {
 		var d = document.getElementById(annotationId);
-		var overlays = document.getElementsByClassName('image-overlay');
+		var overlays = document.getElementsByClassName(IDUtil.cssClassName('overlay', this.CLASS_PREFIX));
 		if(overlays) {
 			[].forEach.call(overlays, (elm) => {
-				elm.className = 'image-overlay';
+				elm.className = IDUtil.cssClassName('overlay', this.CLASS_PREFIX);
 			});
-			if(d && d.className.indexOf('image-overlay') != -1 && d.className.indexOf('active') == -1) {
-				d.className += " active";
+			if(
+				d &&
+				d.className.indexOf(IDUtil.cssClassName('overlay', this.CLASS_PREFIX)) != -1 &&
+				d.className.indexOf('active') == -1) {
+					d.className += " active";
 			}
 		}
 	}
@@ -232,7 +236,7 @@ class FlexImageViewer extends React.Component {
 			parseInt(area.h)
 		);
 		var elt = document.createElement('div');
-		elt.className = 'image-overlay';
+		elt.className = IDUtil.cssClassName('overlay', this.CLASS_PREFIX);
 		elt.onclick= this.setActiveAnnotation.bind(this, annotation.id);
 		elt.id = annotation.id;
 
@@ -264,7 +268,6 @@ class FlexImageViewer extends React.Component {
 			element: elt,
 			location: rect
 		});
-
 	}
 
 	openAnnotationForm(annotation, event) {
@@ -298,7 +301,7 @@ class FlexImageViewer extends React.Component {
 			this.renderAll();
 		}
 		return (
-			<div id={'img_viewer__' + this.props.mediaObject.id}></div>
+			<div id={'img_viewer__' + this.props.mediaObject.id} className={IDUtil.cssClassName('flex-image-viewer')}></div>
 		)
 	}
 

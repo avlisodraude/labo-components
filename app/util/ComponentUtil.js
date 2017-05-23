@@ -9,7 +9,7 @@ const ComponentUtil = {
 		component.setState(stateObj);
 	},
 
-	//hides a FlexModal (used in ComparativeSearch, FlexAggregationBox, ItemDetailsRecipe, FlexHits)
+	//hides a FlexModal (used in AggregationBox, ItemDetailsRecipe, SearchHit)
 	hideModal(component, stateVariable, elementId, manualCloseRequired) {
 		let stateObj = {}
 		stateObj[stateVariable] = false

@@ -22,6 +22,7 @@ class QueryComparisonLineChart extends React.Component {
 		this.state = {
 			activeQueries : {}
 		}
+		this.CLASS_PREFIX = 'qlc';
 	}
 
 	componentDidMount() {
@@ -131,12 +132,12 @@ class QueryComparisonLineChart extends React.Component {
 	    // Loop through each symbol / key
 	    dataNest.forEach(function(d,i) {
 	        g.append("path")
-	            .attr("class", "line")
+	            .attr("class", IDUtil.cssClassName('line', this.CLASS_PREFIX))
 	            .style("stroke", function() { // Add the colours dynamically
 	                return d.color = color(d.key); })
 	            .attr("id", 'tag'+d.key.replace(/\s+/g, '')) // assign ID
 	            .attr("d", lineFunc(d.values));
-	    });
+	    }, this);
 
 	    if(this.props.data) {
 		    Object.keys(this.props.data).forEach((queryId, index) => {
@@ -161,7 +162,7 @@ class QueryComparisonLineChart extends React.Component {
 			)
 		}, this);
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('query-line-chart')}>
 				<svg id={'qclc_' + IDUtil.hashCode(this.props.comparisonId)} width={this.WIDTH} height={this.HEIGHT}></svg>
 				<div className="btn-group" role="group" aria-label="...">
 					{buttons}

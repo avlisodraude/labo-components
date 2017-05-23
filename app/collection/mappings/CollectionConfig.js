@@ -148,13 +148,24 @@ class CollectionConfig {
 			formattedResult = Object.assign(structuredData, formattedResult);
 		}
 
-		//if there are no title and date try to fetch them via the ES stats
+		//if there are no title and date try to fetch them via the ES stats or the raw data itself
 		if(formattedResult.title == null) {
-			if(this.stringFields != null && this.stringFields.length > 0) {
+			if(result.title) {
+				formattedResult.title = result.title;
+			} else if(this.stringFields != null && this.stringFields.length > 0) {
 				formattedResult.title = result[this.stringFields[0]];
 			} else {
 				formattedResult.title = '<No title available>';
 			}
+		}
+		if(formattedResult.description == null && result.description) {
+			formattedResult.description = result.description;
+		}
+		if(formattedResult.posterURL == null && result.posterURL) {
+			formattedResult.posterURL = result.posterURL;
+		}
+		if(formattedResult.playableContent == null && result.playableContent) {
+			formattedResult.playableContent = result.playableContent;
 		}
 		if(formattedResult.date == null) {
 			if(currentDateField && result[currentDateField]) {

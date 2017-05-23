@@ -1,5 +1,7 @@
+import IDUtil from '../../util/IDUtil';
+
 //stateless, this component is updated (via props) after the parent receives new search results
-class FlexSorting extends React.Component {
+class Sorting extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -53,9 +55,11 @@ class FlexSorting extends React.Component {
 			dateOrderIcon = tempOrderIcon;
 		}
 
-		//just draw everything
+		//define css class names
+		let classNames = ['btn-group', IDUtil.cssClassName('sorting')]
+
 		return (
-			<div className="btn-group" role="group" aria-label="...">
+			<div className={classNames.join(' ')} role="group" aria-label="...">
 				<button className={relClass} title="Sort by relevance"
 					onClick={this.sortResults.bind(this, '_score', relOrder)}>
 					<i className="fa fa-cogs"></i>
@@ -73,4 +77,4 @@ class FlexSorting extends React.Component {
 	}
 }
 
-export default FlexSorting;
+export default Sorting;

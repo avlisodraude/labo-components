@@ -250,35 +250,37 @@ class CollectionAnalyser extends React.Component {
 			}
 		}
 		return (
-			<div className="row">
-				<div className="col-md-12">
-					<div className="row">
-						<div className="col-md-12">
-							<form className="form-horizontal">
-								{collectionSelector}
-							</form>
+			<div className={IDUtil.cssClassName('collection-analyser')}>
+				<div className="row">
+					<div className="col-md-12">
+						<div className="row">
+							<div className="col-md-12">
+								<form className="form-horizontal">
+									{collectionSelector}
+								</form>
+							</div>
 						</div>
-					</div>
-					<div className="row">
-						<div className="col-md-12">
-							<form className="form-horizontal">
-								{documentTypeSelect}
-								{dateFieldSelect}
-								{analysisFieldSelect}
-							</form>
+						<div className="row">
+							<div className="col-md-12">
+								<form className="form-horizontal">
+									{documentTypeSelect}
+									{dateFieldSelect}
+									{analysisFieldSelect}
+								</form>
+							</div>
 						</div>
-					</div>
-					<div className="row">
-						<div className="col-md-6">
-							{collectionStats}
+						<div className="row">
+							<div className="col-md-6">
+								{collectionStats}
+							</div>
+							<div className="col-md-6">
+								{fieldAnalysisStats}
+							</div>
 						</div>
-						<div className="col-md-6">
-							{fieldAnalysisStats}
-						</div>
-					</div>
-					<div className="row">
-						<div className="col-md-12">
-							{collectionTimeline}
+						<div className="row">
+							<div className="col-md-12">
+								{collectionTimeline}
+							</div>
 						</div>
 					</div>
 				</div>

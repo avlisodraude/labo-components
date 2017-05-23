@@ -1,11 +1,16 @@
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
+import IDUtil from '../../util/IDUtil';
+
 /*
 	INPUT:
 		- an instance of CollectionConfig.jsx (for determining the available fields)
 		- an onOutput function (for emitting the created aggregation)
 
 	OUTPUT:
-		-a new aggregation
+		- a new aggregation
+
+	HTML markup & CSS attributes:
+		- regular div ==> .bg__aggregation-creator
 */
 class AggregationCreator extends React.Component {
 	constructor(props) {
@@ -79,7 +84,7 @@ class AggregationCreator extends React.Component {
 		}
 
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('aggregation-creator')}>
 				<form className="form-horizontal" onSubmit={this.save.bind(this)}>
 					{stringSelect}
 					<div className="form-group">

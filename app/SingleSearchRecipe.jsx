@@ -1,11 +1,12 @@
 import CollectionSelector from './components/collection/CollectionSelector';
 import QueryBuilder from './components/search/QueryBuilder';
-import FlexHits from './components/search/FlexHits';
-import FlexPaging from './components/search/FlexPaging';
-import FlexSorting from './components/search/FlexSorting';
+import SearchHit from './components/search/SearchHit';
+import Paging from './components/search/Paging';
+import Sorting from './components/search/Sorting';
 import FlexBox from './components/FlexBox';
 import FlexModal from './components/FlexModal';
 import FlexRouter from './util/FlexRouter';
+import IDUtil from './util/IDUtil';
 import ElasticsearchDataUtil from './util/ElasticsearchDataUtil';
 import CollectionUtil from './util/CollectionUtil';
 import ComponentUtil from './util/ComponentUtil';
@@ -294,7 +295,7 @@ class SingleSearchRecipe extends React.Component {
 					queryId={'single__query'}
 					aggregationView={this.props.recipe.ingredients.aggregationView}
 					pageSize={this.state.pageSize}
-					timeSlider={this.props.recipe.ingredients.timeSlider}
+					dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
 					collectionConfig={this.state.collectionConfig}
 					searchAPI={_config.SEARCH_API_BASE}
 					searchParams={searchParams} //FIXME these are actually only used once in the init, should be changed!
@@ -306,7 +307,7 @@ class SingleSearchRecipe extends React.Component {
 			if(this.state.currentOutput && this.state.currentOutput.results && this.state.currentOutput.results.length > 0) {
 				//populate the paging buttons
 				if(this.state.currentOutput.currentPage > 0) {
-					paging = <FlexPaging
+					paging = <Paging
 						currentPage={this.state.currentOutput.currentPage}
 						numPages={Math.ceil(this.state.currentOutput.totalHits / this.state.pageSize)}
 						gotoPage={this.gotoPage.bind(this)}/>
@@ -314,7 +315,7 @@ class SingleSearchRecipe extends React.Component {
 
 				if(this.state.currentOutput.params.sort) {
 					//draw the sorting buttons
-					sortButtons = <FlexSorting
+					sortButtons = <Sorting
 						sortResults={this.sortResults.bind(this)}
 						sortParams={this.state.currentOutput.params.sort}
 						dateField={this.state.currentOutput.dateField}/>
@@ -323,7 +324,7 @@ class SingleSearchRecipe extends React.Component {
 				//populate the list of search results
 				let items = this.state.currentOutput.results.map((result, index) => {
 					return (
-						<FlexHits
+						<SearchHit
 							key={'__' + index}
 							result={result}
 							searchTerm={this.state.currentOutput.params.term} //for highlighting the search term
@@ -344,7 +345,7 @@ class SingleSearchRecipe extends React.Component {
 			}
 
 			return (
-				<div>
+				<div className={IDUtil.cssClassName('single-search-recipe')}>
 					<div className="row">
 						<div className="col-md-12">
 							{searchComponent}

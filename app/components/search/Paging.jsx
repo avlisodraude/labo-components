@@ -1,4 +1,6 @@
-class FlexPaging extends React.Component {
+import IDUtil from '../../util/IDUtil';
+
+class Paging extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -83,8 +85,10 @@ class FlexPaging extends React.Component {
 					</button>);
 			}
 		}
+		//define css class names
+		let classNames = ['btn-group', IDUtil.cssClassName('paging')]
 		return (
-			<div className="btn-group" role="group" aria-label="...">
+			<div className={classNames.join(' ')} role="group" aria-label="...">
 				{pagingButtons}
 			</div>
 		);
@@ -92,4 +96,4 @@ class FlexPaging extends React.Component {
 
 }
 
-export default FlexPaging;
+export default Paging;

@@ -11,6 +11,9 @@ Input:
 
 Output/emits:
 	- a list of classifications
+
+HTML markup & CSS attributes:
+	- regular div => .bg__classify-form
 */
 
 class ClassifyingForm extends React.Component {
@@ -205,19 +208,19 @@ class ClassifyingForm extends React.Component {
 		}, this);
 		vocabularyOptions.push(
 			<label className="radio-inline" key={vocabularyOptions.length}>
-					<input
-						type="radio"
-						name="vocabularyOptions"
-						id="custom"
-						value="custom"
-						checked={'custom' == this.state.vocabulary}
-						onChange={this.setVocabulary.bind(this)}/>
-						Custom (no external lookup)
+				<input
+					type="radio"
+					name="vocabularyOptions"
+					id="custom"
+					value="custom"
+					checked={'custom' == this.state.vocabulary}
+					onChange={this.setVocabulary.bind(this)}/>
+					Custom (no external lookup)
 			</label>
 		);
 
 		return (
-			<div key={'form__classify'}>
+			<div className={IDUtil.cssClassName('classify-form')}>
 				<br/>
 				<div className="row">
 					<div className="col-md-12">

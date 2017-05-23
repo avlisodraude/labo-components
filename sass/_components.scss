@@ -1,0 +1,468 @@
+/* ========================  Annotation package ==================================== */
+
+.bg__annotation { /* Annotation.jsx */
+	span {
+		padding-right: 5px;
+	}
+	.bg__an__label {
+		color: $annotation-label-color;
+	}
+	.bg__an__fragment-info {
+		color: $annotation-frag-info-color;
+	}
+	.bg__an__prov-info {
+		color: $annotation-prov-info-color;
+		font-weight: bold;
+	}
+}
+
+.bg__annotation-box {} /* AnnotationBox.jsx */
+
+.bg__annotation-list {} /* AnnotationList.jsx */
+
+.bg__annotation-summary { /* AnnotationSummary.jsx */
+	.bg__ans__card-list {
+		list-style: none;
+		padding: 10px;
+		margin: 0px;
+		.key {
+			font-weight: bold;
+		}
+		li {
+			border-bottom:1px dotted $border-color;
+			word-break: break-word;
+		}
+		margin-bottom:5px;
+		border:1px solid white;
+		&:hover {
+			background-color: $subdued-hover-color;
+			border: 1px solid $fill-color;
+		}
+	}
+
+}
+
+.bg__classification { /* Classification.jsx */
+	font-size: 100% !important;
+	display: inline-block !important;
+	margin: 0px 5px 5px 0px;
+}
+
+.bg__classify-form {}  /* ClassifyingForm.jsx */
+
+.bg__comment-form {}  /* CommentingForm.jsx */
+
+.bg__link-form { /* LinkingForm.jsx */
+	.bg__lf__result-list {
+		height: 400px;
+		overflow: auto;
+	}
+}
+
+.bg__information-card-form { /* MetadataForm.jsx */
+	.bg__icf__card-table {
+		width: 100%;
+		margin-bottom: $default-margin;
+	}
+
+	.bg__icf__card-table-row {
+		.bg__icf__key {
+			width:25%;
+			padding-right:1%;
+		}
+		.bg__icf__value {
+			width:65%;
+			padding-right:1%;
+		}
+		.bg__icf__icon {
+			width:6%;
+		}
+		border-bottom:5px solid transparent;
+		vertical-align: top;
+	}
+}
+
+
+/* ==================== Search package ============================================ */
+
+.bg__aggregation-box { /* AggregationBox.jsx */
+	.bg__agb__tab-new {
+		a {
+			color: $fill-color !important;
+			&:hover {
+				text-decoration:underline;
+			}
+		}
+	}
+	.bg__agb__tag-cloud {
+		padding: $default-margin;
+
+		.bg__agb__tag-cloud-item {
+			display:inline-block;
+			margin: 0px 5px 5px 0px;
+			color: $fill-color;
+			cursor: pointer;
+			&:hover {
+				text-decoration:underline;
+			}
+		}
+
+		.active.bg__agb__tag-cloud-item {
+			font-weight: bold;
+		}
+	}
+	.bg__agb__breadcrumbs {
+		.bg__agb__crumb {
+			display: inline-block;
+	    	margin: 0px 5px 5px 0px;
+	    	background-color: $fill-color;
+	    	padding: 0px 5px;
+	    	color: white;
+	    	i {
+	    		cursor: pointer;
+		    	&:hover {
+		    		color: $highlight-color;
+		    	}
+		    }
+		}
+	}
+}
+
+.bg__aggregation-creator {} /* AggregationCreator.jsx */
+
+.bg__aggregation-list { /* AggregationList.jsx */
+	.bg__agl__facet-group {
+		list-style:none;
+		margin:0px;
+		padding:0px;
+		.bg__agl__facet-item {
+			color: $list-item-color;
+			&:hover {
+				color:#ccc;
+			}
+		}
+	}
+}
+
+.bg__date-range-select {} /* DateRangeSelector.jsx */
+
+.bg__item-details { /* ItemDetails.jsx */
+	.bg__itd__media-player {
+		img {
+			max-width:100%;
+		}
+	}
+}
+
+.bg__metadata-table { /* MetadataTable.jsx */
+	table-layout:fixed;
+	word-wrap: break-word;
+	tr {
+		td {
+			white-space:pre-wrap;
+			&:first-child {
+				width: $metadata-table-first-column-width;
+			}
+		}
+	}
+	label {
+		color: $metadata-table-label-color;
+	}
+	.bg__mdt__id {}
+	.bg__mdt__index {}
+	.bg__mdt__title {}
+	.bg__mdt__date {}
+	.bg__mdt__description {}
+	.bg__mdt__source {}
+	.bg__mdt__poster {}
+	.bg__mdt__special-props {}
+	.bg__mdt__raw-data {
+		overflow:auto;
+		height: 400px;
+	}
+}
+
+.bg__paging {} /* Paging.jsx */
+
+.bg__query-builder { /* QueryBuilder.jsx */
+	.bg__qb__search-layers {}
+}
+
+.bg__query-factory {
+	.bg__qf__grid {
+		.bg__qf__cell {
+			display:inline-block;
+			height: 600px;
+			float:left;
+			margin-right: 2%;
+			margin-top: 1%;
+			width:48%;
+			background-color: $subdued-bg;
+
+			padding: 3px 8px;
+			border-radius: $border-radius;
+
+			.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+				background-color: $subdued-bg;
+			}
+		}
+	}
+}
+
+.bg__search-hit { /* SearchHit.jsx */
+	margin: 5px;
+	padding: 10px;
+	border-bottom: 1px solid $border-color;
+	.bg__sh__quickview {
+		margin-right: $default-margin;
+		float:left;
+	}
+	.bg__search-snippet {
+		margin: 5px;
+	}
+	&.fragment { /* possibly change this into .bg__search-hit--fragment (BEM style) */
+		margin: 5px;
+		padding: $default-margin;
+		border-right: 1px solid $highlight-color;
+	}
+}
+
+.bg__search-snippet {} /* SearchSnippet.jsx */
+
+.bg__sorting {} /* Sorting.jsx */
+
+
+/* ==================== Collection package ============================================ */
+
+.bg__collection-analyser {} /* CollectionAnalyser.jsx */
+
+.bg__collection-selector { /* CollectionSelector.jsx */
+	.bg__cls__collection {
+		float: left;
+	    margin: 1% 1% 1% 1%;
+	    border-radius: $border-radius;
+	    border: 1px solid grey;
+	    width: 30%;
+	    overflow:hidden;
+	    padding: 10px;
+	    height: 250px;
+	    text-align: center;
+		img {
+	    	width: 50%;
+		}
+		&:hover {
+			box-shadow: 3px 3px 3px grey;
+		}
+		.bg__cls__caption {}
+	}
+}
+
+.bg__collection-stats {} /* CollectionStats.jsx */
+
+.bg__field-analysis-stats {} /* FieldAnalysisStats */
+
+
+/* ==================== Statistics package ============================================ */
+
+.bg__histogram { /* Histogram.jsx */
+	.bg__hg__bar {
+		cursor: pointer;
+		rect {
+			fill: $fill-color;
+			&:hover {
+				fill: $fill-color;
+			}
+		}
+		text {
+			fill: $dark-text;
+			font: 10px sans-serif;
+			&:hover {
+				font-size:150%;
+				z-index:199;
+			}
+		}
+	}
+}
+
+.bg__query-line-chart { /* QueryComparisonLineChart.jsx */
+	.axis path,	.axis line { /* overridden d3 class */
+		fill: none;
+		stroke: #e3e3e3;
+		shape-rendering: crispEdges;
+	}
+
+	.x.axis path { /* overridden d3 class */
+		display: none;
+	}
+
+	.bg__qlc__line {
+		fill: none;
+		stroke-width: 1.5px;
+	}
+}
+
+/* ==================== Player packages ============================================ */
+
+.bg__annotation-timeline { /* AnnotationTimeline.jsx */
+	width:100%;
+	height:50px;
+	display:block;
+	position:relative;
+	margin-top:10px;
+	background-color: $timeline-bg;
+	cursor: crosshair;
+}
+
+.bg__html5-audio-player {} /* HTML5AudioPlayer.jsx */
+
+.bg__flex-image-viewer { /* FlexImageViewer.jsx */
+	.bg__fiv__overlay {
+		outline: $image-overlay-border;
+		box-shadow: $box-shadow-base $shadow-subdued;
+		border-radius: $image-overlay-border-radius;
+		padding:10px;
+		background-color: $image-overlay-bg;
+		cursor: pointer;
+		&.active { /* possibly change this into .bg__flex-image-viewer--active (BEM style) */
+			outline: $image-overlay-border-active;
+			box-shadow: $box-shadow-base $shadow-active;
+			border-radius: $image-overlay-border-radius-active;
+			background-color: $image-overlay-bg-active;
+		}
+	}
+}
+
+.bg__segmentation-controls {} /* SegmentationControls.jsx */
+
+.bg__segmentation-timeline { /* SegmentationTimeline.jsx */
+	width:100%;
+	height:50px;
+	display:block;
+	position:relative;
+	margin-top:10px;
+	background-color: $timeline-bg;
+	cursor: crosshair;
+}
+
+.bg__flex-player {} /* FlexPlayer.jsx */
+
+.bg__html5-video-player {} /* HTML5VideoPlayer.jsx */
+
+.bg__jw-player {} /* JWPlayer.jsx */
+
+.bg__vimeo-player {} /* VimeoPlayer.jsx */
+
+.bg__youtube-player {} /* YouTubePlayer.jsx */
+
+
+/* ==================== Generic/flex components/package ============================================ */
+
+.bg__flex-box { /* FlexBox.jsx */
+	padding: $default-margin;
+	margin-bottom: $default-margin;
+	cursor:pointer;
+	.bg__fb__open {
+		float:right;
+		&:after {
+			content: "\25BC";
+		}
+		&:hover {
+			text-decoration:underline;
+		}
+	}
+	.bg__fb__closed {
+		float:right;
+		&:after {
+			content: "\25B2";
+		}
+	}
+	&.closed { /* possibly change this name into bg__flex-box--closed (BEM style) */
+		&:hover {
+			background-color:$fill-color;
+		}
+	}
+}
+
+.bg__flex-component-info {} /* FlexComponentInfo.jsx */
+
+.bg__flex-modal { /* FlexModal.jsx */
+	.bg__fm__custom {
+		width:55%;
+	}
+}
+
+
+/* ==================== Recipes ============================================ */
+
+.bg__collection-recipe { /* CollectionRecipe.jsx */
+	.bg__rcp__cl__input-area {
+		margin-top:5px;
+		background-color: $subdued-bg;
+		padding: 3px 8px;
+	}
+}
+
+.bg__item-details-recipe { /* ItemDetailsRecipe.jsx */
+	.bg__rcp__id__media-player {}
+}
+
+.bg__comparative-search-recipe {} /* ComparativeSearchRecipe.jsx */
+
+.bg__single-search-recipe {} /* SingleSearchRecipe.jsx */
+
+
+
+
+/* ==================== React Autocomplete (TODO: move to component later?) ==== */
+
+.react-autosuggest__container {
+	position: relative;
+}
+
+.react-autosuggest__input {
+	width: 90%;
+	height: 30px;
+	padding: 10px 20px;
+	font-family: Helvetica, sans-serif;
+	font-weight: 300;
+	font-size: 16px;
+	border: 1px solid $border-color;
+	border-radius: $border-radius;
+}
+
+.react-autosuggest__input:focus {
+	outline: none;
+}
+
+.react-autosuggest__container--open .react-autosuggest__input {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.react-autosuggest__suggestions-container {
+	position: absolute;
+	top: 51px;
+	width: 90%;
+	height: 420px;
+	overflow:auto;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	border: 1px solid $border-color;
+	background-color: #fff;
+	font-family: Helvetica, sans-serif;
+	font-weight: 300;
+	font-size: 16px;
+	border-bottom-left-radius: $border-radius;
+	border-bottom-right-radius: $border-radius;
+	z-index: 2;
+}
+
+.react-autosuggest__suggestion {
+	cursor: pointer;
+	padding: 10px 20px;
+}
+
+.react-autosuggest__suggestion--focused {
+	background-color: #ddd;
+}

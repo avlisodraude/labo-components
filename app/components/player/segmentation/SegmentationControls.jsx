@@ -1,6 +1,7 @@
 import moment from 'moment';
 import TimeUtil from '../../../util/TimeUtil';
 import IconUtil from '../../../util/IconUtil';
+import IDUtil from '../../../util/IDUtil';
 
 class SegmentationControls extends React.Component {
 
@@ -102,54 +103,56 @@ class SegmentationControls extends React.Component {
 			title = '[' + TimeUtil.formatTime(this.props.start) + ' - ' + TimeUtil.formatTime(this.props.end) + ']';
 		}
 		return (
-			<div className="row">
-				<div className="col-md-12">
-					<div className="row">
-						<div className="col-md-12">
-							<h4>Editing:&nbsp;{title}</h4>
+			<div className={IDUtil.cssClassName('segmentation-controls')}>
+				<div className="row">
+					<div className="col-md-12">
+						<div className="row">
+							<div className="col-md-12">
+								<h4>Editing:&nbsp;{title}</h4>
+							</div>
 						</div>
-					</div>
-					<div className="row">
+						<div className="row">
 
-						<div className="col-md-6">
-							<form onSubmit={this.setManualStart.bind(this)}>
-								<div className="input-group">
-									<span className="input-group-addon start-group">
-										Start
-									</span>
-									<input ref="startTime" type="text" className="form-control" defaultValue="00:00:00"/>
-									<span className="input-group-btn">
-										<button className="btn btn-default" type="submit"
-											title="When you press this the start time will be set to the time you entered in the input field">
-											Set
-										</button>
-										{setStartBtn}
-										{playStartBtn}
-									</span>
-								</div>
-							</form>
-						</div>
+							<div className="col-md-6">
+								<form onSubmit={this.setManualStart.bind(this)}>
+									<div className="input-group">
+										<span className="input-group-addon start-group">
+											Start
+										</span>
+										<input ref="startTime" type="text" className="form-control" defaultValue="00:00:00"/>
+										<span className="input-group-btn">
+											<button className="btn btn-default" type="submit"
+												title="When you press this the start time will be set to the time you entered in the input field">
+												Set
+											</button>
+											{setStartBtn}
+											{playStartBtn}
+										</span>
+									</div>
+								</form>
+							</div>
 
-						<div className="col-md-6">
-							<form onSubmit={this.setManualEnd.bind(this)}>
-								<div className="input-group">
-									<span className="input-group-addon end-group">&nbsp;End&nbsp;</span>
-									<input ref="endTime" type="text" className="form-control" defaultValue="00:00:00"/>
-									<span className="input-group-btn">
-										<button className="btn btn-default" type="submit"
-											title="When you press this the end time will be set to the time you entered in the input field">
-											Set
-										</button>
-										{setEndBtn}
-										{playEndBtn}
-									</span>
-								</div>
-							</form>
+							<div className="col-md-6">
+								<form onSubmit={this.setManualEnd.bind(this)}>
+									<div className="input-group">
+										<span className="input-group-addon end-group">&nbsp;End&nbsp;</span>
+										<input ref="endTime" type="text" className="form-control" defaultValue="00:00:00"/>
+										<span className="input-group-btn">
+											<button className="btn btn-default" type="submit"
+												title="When you press this the end time will be set to the time you entered in the input field">
+												Set
+											</button>
+											{setEndBtn}
+											{playEndBtn}
+										</span>
+									</div>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			)
+		)
 	}
 
 };

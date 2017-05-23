@@ -21,7 +21,7 @@ import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 		- a certain date range based on years
 */
 
-class FlexTimeSlider extends React.Component {
+class DateRangeSelector extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -175,15 +175,17 @@ class FlexTimeSlider extends React.Component {
 		}
 
 		return (
-			<div className="row">
-				<div className="col-md-5">
-					{dateFieldSelect}
-				</div>
-				<div className="col-md-7">
-					<div id={'__slider_' + IDUtil.hashCode(this.props.queryId)}
-						style={{display : hasResults ? 'block' : 'none'}}>
+			<div className={IDUtil.cssClassName('date-range-select')}>
+				<div className="row">
+					<div className="col-md-5">
+						{dateFieldSelect}
 					</div>
-					{noResults}
+					<div className="col-md-7">
+						<div id={'__slider_' + IDUtil.hashCode(this.props.queryId)}
+							style={{display : hasResults ? 'block' : 'none'}}>
+						</div>
+						{noResults}
+					</div>
 				</div>
 			</div>
 		)
@@ -191,9 +193,4 @@ class FlexTimeSlider extends React.Component {
 
 }
 
-export default FlexTimeSlider;
-
-
-// FlexTimeSlider.propTypes = {
-// 	data : React.PropTypes.object
-// }
+export default DateRangeSelector;

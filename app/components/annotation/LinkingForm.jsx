@@ -1,3 +1,7 @@
+import IDUtil from '../../util/IDUtil';
+import AnnotationUtil from '../../util/AnnotationUtil';
+import ExternalAPI from '../../api/ExternalAPI';
+
 /*
 Input:
 	- list of links (props.data)
@@ -6,10 +10,10 @@ Input:
 
 Output/emits:
 	- a list of links
-*/
 
-import AnnotationUtil from '../../util/AnnotationUtil';
-import ExternalAPI from '../../api/ExternalAPI';
+HTML markup & CSS attributes:
+	- regular div => .bg__link-form
+*/
 
 class LinkingForm extends React.Component {
 
@@ -21,6 +25,7 @@ class LinkingForm extends React.Component {
 			api : api,
 			results : []
 		}
+		this.CLASS_PREFIX = 'lf';
 	}
 
 	/* ------------------- CRUD / loading of links ------------------- */
@@ -185,7 +190,7 @@ class LinkingForm extends React.Component {
 			}, this);
 			resultList = (<div>
 				<h4>Gevonden resultaten <small>Dubbelklik een gevonden resultaat om deze toe te voegen</small></h4>
-				<div className="c-result-list">
+				<div className={IDUtil.cssClassName('result-list', this.CLASS_PREFIX)}>
 					<table className="table table-bordered">
 						<tbody>
 							{results}
@@ -196,7 +201,7 @@ class LinkingForm extends React.Component {
 		}
 
 		return (
-			<div key={'form__link'}>
+			<div className={IDUtil.cssClassName('link-form')}>
 				<br/>
 				<div className="row">
 					<div className="col-md-12">

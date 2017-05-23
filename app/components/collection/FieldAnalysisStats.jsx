@@ -1,3 +1,5 @@
+import IDUtil from '../../util/IDUtil';
+
 class FieldAnalysisStats extends React.Component {
 
 	constructor(props) {
@@ -34,11 +36,13 @@ class FieldAnalysisStats extends React.Component {
 		}
 
 		return (
-			<table className="table table-condensed">
-				<tbody>
-					{stats}
-				</tbody>
-			</table>
+			<div className={IDUtil.cssClassName('field-analysis-stats')}>
+				<table className="table table-condensed">
+					<tbody>
+						{stats}
+					</tbody>
+				</table>
+			</div>
 		);
 	}
 }

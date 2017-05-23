@@ -1,4 +1,4 @@
-import AggregationCreator from '../collection/AggregationCreator';
+import AggregationCreator from './AggregationCreator';
 import FlexModal from '../FlexModal';
 
 import IDUtil from '../../util/IDUtil';
@@ -15,12 +15,13 @@ OUTPUT:
 */
 
 //this component draws the aggregations (a.k.a. facets) and merely outputs the user selections to the parent component
-class FlexAggregationBox extends React.Component {
+class AggregationBox extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			showModal : false
 		}
+		this.CLASS_PREFIX = 'agb'
 	}
 
 	onComponentOutput(componentClass, data) {
@@ -76,9 +77,8 @@ class FlexAggregationBox extends React.Component {
 	}
 
 	isSelected(key, value) {
-		let facets = this.props.selectedFacets;
-		if(facets[key]) {
-			return facets[key].indexOf('value') != -1;
+		if(this.props.selectedFacets && this.props.selectedFacets[key]) {
+			return this.props.selectedFacets[key].indexOf(value) != -1;
 		}
 		return false;
 	}
@@ -118,7 +118,7 @@ class FlexAggregationBox extends React.Component {
 
 		//add a button for opening the collection selector last
 		tabs.push(
-			<li className="tab-new">
+			<li className={IDUtil.cssClassName('tab-new', this.CLASS_PREFIX)}>
 				<a href="javascript:void(0);" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
 					NEW&nbsp;<i className="fa fa-plus"></i>
 				</a>
@@ -131,7 +131,7 @@ class FlexAggregationBox extends React.Component {
 			let crumbs = Object.keys(this.props.selectedFacets).map((key) => {
 				return this.props.selectedFacets[key].map((value) => {
 					return (
-						<div className="crumb" title={key}>
+						<div className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)} title={key}>
 							{value}
 							&nbsp;
 							<i className="fa fa-close" onClick={this.toggleSelectedFacet.bind(this, key, value)}></i>
@@ -141,7 +141,7 @@ class FlexAggregationBox extends React.Component {
 
 			});
 			breadcrumbs = (
-				<div className="breadcrumbs">
+				<div className={IDUtil.cssClassName('breadcrumbs', this.CLASS_PREFIX)}>
 					{crumbs}
 				</div>
 			)
@@ -163,21 +163,27 @@ class FlexAggregationBox extends React.Component {
 			} else {
 				if(this.props.aggregations[aggr.field] && this.props.aggregations[aggr.field].length > 0) {
 					//generate a word cloud for regular aggregations
+					//TODO create a component for this!
+
 					let terms = this.props.aggregations[aggr.field].map((aggrData) => {
+						let classNames = [IDUtil.cssClassName('tag-cloud-item', this.CLASS_PREFIX)]
+						if(this.isSelected(aggr.field, aggrData.key)) {
+							classNames.push('active');
+						}
 						return (
 							<span
-								key={aggr.field + '|' + aggrData.key}
-								className={this.isSelected(aggr.field, aggrData.key) ? "tag-cloud-item active" : "tag-cloud-item"}
+								key={aggr.field + '|' + aggrData.key} className={classNames.join(' ')}
 								onClick={this.toggleSelectedFacet.bind(this, aggr.field, aggrData.key)}>
 									{aggrData.key}&nbsp;({aggrData.doc_count})
 							</span>
 						)
-					});
+					}, this);
 					visualisation = (
-						<div className="tag-cloud">
+						<div className={IDUtil.cssClassName('tag-cloud', this.CLASS_PREFIX)}>
 							{terms}
 						</div>
 					)
+
 				} else {
 					//if there is no data found within the desired aggregation/facet
 					visualisation = (
@@ -194,7 +200,7 @@ class FlexAggregationBox extends React.Component {
 					{visualisation}
 				</div>
 			);
-		});
+		}, this);
 
 		if(tabs.length > 0) {
 			boxContents = (
@@ -212,11 +218,11 @@ class FlexAggregationBox extends React.Component {
 		}
 
 		return (
-			<div>
+			<div className={IDUtil.cssClassName('aggregation-box')}>
 				{boxContents}
 			</div>
 		)
 	}
 }
 
-export default FlexAggregationBox;
+export default AggregationBox;

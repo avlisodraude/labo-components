@@ -17,6 +17,7 @@ class Histogram extends React.Component {
 		super(props);
 		this.WIDTH = 860;
 		this.HEIGHT = 220;
+		this.CLASS_PREFIX = 'hg';
 	}
 
 	componentDidMount() {
@@ -91,13 +92,13 @@ class Histogram extends React.Component {
 			.tickFormat(function(d) { return d + '';})
 
 		//draw the bars for each year
-		var bar = g.selectAll(".bar")
+		var bar = g.selectAll("." + IDUtil.cssClassName('bar', this.CLASS_PREFIX))
 			.data(years)
 
 		//create new bars
 		var barEnter = bar.enter()
 			.append("g")
-				.attr("class", "bar")
+				.attr("class", IDUtil.cssClassName('bar', this.CLASS_PREFIX))
 				.attr("transform", function(d) { return "translate(" + x(d.year) + "," + y(d.count) + ")"; })//set the correct pos
 
 		//add a rectange and a text element to new bars
@@ -138,7 +139,12 @@ class Histogram extends React.Component {
 	//TODO better ID!! (include some unique part based on the query)
 	render() {
 		return (
-			<svg id={'histogram_' + IDUtil.hashCode(this.props.queryId)} width={this.WIDTH} height={this.HEIGHT}></svg>
+			<svg
+				id={'histogram_' + IDUtil.hashCode(this.props.queryId)}
+				className={IDUtil.cssClassName('histogram')}
+				width={this.WIDTH}
+				height={this.HEIGHT}>
+			</svg>
 		)
 	}
 

@@ -1,4 +1,6 @@
 import PlayerAPI from '../PlayerAPI';
+import IDUtil from '../../../util/IDUtil';
+
 //See https://developers.google.com/youtube/iframe_api_reference
 
 class YouTubePlayer extends React.Component {
@@ -109,7 +111,7 @@ class YouTubePlayer extends React.Component {
 
 	render() {
 		return (
-			<div id={'video_player__' + this.props.mediaObject.id}/>
+			<div id={'video_player__' + this.props.mediaObject.id} className={IDUtil.cssClassName('youtube-player')}/>
 		)
 	}
 }
