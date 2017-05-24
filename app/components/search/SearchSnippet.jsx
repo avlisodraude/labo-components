@@ -2,6 +2,7 @@
 
 import IconUtil from '../../util/IconUtil';
 import IDUtil from '../../util/IDUtil';
+import Classification from '../annotation/Classification';
 
 class SearchSnippet extends React.Component {
 
@@ -61,7 +62,7 @@ class SearchSnippet extends React.Component {
 		//see if there are any tags added to this search result
 		if(this.props.data.tags) {
 			tags = this.props.data.tags.map((t, index) => {
-				return (<span key={'tag__' + index} className="label label-primary tag">{t}</span>);
+				return (<Classification classification={{label : t}}/>);
 			})
 		}
 
