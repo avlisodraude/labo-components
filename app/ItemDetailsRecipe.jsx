@@ -265,6 +265,10 @@ class ItemDetailsRecipe extends React.Component {
 					if(index == 0) {//TODO test this better
 						mediaObject.start = this.props.params.s;
 						mediaObject.end = this.props.params.e;
+						mediaObject.x = this.props.params.x;
+						mediaObject.y = this.props.params.y;
+						mediaObject.w = this.props.params.w;
+						mediaObject.h = this.props.params.h;
 					}
 					if(mediaObject.mimeType.indexOf('video') != -1) {//render a video player
 						mediaPlayer = (

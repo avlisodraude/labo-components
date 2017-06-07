@@ -330,6 +330,10 @@
 			background-color: $image-overlay-bg-active;
 		}
 	}
+	.bg__fiv__highlight {
+		background-color: $highlight-color;
+		opacity: 0.4;
+	}
 }
 
 .bg__segmentation-controls {} /* SegmentationControls.jsx */
