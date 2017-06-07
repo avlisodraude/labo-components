@@ -102,6 +102,8 @@ class FlexImageViewer extends React.Component {
 	---------------------------------------------------------------*/
 
 	initViewer() {
+		let i = this.props.mediaObject.url.indexOf('.tif');
+        let infoUrl = this.props.mediaObject.url.substring(0, i + 4) + '/info.json'
 		//setup the basic viewer
 		this.viewer = OpenSeadragon({
 			id: 'img_viewer__' + this.props.mediaObject.id,
@@ -112,15 +114,37 @@ class FlexImageViewer extends React.Component {
 			height: '100px',
 
 			//in case of a simple image
-			tileSources: {
-				type: 'image',
-				url: this.props.mediaObject.url
-			},
+			tileSources: [infoUrl],
 		});
 
 		//make sure the selection button tooltips have translations (otherwise annoying debug messages)
 		OpenSeadragon.setString('Tooltips.SelectionToggle', 'Toggle selection');
 		OpenSeadragon.setString('Tooltips.SelectionConfirm', 'Confirm selection');
+
+		if(this.props.mediaObject.w && this.props.mediaObject.h) {// if it has a width and height it's a region
+			this.viewer.addHandler('canvas-click', function(target, info) {
+		        // The canvas-click event gives us a position in web coordinates.
+		        var webPoint = target.position;
+		        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
+		        var viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+		        // Convert from viewport coordinates to image coordinates.
+		        var imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+		        // Show the results.
+		        console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
+		    }.bind(this));
+		    this.viewer.addHandler('open', function(target, info) {
+		        console.debug(this.props.mediaObject);
+		        var r = this.viewer.viewport.imageToViewportRectangle(
+		            parseInt(this.props.mediaObject.x),
+		            parseInt(this.props.mediaObject.y),
+		            parseInt(this.props.mediaObject.w),
+		            parseInt(this.props.mediaObject.h)
+		        );
+		        var elt = document.createElement("div");
+		        elt.className = IDUtil.cssClassName('highlight', this.CLASS_PREFIX);
+		        this.viewer.addOverlay(elt, r);
+		    }.bind(this));
+		}
 
 		//add the selection (rectangle) support (Picturae plugin)
 		if(this.props.annotationSupport) {

@@ -5,6 +5,10 @@ export class NISVProgramGuideConfig extends CollectionConfig {
 		super(collectionId, stats, info);
 	}
 
+	getImageBaseUrl() {
+		return 'http://jaws.beeldengeluid.nl/fastcgi-bin/iipsrv.fcgi';
+	}
+
 	getDocumentType() {
 		return 'page';
 	}
@@ -64,7 +68,37 @@ export class NISVProgramGuideConfig extends CollectionConfig {
 		} else {
 			formattedResult.date = result.broadcast_date;
 		}
+		formattedResult.posterURL = this.__getPosterURL(result);
+		formattedResult.playableContent = this.__getPlayableContent(result);
 		return formattedResult;
+	}
+
+	__getPosterURL(result) {
+		var imgUrl = this.getImageBaseUrl();
+		imgUrl += '?IIIF=omroepgidsen/' + result.year + '/' + result.guideId + '/';
+		imgUrl += result.page_id.substring(0, result.page_id.length -2) + '.tif';
+		if(result.coords) {
+			imgUrl += '/' + result.coords.l + ',';
+			imgUrl += result.coords.t + ',';
+			imgUrl += (result.coords.r - result.coords.l) + ',';
+			imgUrl += (result.coords.b - result.coords.t);
+		} else {
+			imgUrl += '/pct:50';
+		}
+		imgUrl += '/pct:50/0/default.jpg';
+		return imgUrl;
+	}
+
+	__getPlayableContent(result) {
+		var imgUrl = this.getImageBaseUrl();
+		imgUrl += '?IIIF=omroepgidsen/' + result.year + '/' + result.guideId + '/';
+		imgUrl += result.page_id.substring(0, result.page_id.length -2) + '.tif';
+		imgUrl += '/full/full/0/default.jpg';
+		return [{
+			url : imgUrl,
+			mimeType : 'image/jpeg',
+			assetId : result.page_id
+		}]
 	}
 
 }

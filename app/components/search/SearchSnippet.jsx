@@ -53,9 +53,13 @@ class SearchSnippet extends React.Component {
 		//get the poster of the media object
 		if(this.props.data.posterURL) {
 			poster = (
-				<img className="media-object" src={this.props.data.posterURL}
-					style={{height:'100px'}}
-					alt="Could not find image"/>
+				<div style={{width : '200px'}}>
+					<a href="#">
+						<img className="media-object" src={this.props.data.posterURL}
+							style={{width:'100%'}}
+							alt="Could not find image"/>
+					</a>
+				</div>
 			)
 		}
 
@@ -93,11 +97,9 @@ class SearchSnippet extends React.Component {
 		return (
 			<div className={classNames.join(' ')}>
 				<div className="media-left">
-					<a href="#">
-						{poster}
-					</a>
-					</div>
-					<div className="media-body">
+					{poster}
+				</div>
+				<div className="media-body">
 					<h4 className="media-heading" title={this.props.data.id}>
 						{this.props.data.title ? this.props.data.title + ' ' : ''}
 						{this.props.data.date ? '(' + this.props.data.date + ')' : ''}

@@ -10,9 +10,19 @@ const FlexRouter = {
 		if(searchTerm) {
 			url += '&st=' + searchTerm;
 		}
-		if(searchResult._type == 'media_fragment') {
+		if(searchResult.rawData._type == 'media_fragment') {
 			url += '&s=' + searchResult.start;
 			url += '&e=' + searchResult.end;
+		}
+		console.debug(searchResult);
+		//TODO this should be changed in the index (nisv_programguides)!
+		if(searchResult.rawData.coords) {
+			let coords = searchResult.rawData.coords;
+			console.debug('FOUND SOME COORDINATES')
+			url += '&x=' + coords.l;
+			url += '&y=' + coords.t;
+			url += '&w=' + (coords.r - coords.l);
+			url += '&h=' + (coords.b - coords.t);
 		}
 		document.location.href = url;
 	},

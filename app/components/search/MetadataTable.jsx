@@ -36,7 +36,11 @@ class MetadataTable extends React.Component {
 		if(this.props.data.posterURL) {
 			poster = (<tr className={IDUtil.cssClassName('poster', this.CLASS_PREFIX)}>
 				<td><label>Poster</label></td>
-				<td><img src={this.props.data.posterURL} alt="poster" style={{height:'100px'}}/></td>
+				<td>
+					<div style={{width: '200px'}}>
+						<img src={this.props.data.posterURL} alt="poster" style={{width:'100%'}}/>
+					</div>
+				</td>
 			</tr>);
 		}
 
