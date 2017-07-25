@@ -4,6 +4,7 @@ import CollectionRecipe from './CollectionRecipe';
 import SingleSearchRecipe from './SingleSearchRecipe';
 import ComparativeSearchRecipe from './ComparativeSearchRecipe';
 import ItemDetailsRecipe from './ItemDetailsRecipe';
+import ExampleRecipe from './ExampleRecipe';
 
 //cooking function
 //TODO the user variable is now filled with the INSTANCE_NAME from settings.py
@@ -27,6 +28,11 @@ export function cookRecipe (recipe, params, user, elementId) {
 	} else if(recipe.type === 'collection-analysis') {
 		render(
 			<CollectionRecipe recipe={recipe} params={params} user={user}/>,
+			document.getElementById(elementId)
+		);
+	} else if(recipe.type === 'example') {
+		render(
+			<ExampleRecipe recipe={recipe} params={params} user={user}/>,
 			document.getElementById(elementId)
 		);
 	} else {
