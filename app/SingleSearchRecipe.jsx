@@ -131,6 +131,9 @@ class SingleSearchRecipe extends React.Component {
 		&sort=date__desc
 	*/
 	extractSearchParams() {
+		if(this.props.params && Object.keys(this.props.params).length == 0) {
+			return null;
+		}
 		var searchTerm = this.props.params.st ? this.props.params.st : '';
 		var fr = this.props.params.fr ? this.props.params.fr : 0;
 		var size = this.props.params.sz ? this.props.params.sz : 10;
@@ -348,6 +351,7 @@ class SingleSearchRecipe extends React.Component {
 				<div className={IDUtil.cssClassName('single-search-recipe')}>
 					<div className="row">
 						<div className="col-md-12">
+							{collectionModal}
 							{searchComponent}
 						</div>
 					</div>
