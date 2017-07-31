@@ -4,3 +4,4 @@ dist
 .sass-cache
 app/collection/mappings
 !app/collection/mappings/ExampleMapping.js
+.idea
