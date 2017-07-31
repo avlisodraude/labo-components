@@ -262,7 +262,7 @@ class SingleCollectionQueryRecipe extends React.Component {
                     queryId={queryId}
                     aggregationView={this.props.recipe.ingredients.aggregationView}
                     pageSize={this.state.pageSize ? this.state.pageSize : 20}
-                    dateRangeSelector={this.props.dateRangeSelector}
+                    dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
                     collectionConfig={this.state.collectionConfig}
                     searchAPI={_config.SEARCH_API_BASE}
                     searchParams={searchParams} //TODO when ComparativeSearchRecipe knows how to store all q's in the URL
