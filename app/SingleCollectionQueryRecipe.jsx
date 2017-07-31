@@ -46,8 +46,11 @@ class SingleCollectionQueryRecipe extends React.Component {
         if (componentClass == 'QueryBuilder') {
             this.onSearched(data);
         } else if (componentClass == 'CollectionSelector') {
-            this.setState(
-                {collectionId: data.collectionId, collectionConfig: data},
+            this.setState({
+                    collectionId: data.collectionId,
+                    collectionConfig: data,
+                    currentOutput: null
+                },
                 this.onCollectionChange(data)
             );
         }
@@ -249,16 +252,18 @@ class SingleCollectionQueryRecipe extends React.Component {
     render() {
         let SelectCollectionModal;
         let searchQuery;
-        let queryId = IDUtil.guid();
-        let searchParams = this.extractSearchParams();
         let resultList = null;
         let paging = null;
         let sortButtons = null;
 
         // once the collection has been selected the query builder will be added to the page.
         if (this.state.collectionConfig) {
+            let searchParams = this.extractSearchParams();
+            let queryId = IDUtil.guid();
+
             searchQuery = (
                 <QueryBuilder
+                    key={this.state.collectionId}
                     queryId={queryId}
                     aggregationView={this.props.recipe.ingredients.aggregationView}
                     pageSize={this.state.pageSize ? this.state.pageSize : 20}
