@@ -69,7 +69,7 @@ class MetadataTable extends React.Component {
 					</tr>
 					<tr className={IDUtil.cssClassName('title', this.CLASS_PREFIX)}>
 						<td><label>Title</label></td>
-						<td>{this.props.data.title ? this.props.title : 'No title available'}</td>
+						<td>{this.props.data.title ? this.props.data.title : 'No title available'}</td>
 					</tr>
 					<tr className={IDUtil.cssClassName('date', this.CLASS_PREFIX)}>
 						<td><label>Date</label></td>

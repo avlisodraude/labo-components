@@ -5,12 +5,13 @@ const SearchAPI = {
 
 	//TODO define some sort of query object holding these parameters
 	//TODO properly handle null results in each component
-	search(queryId, collectionConfig, searchLayers, searchString, desiredFacets, selectedFacets, dateRange,
+	search(queryId, collectionConfig, searchLayers, searchString, fieldCategory, desiredFacets, selectedFacets, dateRange,
 		sortParams, offset, pageSize, callback, updateUrl) {
 		if(offset + pageSize <= 10000) {
-			SearchAPI.fragmentSearch(
+			SearchAPI.__fragmentSearch(
 				collectionConfig.getSearchIndex(),
 				searchString,
+				fieldCategory,
 				searchLayers,
 				selectedFacets,
 				SearchAPI.__formatDateRange(dateRange), //format just before calling the API
@@ -66,11 +67,12 @@ const SearchAPI = {
 
 	//Calls the layered search function in the Search API, used by the MultiLayeredSearchComponent
 	//TODO (maandag) add the sorting stuff
-	fragmentSearch :function(collectionId, term, searchLayers, selectedFacets, dateRange, sortParams, desiredFacets,
+	__fragmentSearch :function(collectionId, term, fieldCategory, searchLayers, selectedFacets, dateRange, sortParams, desiredFacets,
 		callback, offset=0 , size=10, innerHitsSize=3, innerHitsOffset=0) {
 		var url = _config.SEARCH_API_BASE + '/layered_search/' + collectionId
 		var params = {
 			term : term,
+			fieldCategory : fieldCategory,
 			searchLayers : searchLayers,
 			selectedFacets : selectedFacets,
 			offset : offset,
