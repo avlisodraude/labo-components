@@ -59,7 +59,7 @@ class QueryBuilder extends React.Component {
 			selectedFacets : this.props.searchParams ? this.props.searchParams.selectedFacets : {},
 			desiredFacets : null, //these will now be more dynamic than just taken from a config!
 			selectedDateRange : null,
-			fieldCategory : this.props.searchParams.fieldCategory,
+			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
 			currentPage : -1
 		}
 		this.CLASS_PREFIX = 'qb'
@@ -268,8 +268,6 @@ class QueryBuilder extends React.Component {
 				console.debug('this is not supposed to happen! (no date range...)');
 			}
 		} else if(componentClass == 'FieldCategorySelector') {
-			console.debug('selected some nice stuff: ');
-			console.debug(data);
 			this.setState(
 				{
 					fieldCategory : data

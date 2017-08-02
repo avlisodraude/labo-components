@@ -97,8 +97,8 @@ class SingleSearchRecipe extends React.Component {
 			cids : collection
 		}
 
-		if(fieldCategory && fieldCategory.label) {
-			params['fc'] = fieldCategory.label;
+		if(fieldCategory && fieldCategory.id) {
+			params['fc'] = fieldCategory.id;
 		}
 
 		if(dateRange) {
@@ -136,6 +136,7 @@ class SingleSearchRecipe extends React.Component {
 		&sf=bg:keywords.bg:keyword|onderwijs
 		&fr=0&sz=25&cids=nisv
 		&sl=nisv,nisv__asr
+		&fc=titles
 		&dr=date__-441849600000__599616000000
 		&sort=date__desc
 	*/

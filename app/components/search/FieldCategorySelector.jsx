@@ -7,11 +7,6 @@ class FieldCategorySelector extends React.Component {
 		super(props);
 	}
 
-	componentDidMount() {
-		//console.debug('TODO something');
-	}
-
-
 	changeStringField(e) {
 		this.onOutput(e.target.value);
 	}
@@ -20,7 +15,7 @@ class FieldCategorySelector extends React.Component {
 		if(this.props.onOutput) {
 			let fieldCategories = this.props.collectionConfig.getMetadataFieldCategories();
 			let fc = fieldCategories.filter((c) => {
-				return c.label == data;
+				return c.id == data;
 			})
 			if(fc.length == 1) {
 				this.props.onOutput(this.constructor.name, fc[0]);
@@ -34,12 +29,12 @@ class FieldCategorySelector extends React.Component {
 		let fieldCategorySelector = null;
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
 			let options = this.props.collectionConfig.getMetadataFieldCategories().map((fc) => {
-				return (<option value={fc.label}>{fc.label}</option>);
+				return (<option value={fc.id}>{fc.label}</option>);
 			});
 			options.splice(0,0, <option value="null_option">Search in: all fields</option>)
 			fieldCategorySelector = (
 				<select className="form-control" style={{width: '300px', marginLeft: '10px'}}
-					value={this.props.fieldCategory ? this.props.fieldCategory.label : null}
+					value={this.props.fieldCategory ? this.props.fieldCategory.id : null}
 					onChange={this.changeStringField.bind(this)}>
 					{options}
 				</select>
