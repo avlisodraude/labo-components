@@ -46,7 +46,11 @@ class SingleSearchRecipe extends React.Component {
 			this.onSearched(data);
 		} else if(componentClass == 'CollectionSelector') {
 			this.setState(
-				{collectionId : data.collectionId, collectionConfig : data},
+				{
+					collectionId : data.collectionId,
+					collectionConfig : data,
+					currentOutput : null,
+				},
 				this.onCollectionChange(data)
 			);
 		}
@@ -54,7 +58,7 @@ class SingleSearchRecipe extends React.Component {
 
 	onCollectionChange(collectionConfig) {
 		ComponentUtil.hideModal(this, 'showModal', 'collection__modal', true)
-		this.setBrowserHistory(null, 0, this.state.pageSize, {}, null, null, null, collectionConfig.collectionId);
+		this.setBrowserHistory(null, null, 0, this.state.pageSize, {}, null, null, null, collectionConfig.collectionId);
 	}
 
 	onSearched(data) {
@@ -64,6 +68,7 @@ class SingleSearchRecipe extends React.Component {
 		if(data && data.params && data.updateUrl) {
 			this.setBrowserHistory(
 				data.params.term,
+				data.params.fieldCategory,
 				data.params.offset,
 				data.params.size,
 				data.params.selectedFacets,
@@ -75,7 +80,7 @@ class SingleSearchRecipe extends React.Component {
 		}
 	}
 
-	setBrowserHistory(searchTerm, offset, pageSize, selectedFacets, dateRange, sortParams, searchLayers, collection) {
+	setBrowserHistory(searchTerm, fieldCategory, offset, pageSize, selectedFacets, dateRange, sortParams, searchLayers, collection) {
 		let sf = []
 		if(selectedFacets) {
 			sf = Object.keys(selectedFacets).map((key) => {
@@ -90,6 +95,10 @@ class SingleSearchRecipe extends React.Component {
 			fr : offset,
 			sz : pageSize,
 			cids : collection
+		}
+
+		if(fieldCategory && fieldCategory.label) {
+			params['fc'] = fieldCategory.label;
 		}
 
 		if(dateRange) {
@@ -131,19 +140,39 @@ class SingleSearchRecipe extends React.Component {
 		&sort=date__desc
 	*/
 	extractSearchParams() {
-		if(this.props.params && Object.keys(this.props.params).length == 0) {
+		if(this.props.params) {
+			let numParams = Object.keys(this.props.params).length;
+			if(numParams == 0) {
+				return null;
+			} else if(numParams == 1 && this.props.params.cids) {
+				return null;
+			}
+		} else {
 			return null;
 		}
-		var searchTerm = this.props.params.st ? this.props.params.st : '';
-		var fr = this.props.params.fr ? this.props.params.fr : 0;
-		var size = this.props.params.sz ? this.props.params.sz : 10;
-		var sf = this.props.params.sf;
-		var sl = this.props.params.sl;
-		var dr = this.props.params.dr;
-		var s = this.props.params.s;
+		let searchTerm = this.props.params.st ? this.props.params.st : '';
+		let fc = this.props.params.fc;
+		let fr = this.props.params.fr ? this.props.params.fr : 0;
+		let size = this.props.params.sz ? this.props.params.sz : 10;
+		let sf = this.props.params.sf;
+		let sl = this.props.params.sl;
+		let dr = this.props.params.dr;
+		let s = this.props.params.s;
+
+		//populate the field category
+		let fieldCategory = null;
+		if(fc) {
+			let tmp = this.state.collectionConfig.getMetadataFieldCategories();
+			if(tmp) {
+				fieldCategory = tmp.filter((f) => {
+					return f.label == fc;
+				})
+				fieldCategory = fieldCategory.length == 1 ? fieldCategory[0] : null;
+			}
+		}
 
 		//populate the facets
-		var selectedFacets = {};
+		let selectedFacets = {};
 		if(sf) {
 			let tmp = sf.split(',');
 			tmp.forEach((aggr) => {
@@ -159,13 +188,13 @@ class SingleSearchRecipe extends React.Component {
 		}
 
 		//populate the search layers
-		var searchLayers = []
+		let searchLayers = []
 		if(sl) {
 			searchLayers = sl.split(',');
 		}
 
 		//populate the date range TODO think of a way to include min/max :s
-		var dateRange = null;
+		let dateRange = null;
 		if(dr) {
 			let tmp = dr.split('__');
 			if(tmp.length == 3) {
@@ -178,7 +207,7 @@ class SingleSearchRecipe extends React.Component {
 		}
 
 		//populate the sort
-		var sortParams = null;
+		let sortParams = null;
 		if(s) {
 			let tmp = s.split('__');
 			if(tmp.length == 2) {
@@ -191,6 +220,7 @@ class SingleSearchRecipe extends React.Component {
 
 		return {
 			'searchTerm' : searchTerm,
+			'fieldCategory' : fieldCategory,
 			'selectedFacets' : selectedFacets,
 			'searchLayers' : searchLayers,
 			'from' : parseInt(fr),
@@ -214,6 +244,7 @@ class SingleSearchRecipe extends React.Component {
 				sr.collectionConfig,
 				sr.params.searchLayers,
 				sr.params.term,
+				sr.params.fieldCategory,
 				sr.params.desiredFacets,
 				sr.params.selectedFacets,
 				sr.params.dateRange,
@@ -236,6 +267,7 @@ class SingleSearchRecipe extends React.Component {
 				sr.collectionConfig,
 				sr.params.searchLayers,
 				sr.params.term,
+				sr.params.fieldCategory,
 				sr.params.desiredFacets,
 				sr.params.selectedFacets,
 				sr.params.dateRange,
@@ -250,19 +282,16 @@ class SingleSearchRecipe extends React.Component {
 
 	render() {
 		if(this.state.collectionConfig) {
-			var searchParams = this.extractSearchParams();
+			var searchParams = this.extractSearchParams(); //extract the search parameters from the URL
 
-			var chooseCollectionBtn = null;
-
-			var collectionModal = null;
-
-			//search
+			var chooseCollectionBtn = null; // for changing the collection
+			var collectionModal = null; //modal that holds the collection selector
 			var searchComponent = null; //single search, comparative search or combined search
 
-			//search results
+			//search results, paging and sorting
+			var resultList = null;
 			var paging = null;
 			var sortButtons = null;
-			var resultList = null;
 
 			if(this.props.recipe.ingredients.collectionSelector) {
 				//show the button to open the modal
@@ -295,6 +324,7 @@ class SingleSearchRecipe extends React.Component {
 				//this components outputs: search results, aggregations & sorting & paging functions!
 				//(TODO work out this function interface globally! Trying to avoid Flux, Redux stuff)
 				searchComponent = (<QueryBuilder
+					key={this.state.collectionId} //for resetting all the states held within after selecting a new collection
 					queryId={'single__query'}
 					aggregationView={this.props.recipe.ingredients.aggregationView}
 					pageSize={this.state.pageSize}
