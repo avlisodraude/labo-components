@@ -13,3 +13,5 @@
 /* finally import the actual component styles that use the component variables, you can change the variables at the top */
 
 @import "./_components.scss";
+
+@import './react-datepicker.scss';
