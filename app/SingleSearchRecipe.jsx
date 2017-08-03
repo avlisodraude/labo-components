@@ -143,26 +143,7 @@ class SingleSearchRecipe extends React.Component {
 		if(this.props.params && Object.keys(this.props.params).length == 0) {
 			return null;
 		}
-		var searchTerm = this.props.params.st ? this.props.params.st : '';
-		var fr = this.props.params.fr ? this.props.params.fr : 0;
-		var size = this.props.params.sz ? this.props.params.sz : 10;
-		var sf = this.props.params.sf;
-		var sl = this.props.params.sl;
-		var dr = this.props.params.dr;
-		var s = this.props.params.s;
 
-		//populate the facets
-		var selectedFacets = {};
-		if(this.props.params) {
-			let numParams = Object.keys(this.props.params).length;
-			if(numParams == 0) {
-				return null;
-			} else if(numParams == 1 && this.props.params.cids) {
-				return null;
-			}
-		} else {
-			return null;
-		}
 		let searchTerm = this.props.params.st ? this.props.params.st : '';
 		let fc = this.props.params.fc;
 		let fr = this.props.params.fr ? this.props.params.fr : 0;
