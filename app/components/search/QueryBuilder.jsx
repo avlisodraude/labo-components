@@ -6,7 +6,7 @@ import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 import IDUtil from '../../util/IDUtil';
 
 //ui controls for assembling queries
-//import StringFieldSelector from './StringFieldSelector';
+import FieldCategorySelector from './FieldCategorySelector';
 import DateRangeSelector from './DateRangeSelector';
 import AggregationBox from './AggregationBox';
 import AggregationList from './AggregationList';
@@ -57,9 +57,9 @@ class QueryBuilder extends React.Component {
 			displayFacets : false, //filled in onLoadCollectionConfig()
 			aggregations : {},
 			selectedFacets : this.props.searchParams ? this.props.searchParams.selectedFacets : {},
-			desiredFacets : null, //these will now be more dynamic than just taked from a config!
+			desiredFacets : null, //these will now be more dynamic than just taken from a config!
 			selectedDateRange : null,
-			selectedStringField : null,
+			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
 			currentPage : -1
 		}
 		this.CLASS_PREFIX = 'qb'
@@ -116,6 +116,7 @@ class QueryBuilder extends React.Component {
 					this.props.collectionConfig,
 					this.state.searchLayers,
 					this.props.searchParams.searchTerm,
+					this.props.fieldCategory,
 					this.state.desiredFacets,
 					this.props.searchParams.selectedFacets,
 					this.props.searchParams.dateRange,
@@ -143,6 +144,7 @@ class QueryBuilder extends React.Component {
 		this.setState(
 			{
 				selectedFacets : {},
+				fieldCategory : null,
 				selectedDateRange : {
 					field : dr.field, //reset the range, but keep the date field selected
 					start : -1,
@@ -154,6 +156,7 @@ class QueryBuilder extends React.Component {
 				this.props.collectionConfig,
 				this.state.searchLayers,
 				this.refs.searchTerm.value,
+				this.state.fieldCategory,
 				this.state.desiredFacets,
 				{}, //no selected facets
 				null, //no date range selected
@@ -177,6 +180,7 @@ class QueryBuilder extends React.Component {
 				this.props.collectionConfig,
 				searchLayers,
 				this.refs.searchTerm.value,
+				this.state.fieldCategory,
 				this.state.desiredFacets,
 				this.state.selectedFacets, //no selected facets
 				this.state.selectedDateRange, //no date range selected
@@ -201,6 +205,7 @@ class QueryBuilder extends React.Component {
 					this.props.collectionConfig,
 					this.state.searchLayers,
 					this.refs.searchTerm.value,
+					this.state.fieldCategory,
 					data.desiredFacets, //use the just obtained data for the desired facets
 					data.selectedFacets, //use the just obtained data for the selected facets
 					this.state.selectedDateRange, //no date range selected
@@ -248,6 +253,7 @@ class QueryBuilder extends React.Component {
 						this.props.collectionConfig,
 						this.state.searchLayers,
 						this.refs.searchTerm.value,
+						this.state.fieldCategory,
 						df, //make sure to use the just obtained desired facets
 						this.state.selectedFacets,
 						data, //use the just obtained data as the date range
@@ -261,17 +267,17 @@ class QueryBuilder extends React.Component {
 			} else {
 				console.debug('this is not supposed to happen! (no date range...)');
 			}
-		} else if(componentClass == 'StringFieldSelector') {
-			/*
+		} else if(componentClass == 'FieldCategorySelector') {
 			this.setState(
 				{
-					selectedStringField : data
+					fieldCategory : data
 				},
 				SearchAPI.search(
 					this.props.queryId,
 					this.props.collectionConfig,
 					this.state.searchLayers,
 					this.refs.searchTerm.value,
+					data,
 					this.state.desiredFacets,
 					this.state.selectedFacets,
 					this.state.selectedDateRange,
@@ -281,7 +287,7 @@ class QueryBuilder extends React.Component {
 					this.onOutput.bind(this),
 					true
 				)
-			)*/
+			)
 		}
 	}
 
@@ -294,6 +300,7 @@ class QueryBuilder extends React.Component {
 			this.props.collectionConfig,
 			this.state.searchLayers,
 			this.refs.searchTerm.value,
+			this.state.fieldCategory,
 			this.state.desiredFacets,
 			this.state.selectedFacets,
 			this.state.selectedDateRange,
@@ -312,6 +319,7 @@ class QueryBuilder extends React.Component {
 			this.props.collectionConfig,
 			this.state.searchLayers,
 			this.refs.searchTerm.value,
+			this.state.fieldCategory,
 			this.state.desiredFacets,
 			this.state.selectedFacets,
 			this.state.selectedDateRange,
@@ -354,11 +362,21 @@ class QueryBuilder extends React.Component {
 			let heading = null;
 			let layerOptions = null;
 			let resultBlock = null;
+			let fieldCategorySelector = null;
 
 			//draw a heading with the name of the collection (if configured that way)
 			if(this.props.header) {
 				heading = (<h3>Search through:&nbsp;{this.props.collectionConfig.getSearchIndex()}</h3>)
 			}
+
+			//draw the field category selector
+			fieldCategorySelector = (
+				<FieldCategorySelector
+					fieldCategory={this.state.fieldCategory}
+					collectionConfig={this.props.collectionConfig}
+					onOutput={this.onComponentOutput.bind(this)}
+				/>
+			)
 
 			//draw the checkboxes for selecting layers
 			if(this.state.searchLayers) {
@@ -476,13 +494,11 @@ class QueryBuilder extends React.Component {
 					<div className="separator"></div>
 					<div className="row">
 						<div className="col-md-12">
-							<form>
-								<div className="input-group">
+							<form className="form-inline" onSubmit={this.newSearch.bind(this)}>
+								<div className="form-group">
 									<input type="text" className="form-control"
-											id="search_term" ref="searchTerm" placeholder="Search"/>
-									<span className="input-group-btn">
-										<button className="btn btn-default" onClick={this.newSearch.bind(this)}>Submit</button>
-   									</span>
+										id="search_term" ref="searchTerm" placeholder="Search" style={{width: '500px'}}/>
+									{fieldCategorySelector}
 								</div>
 							</form>
 						</div>
