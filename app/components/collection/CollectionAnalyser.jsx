@@ -4,6 +4,7 @@ import CollectionStats from './CollectionStats';
 import FieldAnalysisStats from './FieldAnalysisStats';
 import QueryComparisonLineChart from '../stats/QueryComparisonLineChart';
 import CollectionSelector from './CollectionSelector';
+import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 import FlexBox from '../FlexBox';
 
 //this component relies on the collection statistics as input
@@ -184,7 +185,7 @@ class CollectionAnalyser extends React.Component {
 				if(docStats.fields.date) { //only if there are date fields available
 					dateFieldOptions = docStats.fields.date.map((dateField) => {
 						return (
-							<option key={dateField} value={dateField}>{dateField}</option>
+							<option key={dateField} value={dateField}>{ElasticsearchDataUtil.toPrettyFieldName(dateField)}</option>
 						)
 					});
 					dateFieldOptions.splice(0,0,<option key='null__option' value='null__option'>-- Select --</option>);
@@ -207,7 +208,7 @@ class CollectionAnalyser extends React.Component {
 				fieldTypes.forEach((fieldType) => {
 					docStats.fields[fieldType].forEach((fieldName) => {
 						analysisFieldOptions.push(
-							<option key={fieldName} value={fieldName}>{fieldName}</option>
+							<option key={fieldName} value={fieldName}>{ElasticsearchDataUtil.toPrettyFieldName(fieldName)}</option>
 						)
 					});
 				});

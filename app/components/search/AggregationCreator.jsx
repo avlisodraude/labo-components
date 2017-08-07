@@ -72,7 +72,7 @@ class AggregationCreator extends React.Component {
 			if(stringOptions.length > 0) {
 				stringSelect = (
 					<div className="form-group">
-						<label className="col-sm-3">String field</label>
+						<label className="col-sm-3">Fields of type: string</label>
 						<div className="col-sm-9">
 							<select className="form-control" onChange={this.selectField.bind(this)} value={this.state.selectedField}>
 								{stringOptions}
