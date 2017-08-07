@@ -1,4 +1,5 @@
 import IDUtil from '../../util/IDUtil';
+import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 
 class CollectionStats extends React.Component {
 
@@ -34,7 +35,7 @@ class CollectionStats extends React.Component {
 						if(dt.fields) {
 							let fieldTypes = Object.keys(dt.fields).map((fieldType, j) => {
 								let fieldNames = dt.fields[fieldType].map((fieldName, k) => {
-									return(<li key={'fn__' + k}>{fieldName}</li>);
+									return(<li key={'fn__' + k}>{ElasticsearchDataUtil.toPrettyFieldName(fieldName)}</li>);
 								});
 								return (
 									<li className="component-category" key={'ft__' + j}>
