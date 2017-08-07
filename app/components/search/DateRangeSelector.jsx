@@ -1,7 +1,6 @@
 import IDUtil from '../../util/IDUtil';
 import TimeUtil from '../../util/TimeUtil';
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
-import moment from 'moment';
 import DatePickerSelector from './DatePickerSelector';
 //https://facebook.github.io/react/blog/2013/07/11/react-v0-4-prop-validation-and-default-values.html
 /*
@@ -36,10 +35,6 @@ class DateRangeSelector extends React.Component {
             slider: null,
             datePicker: datePicker
         };
-
-        this.updateQueryAfterDateChanged = this.updateQueryAfterDateChanged.bind(this);
-        // Bind the this context to the handler function
-        this.handler = this.onDatePickerUpdate.bind(this);
     }
 
     componentDidMount() {
@@ -87,19 +82,6 @@ class DateRangeSelector extends React.Component {
         }
     }
 
-    //whenever you move the slider
-    onSliderUpdate(values, handle, unencoded, tap, positions) {
-        let df = this.props.dateRange.field;
-        if (this.props.aggregations) {
-            if (this.props.aggregations[df]) {
-                this.onOutput({
-                    field: this.props.dateRange.field,
-                    start: TimeUtil.yearToUNIXTime(parseInt(values[0])),
-                    end: TimeUtil.yearToUNIXTime(parseInt(values[1]))
-                });
-            }
-        }
-    }
 
     currentSelectionHasResults() {
         return this.props.aggregations &&
@@ -116,15 +98,6 @@ class DateRangeSelector extends React.Component {
                 end: -1
             })
         )
-    }
-
-    // This method will be sent to the child component
-    handler() {
-        this.setState({
-            messageShown: true,
-            currentDateField: 'date'
-        });
-        this.render()
     }
 
     updateSliderRange(range) {
@@ -183,22 +156,6 @@ class DateRangeSelector extends React.Component {
         return null;
     }
 
-//whenever you you change a date in the date picker
-    onDatePickerUpdate(values) {
-        let df = this.props.dateRange.field;
-
-        if (this.props.aggregations) {
-            if (this.props.aggregations[df]) {
-                this.onOutput({
-                    field: this.props.dateField,
-                    start: TimeUtil.yearToUNIXTime(parseInt(values[0])),
-                    end: TimeUtil.yearToUNIXTime(parseInt(values[1]))
-                });
-            }
-        }
-        this.setState({startDate: values});
-    }
-
     //the data looks like this => {start : '' : end : '', dateField : ''}
     onOutput(data) {
         if (this.props.onOutput) {
@@ -206,12 +163,31 @@ class DateRangeSelector extends React.Component {
         }
     }
 
-    updateQueryAfterDateChanged(startDate, endDate) {
-        this.onDatePickerUpdate(this);
-        this.setState({
-            slider: true,
-            messageShown: true
-        });
+    getNewDate(start, end) {
+        let df = this.props.dateRange.field;
+        if (this.props.aggregations) {
+            if (this.props.aggregations[df]) {
+                this.onOutput({
+                    field: this.props.dateRange.field,
+                    start: start.valueOf(),
+                    end: end.valueOf()
+                });
+            }
+        }
+    }
+
+    //whenever you move the slider
+    onSliderUpdate(values, handle, unencoded, tap, positions) {
+        let df = this.props.dateRange.field;
+        if (this.props.aggregations) {
+            if (this.props.aggregations[df]) {
+                this.onOutput({
+                    field: this.props.dateRange.field,
+                    start: TimeUtil.yearToUNIXTime(parseInt(values[0])),
+                    end: TimeUtil.yearToUNIXTime(parseInt(values[1]))
+                });
+            }
+        }
     }
 
     render() {
@@ -251,8 +227,7 @@ class DateRangeSelector extends React.Component {
                                 collectionConfig={this.props.collectionConfig}
                                 aggregations={this.props.aggregations}
                                 range={this.getDateRangeTimeStamp(this.props.dateRange.field)}
-                                ranging={this.props.dateRange.field}
-                                parentToggle={this.updateQueryAfterDateChanged}
+                                getNewDate={this.getNewDate.bind(this)}
                             />
                             {noResults}
                         </div>
