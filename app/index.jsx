@@ -4,7 +4,6 @@ import CollectionRecipe from './CollectionRecipe';
 import SingleSearchRecipe from './SingleSearchRecipe';
 import ComparativeSearchRecipe from './ComparativeSearchRecipe';
 import ItemDetailsRecipe from './ItemDetailsRecipe';
-import SingleCollectionQueryRecipe from './SingleCollectionQueryRecipe';
 import ExampleRecipe from './ExampleRecipe';
 
 //cooking function
@@ -31,12 +30,7 @@ export function cookRecipe (recipe, params, user, elementId) {
 			<CollectionRecipe recipe={recipe} params={params} user={user}/>,
 			document.getElementById(elementId)
 		);
-	} else if(recipe.type === 'single-collectionQuery') {
-        render(
-			<SingleCollectionQueryRecipe recipe={recipe} params={params} user={user}/>,
-            document.getElementById(elementId)
-        );
-    }  else if(recipe.type === 'example') {
+	} else if(recipe.type === 'example') {
 		render(
 			<ExampleRecipe recipe={recipe} params={params} user={user}/>,
 			document.getElementById(elementId)

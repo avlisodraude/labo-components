@@ -31,7 +31,9 @@ class SingleSearchRecipe extends React.Component {
 	}
 
 	componentDidMount() {
-		CollectionUtil.generateCollectionConfig(this.state.collectionId, this.onLoadCollectionConfig.bind(this), true);
+		if(this.state.collectionId) {
+			CollectionUtil.generateCollectionConfig(this.state.collectionId, this.onLoadCollectionConfig.bind(this), true);
+		}
 	}
 
 	onLoadCollectionConfig(config) {
@@ -58,7 +60,7 @@ class SingleSearchRecipe extends React.Component {
 
 	onCollectionChange(collectionConfig) {
 		ComponentUtil.hideModal(this, 'showModal', 'collection__modal', true)
-		this.setBrowserHistory(null, null, 0, this.state.pageSize, {}, null, null, null, collectionConfig.collectionId);
+		this.setBrowserHistory(null, null, 0, this.state.pageSize, null, null, null, null, collectionConfig.collectionId);
 	}
 
 	onSearched(data) {
@@ -81,6 +83,11 @@ class SingleSearchRecipe extends React.Component {
 	}
 
 	setBrowserHistory(searchTerm, fieldCategory, offset, pageSize, selectedFacets, dateRange, sortParams, searchLayers, collection) {
+		let params = {
+			fr : offset,
+			sz : pageSize,
+			cids : collection
+		}
 		let sf = []
 		if(selectedFacets) {
 			sf = Object.keys(selectedFacets).map((key) => {
@@ -88,14 +95,12 @@ class SingleSearchRecipe extends React.Component {
 					return key + '|' + value;
 				})
 			});
+			params['sf'] = sf.join(',');
 		}
-		var params = {
-			st : searchTerm,
-			sf : sf.join(','),
-			fr : offset,
-			sz : pageSize,
-			cids : collection
+		if(searchTerm) {
+			params['st'] = searchTerm;
 		}
+
 
 		if(fieldCategory && fieldCategory.id) {
 			params['fc'] = fieldCategory.id;
@@ -239,7 +244,7 @@ class SingleSearchRecipe extends React.Component {
 	//FIXME this function is tied to the function returned by the search component (which is kind of weird, but works)
 	gotoPage(queryId, pageNumber) {
 		if(this.state.currentOutput) {
-			var sr = this.state.currentOutput;
+			let sr = this.state.currentOutput;
 			SearchAPI.search(
 				queryId,
 				sr.collectionConfig,
@@ -262,7 +267,7 @@ class SingleSearchRecipe extends React.Component {
 	//sortMode = {type : date/rel, order : desc/asc}
 	sortResults(queryId, sortParams) {
 		if(this.state.currentOutput) {
-			var sr = this.state.currentOutput;
+			let sr = this.state.currentOutput;
 			SearchAPI.search(
 				queryId,
 				sr.collectionConfig,
@@ -282,48 +287,45 @@ class SingleSearchRecipe extends React.Component {
 	}
 
 	render() {
-		if(this.state.collectionConfig) {
-			var searchParams = this.extractSearchParams(); //extract the search parameters from the URL
+		let chooseCollectionBtn = null; // for changing the collection
+		let collectionModal = null; //modal that holds the collection selector
+		let searchComponent = null; //single search, comparative search or combined search
 
-			var chooseCollectionBtn = null; // for changing the collection
-			var collectionModal = null; //modal that holds the collection selector
-			var searchComponent = null; //single search, comparative search or combined search
+		//search results, paging and sorting
+		let resultList = null;
+		let paging = null;
+		let sortButtons = null;
 
-			//search results, paging and sorting
-			var resultList = null;
-			var paging = null;
-			var sortButtons = null;
+		if(this.props.recipe.ingredients.collectionSelector) {
+			//show the button to open the modal
+			chooseCollectionBtn = (
+				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
+					Select collection
+				</button>
+			)
 
-			if(this.props.recipe.ingredients.collectionSelector) {
-				//show the button to open the modal
-				chooseCollectionBtn = (
-					<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
-						Add query&nbsp;<i className="fa fa-plus"></i>
-					</button>
+			//collection modal
+			if(this.state.showModal) {
+				collectionModal = (
+					<FlexModal
+						elementId="collection__modal"
+						stateVariable="showModal"
+						owner={this}
+						size="large"
+						title="Select a collection">
+							<CollectionSelector
+								onOutput={this.onComponentOutput.bind(this)}
+								showSelect={true}
+								showBrowser={true}/>
+					</FlexModal>
 				)
-
-				//collection modal
-				if(this.state.showModal) {
-					collectionModal = (
-						<FlexModal
-							elementId="collection__modal"
-							stateVariable="showModal"
-							owner={this}
-							size="large"
-							title="Select a collection">
-								<CollectionSelector
-									onOutput={this.onComponentOutput.bind(this)}
-									showSelect={true}
-									showBrowser={true}/>
-						</FlexModal>
-					)
-				}
 			}
+		}
 
-			//make sure a collection is configured
-			if(this.props.recipe.ingredients.collection) {
+		//only draw when a collection config is properly loaded
+		if(this.state.collectionConfig) {
+			if(this.state.collectionId) {
 				//this components outputs: search results, aggregations & sorting & paging functions!
-				//(TODO work out this function interface globally! Trying to avoid Flux, Redux stuff)
 				searchComponent = (<QueryBuilder
 					key={this.state.collectionId} //for resetting all the states held within after selecting a new collection
 					queryId={'single__query'}
@@ -332,7 +334,7 @@ class SingleSearchRecipe extends React.Component {
 					dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
 					collectionConfig={this.state.collectionConfig}
 					searchAPI={_config.SEARCH_API_BASE}
-					searchParams={searchParams} //FIXME these are actually only used once in the init, should be changed!
+					searchParams={this.extractSearchParams()} //FIXME these are actually only used once in the init, should be changed!
 					onOutput={this.onComponentOutput.bind(this)}
 					header={true}/>);
 			}
@@ -377,21 +379,20 @@ class SingleSearchRecipe extends React.Component {
 					</div>
 				)
 			}
-
-			return (
-				<div className={IDUtil.cssClassName('single-search-recipe')}>
-					<div className="row">
-						<div className="col-md-12">
-							{collectionModal}
-							{searchComponent}
-						</div>
-					</div>
-					{resultList}
-				</div>
-			);
-		} else {
-			return (<div>Busy loading the collection config...</div>)
 		}
+
+		return (
+			<div className={IDUtil.cssClassName('single-search-recipe')}>
+				<div className="row">
+					<div className="col-md-12">
+						{chooseCollectionBtn}
+						{collectionModal}
+						{searchComponent}
+					</div>
+				</div>
+				{resultList}
+			</div>
+		);
 	}
 }
 

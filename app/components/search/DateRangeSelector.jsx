@@ -25,20 +25,17 @@ class DateRangeSelector extends React.Component {
     constructor(props) {
         super(props);
         let dateFields = null;
-        let datePicker = false;
-
         if (this.props.collectionConfig) {
             dateFields = this.props.collectionConfig.getDateFields();
         }
         this.state = {
             currentDateField: dateFields && dateFields.length > 0 ? dateFields[0] : null,
-            slider: null,
-            datePicker: datePicker
+            slider: null
         };
     }
 
     componentDidMount() {
-        if (this.props.dateRange && !this.state.datePicker) {
+        if (this.props.dateRange && this.props.selectorType == 'date-slider') {
             var range = this.getDateRange(this.props.dateRange.field);
 
             if (range) {
@@ -213,7 +210,7 @@ class DateRangeSelector extends React.Component {
                     spans more than one year</div>
             )
         }
-        if (this.state.datePicker) {
+        if (this.props.selectorType == 'date-picker') {
             return (
                 <div className="datePickerSelector">
                     <div className={IDUtil.cssClassName('date-range-select')}>

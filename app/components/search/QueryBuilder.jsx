@@ -134,7 +134,9 @@ class QueryBuilder extends React.Component {
 
 	//this resets the paging
 	newSearch(e) {
-		e.preventDefault();
+		if(e) {
+			e.preventDefault();
+		}
 		//reset the date range
 		let dr = this.state.selectedDateRange;
 		if(dr) {
@@ -448,13 +450,14 @@ class QueryBuilder extends React.Component {
 						dateRangeSelector = (
 							<DateRangeSelector
 								queryId={this.props.queryId}
-								collection={this.props.collectionConfig.getSearchIndex()} //for creating a guid
-								dateRange={this.state.selectedDateRange} //for activating the selected date field
-								collectionConfig={this.props.collectionConfig} //for determining available date fields & aggregations
-								aggregations={this.state.aggregations} //to fetch the date aggregations
 								searchId={this.state.searchId} //for determining when the component should rerender
+								collection={this.props.collectionConfig.getSearchIndex()} //for creating a guid
+								collectionConfig={this.props.collectionConfig} //for determining available date fields & aggregations
+								dateRange={this.state.selectedDateRange} //for activating the selected date field
+								selectorType={this.props.dateRangeSelector} //the type of selector: a slider or two date pickers
+								aggregations={this.state.aggregations} //to fetch the date aggregations
 								onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
-								/>
+							/>
 						);
 					}
 				}
