@@ -497,11 +497,18 @@ class QueryBuilder extends React.Component {
 					<div className="separator"></div>
 					<div className="row">
 						<div className="col-md-12">
-							<form className="form-inline" onSubmit={this.newSearch.bind(this)}>
+							<form className="form-horizontal" onSubmit={this.newSearch.bind(this)}>
 								<div className="form-group">
-									<input type="text" className="form-control"
-										id="search_term" ref="searchTerm" placeholder="Search" style={{width: '500px'}}/>
-									{fieldCategorySelector}
+									<div className="col-sm-6">
+										<div className="input-group">
+											<input type="text" className="form-control"
+												id="search_term" ref="searchTerm" placeholder="Search"/>
+											<span className="input-group-addon"><i className="fa fa-search"></i></span>
+										</div>
+									</div>
+									<div className="col-sm-6">
+										{fieldCategorySelector}
+									</div>
 								</div>
 							</form>
 						</div>

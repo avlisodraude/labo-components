@@ -33,7 +33,7 @@ class FieldCategorySelector extends React.Component {
 			});
 			options.splice(0,0, <option value="null_option">Search in: all fields</option>)
 			fieldCategorySelector = (
-				<select className="form-control" style={{width: '300px', marginLeft: '10px'}}
+				<select className="form-control"
 					value={this.props.fieldCategory ? this.props.fieldCategory.id : null}
 					onChange={this.changeStringField.bind(this)}>
 					{options}
