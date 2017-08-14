@@ -4,9 +4,9 @@
   "description": "B&G UI components",
   "main": "webpack.config.js",
   "scripts": {
-    "dev": "NODE_ENV=development webpack",
-    "production": "NODE_ENV=production webpack",
-    "watch": "npm run dev -- --watch"
+    "dev": "webpack --env=dev",
+    "prod": "webpack --env=prod",
+    "watch": "webpack --env=dev --watch"
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,8 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.4",
+    "eslint": "^4.4.1",
+    "eslint-loader": "^1.9.0",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
     "node-sass": "^4.5.3",
