@@ -70,7 +70,8 @@ var config = {
         new ExtractTextPlugin({
             filename: 'labo-component.css',
             allChunks: true
-        })
+        }),
+        // new BundleAnalyzerPlugin()
     ],
     externals: {
         "jquery": "jQuery",
