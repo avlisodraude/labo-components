@@ -1,9 +1,10 @@
 const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const BUILD_DIR = path.resolve(__dirname, 'dist');
-const APP_DIR = path.resolve(__dirname, 'app');
+const BUILD_DIR = path.resolve(__dirname, '../dist');
+const APP_DIR =  path.resolve(__dirname, '../app');
 
 module.exports = {
     entry: [APP_DIR + '/index.jsx'],
@@ -67,21 +68,7 @@ module.exports = {
             filename: 'labo-component.css',
             allChunks: true
         }),
-        new webpack.optimize.UglifyJsPlugin({
-            // beautify: true, // set to true disable compression. Good when debugging/dev.
-            mangle: false,
-            compress: {
-                screw_ie8: true,
-                comparisons: false,
-                dead_code: true,
-                warnings: false
-            },
-            output: {screw_ie8: true},
-            comments: false,
-            unused: true,
-            loops: true,
-            conditionals: true
-        })
+        // new BundleAnalyzerPlugin()
     ],
     externals: {
         "jquery": "jQuery",
