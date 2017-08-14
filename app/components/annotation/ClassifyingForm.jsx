@@ -152,8 +152,14 @@ class ClassifyingForm extends React.Component {
 		);
 	}
 
-	onSuggestionsUpdateRequested(value) {
+	onSuggestionsFetchRequested(value) {
 		this.loadSuggestions(value);
+	}
+
+	onSuggestionsClearRequested() {
+		this.setState({
+			suggestions : []
+		});
 	}
 
 	onChange(event, { newValue }) {
@@ -186,7 +192,7 @@ class ClassifyingForm extends React.Component {
 		}
 
 		const inputProps = {
-			placeholder: "Zoek een term",
+			placeholder: 'Zoek een term',
 			value: this.state.value,
 			onChange: this.onChange.bind(this)
 		};
@@ -241,11 +247,12 @@ class ClassifyingForm extends React.Component {
 								<Autosuggest
 									ref="classifications"
 									suggestions={this.state.suggestions}
-	                     			onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested.bind(this)}
-	                     			getSuggestionValue={this.getSuggestionValue.bind(this)}
-	                     			renderSuggestion={this.renderSuggestion.bind(this)}
-	                     			inputProps={inputProps}
-	                     		/>
+									onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
+									onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
+									getSuggestionValue={this.getSuggestionValue.bind(this)}
+									renderSuggestion={this.renderSuggestion.bind(this)}
+									inputProps={inputProps}
+								/>
 							</div>
 							<button className="btn btn-primary" onClick={this.addClassification.bind(this)}>Add</button>
 						</form>
