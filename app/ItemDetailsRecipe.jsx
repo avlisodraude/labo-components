@@ -125,10 +125,22 @@ class ItemDetailsRecipe extends React.Component {
 				let itemDetailData = config.getItemDetailData(data);
 				found = itemDetailData == null ? false : true;
 				if(found) {
+					//determine which media contant tab should be active
+					let activeMediaTab = 0;
+					if(itemDetailData.playableContent && this.props.params.fragmentUrl) {
+						for(let i = 0;i<itemDetailData.playableContent.length;i++) {
+							let mediaObject = itemDetailData.playableContent[i];
+							if(mediaObject.url == this.props.params.fragmentUrl) {
+								activeMediaTab = i;
+								break;
+							}
+						}
+					}
 					this.setState({
 						itemData : itemDetailData,
 						annotationTarget : this.getAnnotationTarget.call(this, itemDetailData),
-						found : true
+						found : true,
+						activeMediaTab : activeMediaTab
 					});
 				}
 			}.bind(this));
@@ -262,7 +274,7 @@ class ItemDetailsRecipe extends React.Component {
 					let mediaPlayer = 'Unknown Media Object: ' + index;
 					mediaObject.id = index; //assign an ID so each player has a unique ID for the UI
 					//assume that the first item of the playable content is the main one
-					if(index == 0) {//TODO test this better
+					if(mediaObject.url == this.props.params.fragmentUrl) {//TODO test this better
 						mediaObject.start = this.props.params.s;
 						mediaObject.end = this.props.params.e;
 						mediaObject.x = this.props.params.x;

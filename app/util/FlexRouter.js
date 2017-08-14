@@ -10,19 +10,15 @@ const FlexRouter = {
 		if(searchTerm) {
 			url += '&st=' + searchTerm;
 		}
-		if(searchResult.rawData._type == 'media_fragment') {
-			url += '&s=' + searchResult.start;
-			url += '&e=' + searchResult.end;
-		}
-		console.debug(searchResult);
-		//TODO this should be changed in the index (nisv_programguides)!
-		if(searchResult.rawData.coords) {
-			let coords = searchResult.rawData.coords;
-			console.debug('FOUND SOME COORDINATES')
-			url += '&x=' + coords.l;
-			url += '&y=' + coords.t;
-			url += '&w=' + (coords.r - coords.l);
-			url += '&h=' + (coords.b - coords.t);
+		//check the collection config to see how the mediaFragment was added to the result object
+		if(searchResult.mediaFragment) {
+			if(searchResult.mediaFragment.hasOwnProperty('url')) { url += '&fragmentUrl=' + searchResult.mediaFragment.url; }
+			if(searchResult.mediaFragment.hasOwnProperty('start')) { url += '&s=' + searchResult.mediaFragment.start; }
+			if(searchResult.mediaFragment.hasOwnProperty('end')) { url += '&e=' + searchResult.mediaFragment.end; }
+			if(searchResult.mediaFragment.hasOwnProperty('x')) { url += '&x=' + searchResult.mediaFragment.x; }
+			if(searchResult.mediaFragment.hasOwnProperty('y')) { url += '&y=' + searchResult.mediaFragment.y; }
+			if(searchResult.mediaFragment.hasOwnProperty('w')) { url += '&w=' + searchResult.mediaFragment.w; }
+			if(searchResult.mediaFragment.hasOwnProperty('h')) { url += '&h=' + searchResult.mediaFragment.h; }
 		}
 		document.location.href = url;
 	},
