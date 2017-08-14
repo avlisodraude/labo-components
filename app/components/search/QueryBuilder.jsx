@@ -447,6 +447,7 @@ class QueryBuilder extends React.Component {
 					//draw the time slider
 					//FIXME it will disappear when there are no results!
 					if(this.props.dateRangeSelector && this.state.selectedDateRange) {
+						console.debug(this.state.selectedDateRange);
 						dateRangeSelector = (
 							<DateRangeSelector
 								queryId={this.props.queryId}

@@ -5,9 +5,15 @@ class DatePickerSelector extends React.Component {
 
     constructor(props) {
         super(props);
+        let startDate = null;
+        let endDate = null;
+        if(this.props.range) {
+            startDate = moment(this.props.range.min);
+            endDate = moment(this.props.range.max);
+        }
         this.state = {
-            startDate: moment(this.props.range.min) || null,
-            endDate: moment(this.props.range.max) || null
+            startDate: startDate,
+            endDate: endDate
         };
 
         this.startingDateChanged = this.startingDateChanged.bind(this);

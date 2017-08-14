@@ -6,7 +6,7 @@ const SearchAPI = {
 	//TODO define some sort of query object holding these parameters
 	//TODO properly handle null results in each component
 	search(queryId, collectionConfig, searchLayers, searchString, fieldCategory, desiredFacets, selectedFacets, dateRange,
-		sortParams, offset, pageSize, callback, updateUrl) {
+		sortParams, offset, pageSize, callback, updateUrl, innerHitsSize=5, innerHitsOffset=0) {
 		if(offset + pageSize <= 10000) {
 			SearchAPI.__fragmentSearch(
 				collectionConfig.getSearchIndex(),
@@ -45,7 +45,11 @@ const SearchAPI = {
 					callback(data);
 				},
 				offset,
-				pageSize
+				pageSize,
+				innerHitsSize,
+				innerHitsOffset,
+				collectionConfig.getFragmentPath(),
+				collectionConfig.getFragmentTextFields()
 			);
 		} else {
 			console.debug('Currently the search engine cannot look beyond this point, please narrow your search terms');
@@ -68,7 +72,7 @@ const SearchAPI = {
 	//Calls the layered search function in the Search API, used by the MultiLayeredSearchComponent
 	//TODO (maandag) add the sorting stuff
 	__fragmentSearch :function(collectionId, term, fieldCategory, searchLayers, selectedFacets, dateRange, sortParams, desiredFacets,
-		callback, offset=0 , size=10, innerHitsSize=3, innerHitsOffset=0) {
+		callback, offset=0 , size=10, innerHitsSize=3, innerHitsOffset=0, fragmentPath=null, fragmentFields=null) {
 		var url = _config.SEARCH_API_BASE + '/layered_search/' + collectionId
 		var params = {
 			term : term,
@@ -79,7 +83,11 @@ const SearchAPI = {
 			size : size,
 			desiredFacets : desiredFacets,
 			dateRange : dateRange,
-			sort : sortParams
+			sort : sortParams,
+			innerHitsSize : innerHitsSize,
+			innerHitsOffset : innerHitsOffset,
+			fragmentPath : fragmentPath,
+			fragmentFields : fragmentFields
 		}
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {

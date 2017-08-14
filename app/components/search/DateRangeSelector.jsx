@@ -210,6 +210,7 @@ class DateRangeSelector extends React.Component {
                     spans more than one year</div>
             )
         }
+
         if (this.props.selectorType == 'date-picker') {
             return (
                 <div className="datePickerSelector">
@@ -226,7 +227,6 @@ class DateRangeSelector extends React.Component {
                                 range={this.getDateRangeTimeStamp(this.props.dateRange.field)}
                                 getNewDate={this.getNewDate.bind(this)}
                             />
-                            {noResults}
                         </div>
                     </div>
                 </div>

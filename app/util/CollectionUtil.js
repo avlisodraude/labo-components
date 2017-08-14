@@ -22,6 +22,7 @@ import TwitterConfig from '../collection/mappings/TwitterConfig';
 import MotUConfig from '../collection/mappings/MotUConfig';
 import EYEConfig from '../collection/mappings/EYEConfig';
 import ArtTubeConfig from '../collection/mappings/ArtTubeConfig';
+import RVDContractsConfig from '../collection/mappings/RVDContractsConfig';
 import TimeUtil from '../util/TimeUtil';
 
 const CollectionUtil = {
@@ -37,6 +38,7 @@ const CollectionUtil = {
 		'nisv' : NISVConfig,
 		'motu' : MotUConfig,
 		'arttube' : ArtTubeConfig,
+		'rvd' : RVDContractsConfig
 	},
 
 	//returns the correct CollectionConfig instance based on the collectionId
@@ -95,6 +97,7 @@ const CollectionUtil = {
 	SEARCH_LAYER_MAPPING : {
 		'srt' : 'Subtitles',
 		'asr' : 'ASR',
+		'ocr' : 'OCR',
 		'topics' : 'Man-made annotations',
 		'enrichments' : 'Man-made annotations',
 		'default' : 'Collection metadata'
