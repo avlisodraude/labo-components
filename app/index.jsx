@@ -5,6 +5,9 @@ import SingleSearchRecipe from './SingleSearchRecipe';
 import ComparativeSearchRecipe from './ComparativeSearchRecipe';
 import ItemDetailsRecipe from './ItemDetailsRecipe';
 import ExampleRecipe from './ExampleRecipe';
+import '../sass/labo-components.scss';
+//CSS must be included in the entry point to allow Webpack
+// to detect and run CSS .
 
 //cooking function
 //TODO the user variable is now filled with the INSTANCE_NAME from settings.py
