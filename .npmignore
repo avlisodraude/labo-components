@@ -3,3 +3,5 @@ node_modules
 .sass-cache
 app/collection/mappings
 !app/collection/mappings/ExampleMapping.js
+!app/collection/mappings/CollectionConfig.js
+.idea
