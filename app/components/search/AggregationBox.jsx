@@ -118,7 +118,7 @@ class AggregationBox extends React.Component {
 
 		//add a button for opening the collection selector last
 		tabs.push(
-			<li className={IDUtil.cssClassName('tab-new', this.CLASS_PREFIX)}>
+			<li key={'new__tab'} className={IDUtil.cssClassName('tab-new', this.CLASS_PREFIX)}>
 				<a href="javascript:void(0);" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
 					NEW&nbsp;<i className="fa fa-plus"></i>
 				</a>
@@ -128,10 +128,10 @@ class AggregationBox extends React.Component {
 		//first draw the breadcrumb trail
 		let breadcrumbs = null;
 		if(this.props.selectedFacets) {
-			let crumbs = Object.keys(this.props.selectedFacets).map((key) => {
-				return this.props.selectedFacets[key].map((value) => {
+			let crumbs = Object.keys(this.props.selectedFacets).map((key, ki) => {
+				return this.props.selectedFacets[key].map((value, vi) => {
 					return (
-						<div className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)} title={key}>
+						<div key={ki + '_' + vi} className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)} title={key}>
 							{value}
 							&nbsp;
 							<i className="fa fa-close" onClick={this.toggleSelectedFacet.bind(this, key, value)}></i>

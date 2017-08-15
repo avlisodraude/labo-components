@@ -63,9 +63,9 @@ class AggregationCreator extends React.Component {
 		let fieldList = this.getFieldList();
 
 		if(fieldList) {
-			stringOptions = fieldList.map((sf) => {
+			stringOptions = fieldList.map((sf, index) => {
 				return (
-					<option value={sf}>{ElasticsearchDataUtil.toPrettyFieldName(sf)}</option>
+					<option key={'sf__' + index} value={sf}>{ElasticsearchDataUtil.toPrettyFieldName(sf)}</option>
 				)
 			});
 
