@@ -12,7 +12,7 @@ class Classification extends React.Component {
 	}
 
 	render() {
-		let classNames = ['label'];
+		const classNames = ['label'];
 		switch(this.props.classification.vocabulary) {
 			case 'DBpedia':
 				classNames.push('label-danger');

@@ -53,7 +53,7 @@ class FlexImageViewer extends React.Component {
 				this.loadAnnotations();
 			} else if (eventType == 'delete' && annotation && annotation.id) {
 				this.viewer.removeOverlay(annotation.id);
-				let temp = [];
+				const temp = [];
 				this.state.annotations.forEach((a) => {
 					if(a.id != annotation.id) {
 						temp.push(a);
@@ -102,8 +102,8 @@ class FlexImageViewer extends React.Component {
 	---------------------------------------------------------------*/
 
 	initViewer() {
-		let i = this.props.mediaObject.url.indexOf('.tif');
-        let infoUrl = this.props.mediaObject.url.substring(0, i + 4) + '/info.json'
+		const i = this.props.mediaObject.url.indexOf('.tif');
+        const infoUrl = this.props.mediaObject.url.substring(0, i + 4) + '/info.json'
 		//setup the basic viewer
 		this.viewer = OpenSeadragon({
 			id: 'img_viewer__' + this.props.mediaObject.id,
@@ -124,23 +124,23 @@ class FlexImageViewer extends React.Component {
 		if(this.props.mediaObject.w && this.props.mediaObject.h) {// if it has a width and height it's a region
 			this.viewer.addHandler('canvas-click', function(target, info) {
 		        // The canvas-click event gives us a position in web coordinates.
-		        var webPoint = target.position;
+		        const webPoint = target.position;
 		        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
-		        var viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+		        const viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
 		        // Convert from viewport coordinates to image coordinates.
-		        var imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+		        const imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
 		        // Show the results.
 		        console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
 		    }.bind(this));
 		    this.viewer.addHandler('open', function(target, info) {
 		        console.debug(this.props.mediaObject);
-		        var r = this.viewer.viewport.imageToViewportRectangle(
+		        const r = this.viewer.viewport.imageToViewportRectangle(
 		            parseInt(this.props.mediaObject.x),
 		            parseInt(this.props.mediaObject.y),
 		            parseInt(this.props.mediaObject.w),
 		            parseInt(this.props.mediaObject.h)
 		        );
-		        var elt = document.createElement("div");
+		        const elt = document.createElement("div");
 		        elt.className = IDUtil.cssClassName('highlight', this.CLASS_PREFIX);
 		        this.viewer.addOverlay(elt, r);
 		    }.bind(this));
@@ -227,7 +227,7 @@ class FlexImageViewer extends React.Component {
 	}
 
 	addEmptyAnnotation(annotation) {
-		let annotations = this.state.annotations;
+		const annotations = this.state.annotations;
 		annotation.id = IDUtil.guid();
 		annotations.push(annotation);
 		this.setState({
@@ -236,8 +236,8 @@ class FlexImageViewer extends React.Component {
 	}
 
 	setActiveAnnotation(annotationId, event) {
-		var d = document.getElementById(annotationId);
-		var overlays = document.getElementsByClassName(IDUtil.cssClassName('overlay', this.CLASS_PREFIX));
+		const d = document.getElementById(annotationId);
+		const overlays = document.getElementsByClassName(IDUtil.cssClassName('overlay', this.CLASS_PREFIX));
 		if(overlays) {
 			[].forEach.call(overlays, (elm) => {
 				elm.className = IDUtil.cssClassName('overlay', this.CLASS_PREFIX);
@@ -252,34 +252,34 @@ class FlexImageViewer extends React.Component {
 	}
 
 	renderAnnotation(annotation) {
-		let area = AnnotationUtil.extractSpatialFragmentFromURI(annotation.target.selector.value);
-		var rect = this.viewer.viewport.imageToViewportRectangle(
+		const area = AnnotationUtil.extractSpatialFragmentFromURI(annotation.target.selector.value);
+		const rect = this.viewer.viewport.imageToViewportRectangle(
 			parseInt(area.x),
 			parseInt(area.y),
 			parseInt(area.w),
 			parseInt(area.h)
 		);
-		var elt = document.createElement('div');
+		const elt = document.createElement('div');
 		elt.className = IDUtil.cssClassName('overlay', this.CLASS_PREFIX);
 		elt.onclick= this.setActiveAnnotation.bind(this, annotation.id);
 		elt.id = annotation.id;
 
-		var buttonDiv = document.createElement('div');
+		const buttonDiv = document.createElement('div');
 		buttonDiv.className = 'text-center';
 
 		//add the remove button
-		var addBtn = document.createElement('button');
+		const addBtn = document.createElement('button');
 		addBtn.className = 'btn btn-default';
 		addBtn.onclick = this.openAnnotationForm.bind(this, annotation);
-		var addGlyph = document.createElement('span');
+		const addGlyph = document.createElement('span');
 		addGlyph.className = IconUtil.getUserActionIcon('annotate');
 		addBtn.appendChild(addGlyph);
 
 		//add the remove button
-		var removeBtn = document.createElement('button');
+		const removeBtn = document.createElement('button');
 		removeBtn.className = 'btn btn-default';
 		removeBtn.onclick = this.deleteAnnotation.bind(this, annotation);
-		var removeGlyph = document.createElement('span');
+		const removeGlyph = document.createElement('span');
 		removeGlyph.className = IconUtil.getUserActionIcon('remove');
 		removeBtn.appendChild(removeGlyph);
 

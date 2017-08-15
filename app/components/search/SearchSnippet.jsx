@@ -14,10 +14,10 @@ class SearchSnippet extends React.Component {
 	//this highlights the searchTerm in the snippet (TODO this should be replace by using ES highlighting)
 	highlightSearchTermInDescription(words) {
 		if(words) {
-			var tmp = ('' + words).split(' ');
+			const tmp = ('' + words).split(' ');
 			let i = 0;
 			let found = false;
-			for(let w of tmp) {
+			for(const w of tmp) {
 				if(w.indexOf(this.props.searchTerm) != -1 || w.indexOf(this.props.searchTerm.toLowerCase()) != -1) {
 					words = tmp.slice(
 						i-6 >= 0 ? i-6 : 0,
@@ -92,7 +92,7 @@ class SearchSnippet extends React.Component {
 		}
 
 		//generate main classes
-		let classNames = ['media', IDUtil.cssClassName('search-snippet')]
+		const classNames = ['media', IDUtil.cssClassName('search-snippet')]
 
 		return (
 			<div className={classNames.join(' ')}>

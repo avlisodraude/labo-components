@@ -2,7 +2,7 @@ const IDUtil = {
 
 	//used to generate a more compact form for unique strings (e.g. collection names) to be used as guid
 	hashCode : function(s) {
-	  var hash = 0, i, chr, len;
+	  let hash = 0, i, chr, len;
 	  if (s.length === 0) return hash;
 	  for (i = 0, len = s.length; i < len; i++) {
 	    chr   = s.charCodeAt(i);

@@ -36,10 +36,10 @@ class DateRangeSelector extends React.Component {
 
     componentDidMount() {
         if (this.props.dateRange && this.props.selectorType == 'date-slider') {
-            var range = this.getDateRange(this.props.dateRange.field);
+            const range = this.getDateRange(this.props.dateRange.field);
 
             if (range) {
-                var slider = document.getElementById('__slider_' + IDUtil.hashCode(this.props.queryId));
+                const slider = document.getElementById('__slider_' + IDUtil.hashCode(this.props.queryId));
                 noUiSlider.create(slider, {
                     start: [0, range.max],
                     step: 1,
@@ -73,7 +73,7 @@ class DateRangeSelector extends React.Component {
     //updates only when the date field has changed or whenever there is a completely new search
     componentDidUpdate() {
         if (this.state.fieldUpdate || (this.props.dateRange.start == -1 && this.props.dateRange.end == -1)) {
-            let range = this.getDateRange(this.props.dateRange.field);
+            const range = this.getDateRange(this.props.dateRange.field);
             this.updateSliderRange(range);
             this.setState({fieldUpdate: false});
         }
@@ -112,12 +112,12 @@ class DateRangeSelector extends React.Component {
     //So when the user selects a field that is not already queried, a new search should be done
     getDateRange(dateField) {
         if (this.props.aggregations) {
-            let aggr = this.props.aggregations[dateField];
+            const aggr = this.props.aggregations[dateField];
             if (aggr && aggr.length > 0) {
-                let min = TimeUtil.getYearFromDate(
+                const min = TimeUtil.getYearFromDate(
                     aggr[0].date_millis
                 );
-                let max = TimeUtil.getYearFromDate(
+                const max = TimeUtil.getYearFromDate(
                     aggr[aggr.length - 1].date_millis
                 ) + 1;
                 if (max > min) {
@@ -135,10 +135,10 @@ class DateRangeSelector extends React.Component {
 
     getDateRangeTimeStamp(dateField) {
         if (this.props.aggregations) {
-            let aggr = this.props.aggregations[dateField];
+            const aggr = this.props.aggregations[dateField];
             if (aggr && aggr.length > 0) {
-                let min = aggr[0].date_millis;
-                let max = aggr[aggr.length - 1].date_millis + 1;
+                const min = aggr[0].date_millis;
+                const max = aggr[aggr.length - 1].date_millis + 1;
 
                 if (max > min) {
                     return {
@@ -161,7 +161,7 @@ class DateRangeSelector extends React.Component {
     }
 
     getNewDate(start, end) {
-        let df = this.props.dateRange.field;
+        const df = this.props.dateRange.field;
         if (this.props.aggregations) {
             if (this.props.aggregations[df]) {
                 this.onOutput({
@@ -175,7 +175,7 @@ class DateRangeSelector extends React.Component {
 
     //whenever you move the slider
     onSliderUpdate(values, handle, unencoded, tap, positions) {
-        let df = this.props.dateRange.field;
+        const df = this.props.dateRange.field;
         if (this.props.aggregations) {
             if (this.props.aggregations[df]) {
                 this.onOutput({
@@ -189,11 +189,11 @@ class DateRangeSelector extends React.Component {
 
     render() {
         let dateFieldSelect = null;
-        let hasResults = this.currentSelectionHasResults();
+        const hasResults = this.currentSelectionHasResults();
         let noResults = null;
 
         if (this.props.collectionConfig.getDateFields() && this.props.dateRange) {
-            let options = this.props.collectionConfig.getDateFields().map((df, index) => {
+            const options = this.props.collectionConfig.getDateFields().map((df, index) => {
                 return (<option key={'df__' + index} value={df}>{ElasticsearchDataUtil.toPrettyFieldName(df)}</option>);
             });
             dateFieldSelect = (

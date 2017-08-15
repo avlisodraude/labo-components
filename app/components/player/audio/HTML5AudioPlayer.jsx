@@ -31,7 +31,7 @@ class HTML5AudioPlayer extends React.Component {
 			if(this.props.onPlayerReady) {
 				this.props.onPlayerReady(new HTML5AudioPlayerAPI(this.state.playerAPI));
 			}
-			let start = this.props.mediaObject.start ? this.props.mediaObject.start : 0;
+			const start = this.props.mediaObject.start ? this.props.mediaObject.start : 0;
 			if(start > 0) {
 				this.state.playerAPI.currentTime = start / 1000;
 			}

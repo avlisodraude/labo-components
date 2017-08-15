@@ -20,7 +20,7 @@ class ClassifyingForm extends React.Component {
 
 	constructor(props) {
 		super(props);
-		var vocabulary = this.props.config.vocabularies ? this.props.config.vocabularies[0] : null;
+		const vocabulary = this.props.config.vocabularies ? this.props.config.vocabularies[0] : null;
 		this.state = {
 			data: this.props.data ? this.props.data : [],
 			value : '', //the label of the selected classification (autocomplete)
@@ -37,8 +37,8 @@ class ClassifyingForm extends React.Component {
 	addClassification(e) {
 		if(this.state.value != '') {
 			e.preventDefault();
-			var cs = this.state.data;
-			var suggestionId = this.state.suggestionId;
+			const cs = this.state.data;
+			let suggestionId = this.state.suggestionId;
 			if(this.state.vocabulary && this.state.vocabulary == 'custom') {
 				suggestionId =  IDUtil.guid();
 			}
@@ -58,7 +58,7 @@ class ClassifyingForm extends React.Component {
 	}
 
 	removeClassification(index) {
-		var cs = this.state.data;
+		const cs = this.state.data;
 		if(cs) {
 			cs.splice(index, 1);
 			this.setState({data : cs}, this.onOutput.bind(this));
@@ -81,7 +81,7 @@ class ClassifyingForm extends React.Component {
 			this.xhrs[x-1].abort();
 			this.xhrs.pop();
 		}
-	    let xhr = ExternalAPI.autocomplete(this.state.vocabulary, value, callback);
+	    const xhr = ExternalAPI.autocomplete(this.state.vocabulary, value, callback);
 	    this.xhrs.push(xhr);
 	}
 
@@ -120,9 +120,9 @@ class ClassifyingForm extends React.Component {
 
 	//TODO the rendering should be adapted for different vocabularies
 	renderSuggestion(suggestion) {
-		let arr = suggestion.label.split('|');
+		const arr = suggestion.label.split('|');
 		let label = arr[1];
-		let scopeNote = arr[2] ? '(' + arr[2] + ')' : ''
+		const scopeNote = arr[2] ? '(' + arr[2] + ')' : ''
 		if(this.state.vocabulary == 'GTAA') {
 			switch(arr[1]) {
 				case 'Persoon' : label = (<span className="label label-warning">Persoon</span>);break;

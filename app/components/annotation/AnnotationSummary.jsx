@@ -41,7 +41,7 @@ class AnnotationSummary extends React.Component {
 			//if configured, extract the title based on the start & end times of the segment
 			if(this.props.showTitle) {
 				//title
-				let frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(this.props.annotation);
+				const frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(this.props.annotation);
 				title = (
 					<h4>
 						{'[' + TimeUtil.formatTime(frag.start) + ' - ' + TimeUtil.formatTime(frag.end) + ']'}
@@ -50,7 +50,7 @@ class AnnotationSummary extends React.Component {
 			}
 
 			//all the classifications are colorful labels
-			let clItems = this.props.annotation.body.filter((a) => {
+			const clItems = this.props.annotation.body.filter((a) => {
 				return a.annotationType == 'classification';
 			}).map((c, index) => {
 				return (
@@ -68,10 +68,10 @@ class AnnotationSummary extends React.Component {
 			}
 
 			//a tabbed panel holding a filled in card for each tab
-			let cTabs = this.props.annotation.body.filter((a) => {
+			const cTabs = this.props.annotation.body.filter((a) => {
 				return a.annotationType == 'metadata';
 			}).map((a, index) => {
-				let iconClass = IconUtil.getAnnotationTemplateIcon(a.annotationTemplate);
+				const iconClass = IconUtil.getAnnotationTemplateIcon(a.annotationTemplate);
 				return (
 					<li key={index + '__tab'} className={index == 0 ? 'active' : ''}>
 						<a data-toggle="tab" href={'#__tab_' + a.annotationId}>
@@ -82,16 +82,16 @@ class AnnotationSummary extends React.Component {
 				)
 			});
 
-			let cTabContents = this.props.annotation.body.filter((a) => {
+			const cTabContents = this.props.annotation.body.filter((a) => {
 				return a.annotationType == 'metadata';
 			}).map((a, index) => {
-				let cardItems = a.properties.map((prop, i) => {
+				const cardItems = a.properties.map((prop, i) => {
 					return (
 						<li key={'c__' + index + '__' + i}>
 							<span className="key">{prop.key}:</span>&nbsp;{prop.value}
 						</li>);
 				});
-				let cardList = (
+				const cardList = (
 					<ul className={IDUtil.cssClassName('card-list', this.CLASS_PREFIX)}
 						key={'c__' + index}
 						onDoubleClick={this.editAnnotation.bind(this, a)}>
@@ -121,7 +121,7 @@ class AnnotationSummary extends React.Component {
 
 
 			//comments are shown in the form of a speech bubble with a number in it
-			let commentList = this.props.annotation.body.filter((a) => {
+			const commentList = this.props.annotation.body.filter((a) => {
 				return a.annotationType == 'comment';
 			});
 			if(commentList.length > 0) {
@@ -136,7 +136,7 @@ class AnnotationSummary extends React.Component {
 			}
 
 			//links are also shown in the form of a speech bubble with a number in it
-			let linkList = this.props.annotation.body.filter((a) => {
+			const linkList = this.props.annotation.body.filter((a) => {
 				return a.annotationType == 'link';
 			});
 			if(linkList.length > 0) {

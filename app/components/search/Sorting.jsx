@@ -13,7 +13,7 @@ class Sorting extends React.Component {
 		} else {
 			order = 'desc';
 		}
-		let sortParams = {
+		const sortParams = {
 			field : sortField,
 			order : order
 		}
@@ -56,7 +56,7 @@ class Sorting extends React.Component {
 		}
 
 		//define css class names
-		let classNames = ['btn-group', IDUtil.cssClassName('sorting')]
+		const classNames = ['btn-group', IDUtil.cssClassName('sorting')]
 
 		return (
 			<div className={classNames.join(' ')} role="group" aria-label="...">

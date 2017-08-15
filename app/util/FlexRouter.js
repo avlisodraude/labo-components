@@ -25,21 +25,21 @@ const FlexRouter = {
 
 	//this is typically called from a collection browsing recipe after selecting a collection for closer study
 	gotoSearch : function(searchRecipePath, collectionIds) {
-		let url = FlexRouter.__getBaseUrl() + '/' + searchRecipePath + '?cids=' + collectionIds.join(',');
+		const url = FlexRouter.__getBaseUrl() + '/' + searchRecipePath + '?cids=' + collectionIds.join(',');
 		document.location.href =  url;
 	},
 
 	__getBaseUrl : function() {
-		let temp = window.location.href;
-		let arr = temp.split("/");
+		const temp = window.location.href;
+		const arr = temp.split("/");
 		return arr[0] + "//" + arr[2];
 	},
 
 	setBrowserHistory : function(params, stateTitle) {
 		let url = document.location.pathname;
 		if(params && typeof(params) == 'object' && Object.keys(params).length > 0) {
-			let paramList = [];
-			for(let p in params) {
+			const paramList = [];
+			for(const p in params) {
 				paramList.push(p + '=' + params[p]);
 			}
 			url += '?' + paramList.join('&');

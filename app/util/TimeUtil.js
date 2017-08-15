@@ -7,10 +7,10 @@ const TimeUtil = {
 		if(t == -1) {
 			return '00:00:00';
 		}
-	    var pt = moment.duration(t * 1000);
-	    var h = pt.hours() < 10 ? '0' + pt.hours() : pt.hours();
-	    var m = pt.minutes() < 10 ? '0' + pt.minutes() : pt.minutes();
-	    var s = pt.seconds() < 10 ? '0' + pt.seconds() : pt.seconds();
+	    const pt = moment.duration(t * 1000);
+	    const h = pt.hours() < 10 ? '0' + pt.hours() : pt.hours();
+	    const m = pt.minutes() < 10 ? '0' + pt.minutes() : pt.minutes();
+	    const s = pt.seconds() < 10 ? '0' + pt.seconds() : pt.seconds();
 	    return h + ':' + m + ':' + s;
 	},
 
@@ -19,10 +19,10 @@ const TimeUtil = {
 		if(millis == -1) {
 			return '00:00:00';
 		}
-	    var pt = moment.duration(millis);
-	    var h = pt.hours() < 10 ? '0' + pt.hours() : pt.hours();
-	    var m = pt.minutes() < 10 ? '0' + pt.minutes() : pt.minutes();
-	    var s = pt.seconds() < 10 ? '0' + pt.seconds() : pt.seconds();
+	    const pt = moment.duration(millis);
+	    const h = pt.hours() < 10 ? '0' + pt.hours() : pt.hours();
+	    const m = pt.minutes() < 10 ? '0' + pt.minutes() : pt.minutes();
+	    const s = pt.seconds() < 10 ? '0' + pt.seconds() : pt.seconds();
 	    return h + ':' + m + ':' + s;
 	},
 

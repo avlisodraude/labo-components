@@ -138,7 +138,7 @@ class QueryBuilder extends React.Component {
 			e.preventDefault();
 		}
 		//reset the date range
-		let dr = this.state.selectedDateRange;
+		const dr = this.state.selectedDateRange;
 		if(dr) {
 			dr.start = -1;
 			dr.end = -1;
@@ -173,7 +173,7 @@ class QueryBuilder extends React.Component {
 
 	//this resets the paging
 	toggleSearchLayer(e) {
-		let searchLayers = this.state.searchLayers;
+		const searchLayers = this.state.searchLayers;
 		searchLayers[e.target.id] = !searchLayers[e.target.id];
 		this.setState(
 			{searchLayers : searchLayers},
@@ -219,13 +219,13 @@ class QueryBuilder extends React.Component {
 				)
 			)
 		} else if(componentClass == 'DateRangeSelector') {
-			let df = this.state.desiredFacets;
+			const df = this.state.desiredFacets;
 			if(this.state.selectedDateRange) {
 
 				//first check if the date field has changed for updating the desiredFacet
 				if(this.state.selectedDateRange.field != data.field) {
 					let index = 0;
-					for(var i=0;i<df.length;i++) {
+					for(let i=0;i<df.length;i++) {
 						if(df[i].type == 'date_histogram') {
 							index = i;
 							break;
@@ -382,7 +382,7 @@ class QueryBuilder extends React.Component {
 
 			//draw the checkboxes for selecting layers
 			if(this.state.searchLayers) {
-				let layers = Object.keys(this.state.searchLayers).map((layer, index) => {
+				const layers = Object.keys(this.state.searchLayers).map((layer, index) => {
 					return (
 						<label key={'layer__' + index} className="checkbox-inline">
 							<input id={layer} type="checkbox" checked={this.state.searchLayers[layer]}

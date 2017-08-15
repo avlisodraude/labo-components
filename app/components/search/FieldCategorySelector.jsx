@@ -13,8 +13,8 @@ class FieldCategorySelector extends React.Component {
 
 	onOutput(data) {
 		if(this.props.onOutput) {
-			let fieldCategories = this.props.collectionConfig.getMetadataFieldCategories();
-			let fc = fieldCategories.filter((c) => {
+			const fieldCategories = this.props.collectionConfig.getMetadataFieldCategories();
+			const fc = fieldCategories.filter((c) => {
 				return c.id == data;
 			})
 			if(fc.length == 1) {
@@ -28,7 +28,7 @@ class FieldCategorySelector extends React.Component {
 	render() {
 		let fieldCategorySelector = null;
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
-			let options = this.props.collectionConfig.getMetadataFieldCategories().map((fc) => {
+			const options = this.props.collectionConfig.getMetadataFieldCategories().map((fc) => {
 				return (<option value={fc.id}>{fc.label}</option>);
 			});
 			options.splice(0,0, <option value="null_option">Search in: all fields</option>)

@@ -34,7 +34,7 @@ class CommentingForm extends React.Component {
 
 	addComment(e) {
 		e.preventDefault();
-		var cs = this.state.data;
+		const cs = this.state.data;
 		if(cs) {
 			cs.push({text : this.refs.comment.value});
 			this.setState({data : cs}, this.onOutput.bind(this));
@@ -43,7 +43,7 @@ class CommentingForm extends React.Component {
 	}
 
 	removeComment(index) {
-		var cs = this.state.data;
+		const cs = this.state.data;
 		if(cs) {
 			cs.splice(index, 1);
 			this.setState({data : cs}, this.onOutput.bind(this));

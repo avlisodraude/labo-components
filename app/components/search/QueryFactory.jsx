@@ -39,10 +39,10 @@ class QueryFactory extends React.Component {
 	}
 
 	onConfigsLoaded(configs) {
-		let openQueries = []
-		let openQueryData = {}
+		const openQueries = []
+		const openQueryData = {}
 		configs.forEach((conf) => {
-			let queryId = IDUtil.guid();
+			const queryId = IDUtil.guid();
 			openQueries.push(queryId)
 			openQueryData[queryId] = {
 				queryId : queryId,
@@ -70,11 +70,11 @@ class QueryFactory extends React.Component {
 	//connected to the onOutput of the CollectionSelector & each QueryBuilder component
 	onComponentOutput(componentClass, data) {
 		if(componentClass == 'CollectionSelector') {
-			let oq = this.state.openQueries;
-			let queryId = IDUtil.guid();
+			const oq = this.state.openQueries;
+			const queryId = IDUtil.guid();
 			oq.push(queryId)
 
-			let oqd = this.state.openQueryData;
+			const oqd = this.state.openQueryData;
 			oqd[queryId] = {
 				queryId : queryId,
 				collectionConfig : data
@@ -89,7 +89,7 @@ class QueryFactory extends React.Component {
 			this.onOutput(data);
 
 			//store the just executed query, so the user can save it later
-			let oqd = this.state.openQueryData;
+			const oqd = this.state.openQueryData;
 			if(data.queryId && oqd[data.queryId]) {
 				oqd[data.queryId]['queryParams'] = data.params;
 				this.setState({
@@ -101,10 +101,10 @@ class QueryFactory extends React.Component {
 	}
 
 	closeQuery(queryId) {
-		let oq = this.state.openQueries;
-		let index = oq.indexOf(queryId);
+		const oq = this.state.openQueries;
+		const index = oq.indexOf(queryId);
 
-		let oqd = this.state.openQueryData;
+		const oqd = this.state.openQueryData;
 		delete oqd[queryId]
 		if(index != -1) {
 			oq.splice(index, 1);
@@ -119,7 +119,7 @@ class QueryFactory extends React.Component {
 	}
 
 	saveQuery(queryId) {
-		let query = this.state.openQueryData[queryId];
+		const query = this.state.openQueryData[queryId];
 		console.debug('saving query');
 		console.debug(query.queryParams);
 
@@ -160,9 +160,9 @@ class QueryFactory extends React.Component {
 		}
 
 		//for drawing the tabs
-		let cells = this.state.openQueries.map(function(queryId, index) {
+		const cells = this.state.openQueries.map(function(queryId, index) {
 			//TODO draw some stuff
-			let queryData = this.state.openQueryData[queryId];
+			const queryData = this.state.openQueryData[queryId];
 			let title = queryData.collectionConfig.collectionId;
 			if(queryData.collectionConfig.collectionInfo) {
 				title = queryData.collectionConfig.collectionInfo.title;

@@ -121,8 +121,8 @@ class FlexPlayer extends React.Component {
 	}
 
 	checkFocus(f, args) {
-		let inputs = document.getElementsByTagName('input');
-		for(let i of inputs) {
+		const inputs = document.getElementsByTagName('input');
+		for(const i of inputs) {
 			if(i == document.activeElement) {
 				return true;
 			}
@@ -135,7 +135,7 @@ class FlexPlayer extends React.Component {
 	//called by the playerAPI (this component is an observer of that. I know it's ugly, will make it pretty later)
 	//TODO is this still necessary?
 	update() {
-		let activeSegment = this.state.playerAPI.getActiveSegment();
+		const activeSegment = this.state.playerAPI.getActiveSegment();
 		this.setState({
 			start : activeSegment.start,
 			end : activeSegment.end
@@ -200,7 +200,7 @@ class FlexPlayer extends React.Component {
 	}
 
 	setStart(start) {
-	    var temp = -1;
+	    let temp = -1;
 	    if(start == undefined) {
 	        temp = this.state.curPosition;
 	    } else {
@@ -217,7 +217,7 @@ class FlexPlayer extends React.Component {
 	}
 
 	setEnd(end, skipPause) {
-	    var temp = -1;
+	    let temp = -1;
 	    if(end == undefined) {
 	        temp = this.state.curPosition;
 	    } else {
@@ -394,7 +394,7 @@ class FlexPlayer extends React.Component {
 	------------------------------------------------------------------------------- */
 
 	setActiveAnnotation(annotation, play) {
-		let index = AnnotationUtil.getSegmentIndex(this.state.annotations, annotation);
+		const index = AnnotationUtil.getSegmentIndex(this.state.annotations, annotation);
 		this.setState(
 			{
 				activeAnnotation : annotation,
@@ -410,7 +410,7 @@ class FlexPlayer extends React.Component {
 			//TODO make sure to check the mimeType and also add support for images/spatial targets!!
 			if(annotation.target.source == this.props.mediaObject.url) {
 				this.setActiveAnnotation(annotation);
-				let frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(annotation);
+				const frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(annotation);
 				if(frag) {
 					this.state.playerAPI.setActiveSegment(frag, true, true);
 				} else {
@@ -482,14 +482,14 @@ class FlexPlayer extends React.Component {
 	}
 
 	nextSegment() {
-		let segment = AnnotationUtil.getSegment(this.state.annotations, this.state.activeAnnotationIndex + 1);
+		const segment = AnnotationUtil.getSegment(this.state.annotations, this.state.activeAnnotationIndex + 1);
 		if(segment) {
 			AnnotationActions.set(segment);
 		}
 	}
 
 	previousSegment() {
-		let segment = AnnotationUtil.getSegment(this.state.annotations, this.state.activeAnnotationIndex - 1);
+		const segment = AnnotationUtil.getSegment(this.state.annotations, this.state.activeAnnotationIndex - 1);
 		if(segment) {
 			AnnotationActions.set(segment);
 		}

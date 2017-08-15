@@ -1,8 +1,8 @@
 const ExternalAPI = {
 
 	autocomplete: function(vocabulary, term, callback) {
-		let url = '/autocomplete?vocab=' + vocabulary + '&term=' + term;
-	    var xhr = new XMLHttpRequest();
+		const url = '/autocomplete?vocab=' + vocabulary + '&term=' + term;
+	    const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -19,8 +19,8 @@ const ExternalAPI = {
 	},
 
 	search: function(api, searchTerm, callback) {
-		let url = '/link/' + api + '/search?q=' + searchTerm;
-	    var xhr = new XMLHttpRequest();
+		const url = '/link/' + api + '/search?q=' + searchTerm;
+	    const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {

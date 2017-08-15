@@ -47,7 +47,7 @@ class CollectionSelector extends React.Component {
 
 	getCollectionInfo(collectionId) {
 		if(this.state.collectionList) {
-			let tmp = this.state.collectionList.filter((c) => {
+			const tmp = this.state.collectionList.filter((c) => {
 				return c.index == collectionId;
 			});
 			if(tmp.length == 1) {
@@ -62,7 +62,7 @@ class CollectionSelector extends React.Component {
 	------------------------------------------------------------------------------- */
 
 	onOutput(collectionId, collectionStats, collectionInfo) {
-		var collectionConfig = CollectionUtil.createCollectionConfig(collectionId, collectionStats, collectionInfo);
+		const collectionConfig = CollectionUtil.createCollectionConfig(collectionId, collectionStats, collectionInfo);
 		if(this.props.onOutput) {
 			if(collectionId) {
 				this.props.onOutput(this.constructor.name, collectionConfig);
@@ -81,7 +81,7 @@ class CollectionSelector extends React.Component {
 
 			//the collection selection part
 			if(this.props.showSelect) {
-				let collectionOptions = this.state.collectionList.map((collection) => {
+				const collectionOptions = this.state.collectionList.map((collection) => {
 					return (
 						<option key={collection.index + '__option'} value={collection.index}>
 							{collection.title}
@@ -109,8 +109,8 @@ class CollectionSelector extends React.Component {
 			if(this.props.showBrowser) {
 
 				//the collections visualized as blocks
-				let collectionBlocks = this.state.collectionList.map((collection) => {
-					let tmp = collection.organization.image_url;
+				const collectionBlocks = this.state.collectionList.map((collection) => {
+					const tmp = collection.organization.image_url;
 					let image = null;
 					if(tmp && tmp.indexOf('http:') != -1) {
 						image = <img src={tmp}/>

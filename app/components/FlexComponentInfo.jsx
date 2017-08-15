@@ -25,7 +25,7 @@ class FlexComponentInfo extends React.Component {
 	render() {
 		let childrenWithProps = null;
 		if(this.props.config) {//this.state.componentConfig
-			let config = {
+			const config = {
 				key : "testbox",
 				blockId : "labs-catalogue-aggr",
 				searchAPI: _config.SEARCH_API_BASE,

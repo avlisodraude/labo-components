@@ -18,9 +18,9 @@ class VimeoPlayer extends React.Component {
 	}
 
 	componentDidMount() {
-		var iframes = document.querySelectorAll('iframe');
-		var iframe = null;
-		for (var i = 0, length = iframes.length; i < length; i++) {
+		const iframes = document.querySelectorAll('iframe');
+		let iframe = null;
+		for (let i = 0, length = iframes.length; i < length; i++) {
 			iframe = iframes[i];
 			this.playerReady(new Vimeo.Player(iframe));
 		}

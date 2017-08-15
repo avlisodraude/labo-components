@@ -44,7 +44,7 @@ class AnnotationBox extends React.Component {
 
 	//receives all the data output by child components
 	onComponentOutput(mode, values) {
-		var ad = this.state.annotationData.filter((a) => {
+		const ad = this.state.annotationData.filter((a) => {
 			return a.annotationType != mode;
 		});
 		values.forEach((a) => {
@@ -57,7 +57,7 @@ class AnnotationBox extends React.Component {
 
 	//TODO this function looks like it could be more optimized
 	gatherDataAndSave() {
-		var annotation = this.props.annotation;
+		const annotation = this.props.annotation;
 		annotation.body = this.state.annotationData;
 		AnnotationActions.save(annotation);
 	}
@@ -83,7 +83,7 @@ class AnnotationBox extends React.Component {
 		}, this)
 
 		//generate the content of each tab (a form based on a annotation mode/motivation)
-		var tabContents = Object.keys(this.props.annotationModes).map(function(mode) {
+		const tabContents = Object.keys(this.props.annotationModes).map(function(mode) {
 			if(mode == 'bookmark') return null;
 			let form = '';
 			switch(mode) {

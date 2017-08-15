@@ -50,7 +50,7 @@ class SearchHit extends React.Component {
 				</FlexModal>
 			)
 		}
-		let classNames = [IDUtil.cssClassName('search-hit')];
+		const classNames = [IDUtil.cssClassName('search-hit')];
 		if(snippet.type == 'media_fragment') {
 			classNames.push('fragment')
 		}

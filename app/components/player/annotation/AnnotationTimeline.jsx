@@ -34,7 +34,7 @@ class AnnotationTimeline extends React.Component {
 	    this.updateCanvasDimensions();
 
 	    //add a mouse move listener to the canvas, so it's possible to highlight annotations hovered over
-	    var c = document.getElementById("an_timebar_canvas__" + this.props.mediaObject.id);
+	    const c = document.getElementById("an_timebar_canvas__" + this.props.mediaObject.id);
 	    c.addEventListener('mousemove', this.highlightAnnotation.bind(this));
 	}
 
@@ -45,8 +45,8 @@ class AnnotationTimeline extends React.Component {
 	}
 
 	updateCanvasDimensions() {
-		var c = document.getElementById('an_timebar_canvas__' + this.props.mediaObject.id);
-		var container = document.getElementById('an_timebar__' + this.props.mediaObject.id);
+		const c = document.getElementById('an_timebar_canvas__' + this.props.mediaObject.id);
+		const container = document.getElementById('an_timebar__' + this.props.mediaObject.id);
 		c.width = container.offsetWidth;
 		c.height = container.offsetHeight;
 	}
@@ -62,7 +62,7 @@ class AnnotationTimeline extends React.Component {
 	determineCurrentAnnotation() {
 		let currentAnnotation = null;
 		if(this.props.annotations) {
-			let pos = this.props.curPosition;
+			const pos = this.props.curPosition;
 			currentAnnotation = this.props.annotations.filter((a, index)=> {
 				if(a.target.selector) {
 					if(a.target.selector.start < pos && a.target.selector.end > pos) {
@@ -76,8 +76,8 @@ class AnnotationTimeline extends React.Component {
 
 	//TODO update the active annotation after pressing play
 	activateAnnotation(e) {
-		let activePos = parseFloat(this.hoverPos);
-		let currentAnnotation = this.props.annotations.filter((a, index)=> {
+		const activePos = parseFloat(this.hoverPos);
+		const currentAnnotation = this.props.annotations.filter((a, index)=> {
 			if(a.target.selector) {
 				if(a.target.selector.start < activePos && a.target.selector.end > activePos) {
 					return true;
@@ -90,7 +90,7 @@ class AnnotationTimeline extends React.Component {
 	}
 
 	editAnnotation() {
-		let currentAnnotation = this.props.annotations.filter((a, index)=> {
+		const currentAnnotation = this.props.annotations.filter((a, index)=> {
 			if(a.target.selector) {
 				if(a.target.selector.start < this.hoverPos && a.target.selector.end > this.hoverPos) {
 					return true;
@@ -103,9 +103,9 @@ class AnnotationTimeline extends React.Component {
 	}
 
 	highlightAnnotation(e) {
-		var c = document.getElementById("an_timebar_canvas__" + this.props.mediaObject.id);
-		var mousePos = this.getMousePos(c, e);
-		var dur = this.props.duration;
+		const c = document.getElementById("an_timebar_canvas__" + this.props.mediaObject.id);
+		const mousePos = this.getMousePos(c, e);
+		const dur = this.props.duration;
 		this.hoverPos = dur / 100 * (mousePos.x / (c.width / 100));
 		if(this.props.playerAPI.isPaused((paused) => {
 			if(paused) {
@@ -121,12 +121,12 @@ class AnnotationTimeline extends React.Component {
 			return;
 		}
 		this.repainting = true;
-		var c = document.getElementById("an_timebar_canvas__" + this.props.mediaObject.id);
+		const c = document.getElementById("an_timebar_canvas__" + this.props.mediaObject.id);
 		if(c.width == 0 && c.height == 0) {
 			this.updateCanvasDimensions();
 		}
-		var dur = -1;
-		var t = this.props.curPosition;
+		let dur = -1;
+		let t = this.props.curPosition;
         if(!t) {
             t = this.props.start;
         }
@@ -136,10 +136,10 @@ class AnnotationTimeline extends React.Component {
 	        ctx.clearRect (0, 0, c.width, c.height);
 	        this.props.annotations.forEach((a, index) => {
 	        	if(a.target.selector) {
-	        		let frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(a);
+	        		const frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(a);
 		        	if(frag) {
-			        	let start = c.width / 100 * (frag.start / (dur / 100));
-			        	let end = c.width / 100 * (frag.end / (dur / 100));
+			        	const start = c.width / 100 * (frag.start / (dur / 100));
+			        	const end = c.width / 100 * (frag.end / (dur / 100));
 			        	if(this.hoverPos >= frag.start && this.hoverPos <= frag.end) {
 			        		ctx.fillStyle = "#FF69B4";
 			        	} else if(this.props.annotation && a.id == this.props.annotation.id){
@@ -153,7 +153,7 @@ class AnnotationTimeline extends React.Component {
 	        });
 	    } else {
 			dur = this.props.end - this.props.start;
-			var dt = t - this.props.start;
+			const dt = t - this.props.start;
 			var ctx = c.getContext("2d");
 			ctx.clearRect (0, 0, c.width, c.height);
 			console.debug('TODO: implement this');
@@ -162,7 +162,7 @@ class AnnotationTimeline extends React.Component {
 	}
 
 	getMousePos(canvas, evt) {
-	    var rect = canvas.getBoundingClientRect();
+	    const rect = canvas.getBoundingClientRect();
 	    return {
 	      x: evt.clientX - rect.left,
 	      y: evt.clientY - rect.top

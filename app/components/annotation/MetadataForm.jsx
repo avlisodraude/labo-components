@@ -59,7 +59,7 @@ class MetadataForm extends React.Component {
 		if(this.state.singleCardMode && !activeCard) {
 			activeTemplate = this.getActiveTemplate();
 			if(activeTemplate) {
-				let properties = this.state.activeTemplate.properties.map((prop) => {
+				const properties = this.state.activeTemplate.properties.map((prop) => {
 					return {key : prop.key, value : ''}
 				});
 				activeCard = {properties : properties};
@@ -117,7 +117,7 @@ class MetadataForm extends React.Component {
 	}
 
 	setActiveTemplate(event) {
-		let templateId = event.target.value;
+		const templateId = event.target.value;
 		if(templateId && this.state.templates) {
 			if(templateId == 'NO_TEMPLATE') {
 				this.setState({
@@ -125,12 +125,12 @@ class MetadataForm extends React.Component {
 					activeCard : {properties : []}
 				});
 			} else {
-				let activeTemplate = this.getTemplateById(templateId);
+				const activeTemplate = this.getTemplateById(templateId);
 				if(activeTemplate) {
-					let properties = activeTemplate.properties.map((prop) => {
+					const properties = activeTemplate.properties.map((prop) => {
 						return {key : prop.key, value : ''}
 					});
-					let activeCard = {
+					const activeCard = {
 						annotationTemplate : templateId,
 						properties : properties
 					};
@@ -162,7 +162,7 @@ class MetadataForm extends React.Component {
 
 	getTemplateById(templateId) {
 		if(this.state.templates) {
-			let temp = this.state.templates.filter((t) => {
+			const temp = this.state.templates.filter((t) => {
 				return t.id == templateId;
 			});
 			if(temp.length > 0) {
@@ -177,9 +177,9 @@ class MetadataForm extends React.Component {
 	getInputFieldType(card, property) {
 		let fieldType = 'string';
 		if(card && card.annotationTemplate) {
-			let t = this.props.config.templates[card.annotationTemplate];
+			const t = this.props.config.templates[card.annotationTemplate];
 			if(t && t.properties) {
-				let tmp = t.properties.filter((p) => {
+				const tmp = t.properties.filter((p) => {
 					return p.key == property;
 				})
 				if(tmp.length == 1 && tmp[0].type) {
@@ -204,7 +204,7 @@ class MetadataForm extends React.Component {
 				return {key : prop.key, value : ''}
 			});
 		}
-		let ac = {properties : properties}
+		const ac = {properties : properties}
 		this.setState({
 			activeCard : ac,
 			activeCardIndex : -1
@@ -213,8 +213,8 @@ class MetadataForm extends React.Component {
 
 	setActiveCard(index, e) {
 		if(this.state.cards.length > 0 && index < this.state.cards.length) {
-			let activeCard = JSON.parse(JSON.stringify(this.state.cards[index]));
-			let activeTemplate = this.getTemplateById(activeCard.annotationTemplate);
+			const activeCard = JSON.parse(JSON.stringify(this.state.cards[index]));
+			const activeTemplate = this.getTemplateById(activeCard.annotationTemplate);
 			this.setState({
 				activeCard : activeCard,
 				activeCardIndex : index,
@@ -228,8 +228,8 @@ class MetadataForm extends React.Component {
 			e.preventDefault();
 		}
 		if(this.state.activeCard) {
-			let cards = this.state.cards;
-			let ac = JSON.parse(JSON.stringify(this.state.activeCard));
+			const cards = this.state.cards;
+			const ac = JSON.parse(JSON.stringify(this.state.activeCard));
 
 			//(if there is an active template) attach the selected template ID to the annotation/card (otherwise remove it)
 			if(this.state.activeTemplate) {
@@ -255,7 +255,7 @@ class MetadataForm extends React.Component {
 	}
 
 	removeCard(index) {
-		let cards = this.state.cards;
+		const cards = this.state.cards;
 		cards.splice(index, 1);
 		this.setState(
 			{cards : cards},
@@ -273,14 +273,14 @@ class MetadataForm extends React.Component {
 	addProperty(e) {
 		e.preventDefault();
 		if(this.state.activeCard) {
-			let ac = this.state.activeCard;
+			const ac = this.state.activeCard;
 			ac.properties.push({key : '', value : ''})
 			this.setState({activeCard : ac});
 		}
 	}
 
 	updateProperty(index, isKey, e) {
-		let ac = this.state.activeCard;
+		const ac = this.state.activeCard;
 		if(isKey) {
 			ac.properties[index].key = e.target.value;
 		} else {
@@ -299,7 +299,7 @@ class MetadataForm extends React.Component {
 
 	removeProperty(index) {
 		let resetPoster = false;
-		let ac = this.state.activeCard;
+		const ac = this.state.activeCard;
 		if(ac.properties[index] && ac.properties[index].key == 'poster') {
 			resetPoster = true;
 		}
@@ -331,8 +331,8 @@ class MetadataForm extends React.Component {
 		if(!this.state.singleCardMode) {
 			//draw the list of cards at the top (use the first property as label/title)
 			if(this.state.cards.length > 0) {
-				let cards = this.state.cards.map((card, index) => {
-					let iconClass = IconUtil.getAnnotationTemplateIcon(card.annotationTemplate);
+				const cards = this.state.cards.map((card, index) => {
+					const iconClass = IconUtil.getAnnotationTemplateIcon(card.annotationTemplate);
 					return (
 						<li key={'com__' + index}
 							className={this.state.activeCardIndex == index ? 'list-group-item active' : 'list-group-item' }
@@ -379,13 +379,13 @@ class MetadataForm extends React.Component {
 
 		//draw the form of the active card below
 		if(this.state.activeCard) {
-			let formRows = this.state.activeCard.properties.map((prop, i) => {
+			const formRows = this.state.activeCard.properties.map((prop, i) => {
 				let inputField = null;
 				let delPropBtn = null;
 				let propertyField = null;
 
 				//determine what input field to draw
-				let fieldType = this.getInputFieldType(this.state.activeCard, prop.key);
+				const fieldType = this.getInputFieldType(this.state.activeCard, prop.key);
 				if(fieldType == 'markdown') {
 					inputField = (
 						<textarea className="form-control" value={prop.value} rows="5"
@@ -433,8 +433,8 @@ class MetadataForm extends React.Component {
 			//draw the template selector (if any have been defined)
 			let templateSelect = null;
 			if(this.state.templates) {
-				let templateOptions = Object.keys(this.state.templates).map((key) => {
-					let template = this.state.templates[key];
+				const templateOptions = Object.keys(this.state.templates).map((key) => {
+					const template = this.state.templates[key];
 					return (
 						<option key={template.id + '__option'} value={template.id}>
 							{template.label}

@@ -5,7 +5,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const BUILD_DIR = path.resolve(__dirname, '../dist');
 const APP_DIR =  path.resolve(__dirname, '../app');
-console.log('buil dir', BUILD_DIR);
+
 module.exports = {
     entry: [APP_DIR + '/index.jsx'],
     devtool: 'source-map',
@@ -23,13 +23,12 @@ module.exports = {
         rules: [
             {
                 test: /\.jsx?$/,
-                exclude: /(node_modules|css|templates)/,
+                exclude: /(node_modules)/,
                 enforce: 'pre',
-                use: [
-                    {
-                        loader: 'eslint-loader'
-                    }
-                ],
+                loader: "eslint-loader",
+                options: {
+                    fix : false
+                }
             },
             {
                 test: /.jsx?$/,

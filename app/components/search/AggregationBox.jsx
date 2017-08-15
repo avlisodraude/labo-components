@@ -26,7 +26,7 @@ class AggregationBox extends React.Component {
 
 	onComponentOutput(componentClass, data) {
 		if(componentClass == 'AggregationCreator' && data) {
-			let desiredFacets = this.props.desiredFacets;
+			const desiredFacets = this.props.desiredFacets;
 			desiredFacets.push(data);
 			this.onOutput(desiredFacets, this.props.selectedFacets);
 			ComponentUtil.hideModal(this, 'showModal', 'field_select__modal', true);
@@ -44,10 +44,10 @@ class AggregationBox extends React.Component {
 	}
 
 	toggleSelectedFacet(key, value, e) {
-		let facets = this.props.selectedFacets;
+		const facets = this.props.selectedFacets;
 		if(facets) {
 			if(facets[key]) {
-				let index = facets[key].indexOf(value);
+				const index = facets[key].indexOf(value);
 				if(index == -1) {
 					facets[key].push(value); //add the value
 				} else {
@@ -66,7 +66,7 @@ class AggregationBox extends React.Component {
 	}
 
 	toggleDesiredFacet(key) {
-		let desiredFacets = this.props.desiredFacets;
+		const desiredFacets = this.props.desiredFacets;
 		for(let i=desiredFacets.length-1;i>=0;i--) {
 			if(desiredFacets[i].field == key) {
 				desiredFacets.splice(i, 1);
@@ -104,7 +104,7 @@ class AggregationBox extends React.Component {
 		}
 
 		//draw a tab for each found aggregation (TODO make this actually the desired facets, so it's possible to show empty results)
-		let tabs = this.props.desiredFacets.map((aggr, index) => {
+		const tabs = this.props.desiredFacets.map((aggr, index) => {
 			return (
 				<li key={index + '__tab'} className={index == 0 ? 'active' : ''}>
 					<a data-toggle="tab" href={'#__aggr_' + IDUtil.hashCode(this.props.queryId + '-' + index)}>
@@ -128,7 +128,7 @@ class AggregationBox extends React.Component {
 		//first draw the breadcrumb trail
 		let breadcrumbs = null;
 		if(this.props.selectedFacets) {
-			let crumbs = Object.keys(this.props.selectedFacets).map((key, ki) => {
+			const crumbs = Object.keys(this.props.selectedFacets).map((key, ki) => {
 				return this.props.selectedFacets[key].map((value, vi) => {
 					return (
 						<div key={ki + '_' + vi} className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)} title={key}>
@@ -149,7 +149,7 @@ class AggregationBox extends React.Component {
 
 
 		//the contents contain the actual facets
-		let tabContents = this.props.desiredFacets.map((aggr, index) => {
+		const tabContents = this.props.desiredFacets.map((aggr, index) => {
 			let visualisation = null;
 			//always generate a histogram for date histogram aggregations
 			if(ElasticsearchDataUtil.isHistogram(aggr.field, this.props.desiredFacets)) {
@@ -165,8 +165,8 @@ class AggregationBox extends React.Component {
 					//generate a word cloud for regular aggregations
 					//TODO create a component for this!
 
-					let terms = this.props.aggregations[aggr.field].map((aggrData) => {
-						let classNames = [IDUtil.cssClassName('tag-cloud-item', this.CLASS_PREFIX)]
+					const terms = this.props.aggregations[aggr.field].map((aggrData) => {
+						const classNames = [IDUtil.cssClassName('tag-cloud-item', this.CLASS_PREFIX)]
 						if(this.isSelected(aggr.field, aggrData.key)) {
 							classNames.push('active');
 						}

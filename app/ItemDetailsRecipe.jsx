@@ -88,9 +88,9 @@ class ItemDetailsRecipe extends React.Component {
 		//(for now we have to wait until the jquery is available... )
 		if(!this.tabListeners) {
 			$('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
-				var target = $(e.target).attr("href") // activated tab
-				var index = target.substring('#mo__'.length);
-				var annotationTarget = this.getAnnotationTarget(this.state.itemData, index)
+				const target = $(e.target).attr("href") // activated tab
+				const index = target.substring('#mo__'.length);
+				const annotationTarget = this.getAnnotationTarget(this.state.itemData, index)
 				if(annotationTarget) {
 					this.setActiveAnnotationTarget.call(this, annotationTarget);
 				} else {
@@ -105,9 +105,9 @@ class ItemDetailsRecipe extends React.Component {
 	//determine which (media object) target on the page should be the active annotation target
 	getAnnotationTarget(itemDetailData, index=0) {
 		if(itemDetailData && itemDetailData.playableContent) {
-			var mediaObject = itemDetailData.playableContent[index];
+			const mediaObject = itemDetailData.playableContent[index];
 			if(mediaObject) {
-				let annotation = AnnotationUtil.generateW3CEmptyAnnotation(
+				const annotation = AnnotationUtil.generateW3CEmptyAnnotation(
 					this.state.user,
 					mediaObject.url,
 					mediaObject.mimeType
@@ -122,14 +122,14 @@ class ItemDetailsRecipe extends React.Component {
 		let found = data ? data.found : false;
 		if(collectionId && found != false) {
 			CollectionUtil.generateCollectionConfig(collectionId, function(config){
-				let itemDetailData = config.getItemDetailData(data);
+				const itemDetailData = config.getItemDetailData(data);
 				found = itemDetailData == null ? false : true;
 				if(found) {
 					//determine which media contant tab should be active
 					let activeMediaTab = 0;
 					if(itemDetailData.playableContent && this.props.params.fragmentUrl) {
 						for(let i = 0;i<itemDetailData.playableContent.length;i++) {
-							let mediaObject = itemDetailData.playableContent[i];
+							const mediaObject = itemDetailData.playableContent[i];
 							if(mediaObject.url == this.props.params.fragmentUrl) {
 								activeMediaTab = i;
 								break;
@@ -208,9 +208,9 @@ class ItemDetailsRecipe extends React.Component {
 		} else {
 			let annotationBox = null;
 			let annotationList = null;
-			let uniqueMetadata = null;
-			let poster = null;
-			let source = null;
+			const uniqueMetadata = null;
+			const poster = null;
+			const source = null;
 			let metadataPanel = null;
 			let mediaPanel = null;
 			let mediaTabs = null;
@@ -254,11 +254,11 @@ class ItemDetailsRecipe extends React.Component {
 
 			//media objects
 			if(this.state.itemData.playableContent) {
-				let mediaObjectTypes = [];
+				const mediaObjectTypes = [];
 
 				//first generate the tabs
 				mediaTabs = this.state.itemData.playableContent.map((mediaObject, index) => {
-					let iconClass = IconUtil.getMimeTypeIcon(mediaObject.mimeType);
+					const iconClass = IconUtil.getMimeTypeIcon(mediaObject.mimeType);
 					return (
 						<li key={index + '__mt'}
 							className={this.state.activeMediaTab == index ? 'active' : ''}>

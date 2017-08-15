@@ -7,7 +7,7 @@ class FieldAnalysisStats extends React.Component {
 	}
 
 	render() {
-		let stats = [];
+		const stats = [];
 		if(this.props.data && this.props.data.doc_stats) {
 			stats.push(
 				<tr>

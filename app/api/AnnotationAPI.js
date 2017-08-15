@@ -1,13 +1,13 @@
 const AnnotationAPI = {
 
 	saveAnnotation : function(annotation, callback) {
-		var url = _config.ANNOTATION_API_BASE + '/annotation';
-		var method = 'POST';
+		let url = _config.ANNOTATION_API_BASE + '/annotation';
+		let method = 'POST';
 		if(annotation.id) {
 			url += '/' + annotation.id;
 			method = 'PUT';
 		}
-		var xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -28,8 +28,8 @@ const AnnotationAPI = {
 
 	getAnnotation : function(annotationId) {
 		if(annotationId) {
-			var url = _config.ANNOTATION_API_BASE + '/annotation/' + annotationId;
-			var xhr = new XMLHttpRequest();
+			const url = _config.ANNOTATION_API_BASE + '/annotation/' + annotationId;
+			const xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == XMLHttpRequest.DONE) {
 					if(xhr.status == 200) {
@@ -46,8 +46,8 @@ const AnnotationAPI = {
 	},
 
 	getAnnotations : function(callback) {
-		var url = _config.ANNOTATION_API_BASE + '/annotation';
-		var xhr = new XMLHttpRequest();
+		const url = _config.ANNOTATION_API_BASE + '/annotation';
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -64,8 +64,8 @@ const AnnotationAPI = {
 
 	deleteAnnotation : function (annotation, callback) {
 		if(annotation.id) {
-			var url = _config.ANNOTATION_API_BASE + '/annotation/' + annotation.id;
-			var xhr = new XMLHttpRequest();
+			const url = _config.ANNOTATION_API_BASE + '/annotation/' + annotation.id;
+			const xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == XMLHttpRequest.DONE) {
 					if(xhr.status == 200) {
@@ -83,13 +83,13 @@ const AnnotationAPI = {
 
 	//TODO always add the user too!
 	getFilteredAnnotations : function(params, callback) {
-		var url = _config.ANNOTATION_API_BASE + '/annotations/filter';
-		let temp = [];
+		let url = _config.ANNOTATION_API_BASE + '/annotations/filter';
+		const temp = [];
 		Object.keys(params).forEach((key) => {
 			temp.push(key + '=' + params[key]);
 		})
 		url += '?' + temp.join('&');
-		var xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {

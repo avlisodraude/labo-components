@@ -15,14 +15,14 @@ import IDUtil from '../../util/IDUtil';
 class AggregationCreator extends React.Component {
 	constructor(props) {
 		super(props);
-		let fieldList = this.getFieldList();
+		const fieldList = this.getFieldList();
 		this.state = {
 			selectedField : fieldList ? fieldList[0] : null
 		}
 	}
 
 	onOutput(selectedField, label) {
-		var aggregation = {
+		const aggregation = {
 			field: selectedField,
 			title : label,
 			id : selectedField,
@@ -60,7 +60,7 @@ class AggregationCreator extends React.Component {
 	render() {
 		let stringSelect = null;
 		let stringOptions = [];
-		let fieldList = this.getFieldList();
+		const fieldList = this.getFieldList();
 
 		if(fieldList) {
 			stringOptions = fieldList.map((sf, index) => {

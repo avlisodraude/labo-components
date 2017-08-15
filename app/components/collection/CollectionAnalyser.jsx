@@ -12,8 +12,8 @@ class CollectionAnalyser extends React.Component {
 
 	constructor(props) {
 		super(props);
-		let stats = this.props.collectionStats ? this.props.collectionStats : null;
-		let docStats = stats ? stats.collection_statistics.document_types[0] : null;
+		const stats = this.props.collectionStats ? this.props.collectionStats : null;
+		const docStats = stats ? stats.collection_statistics.document_types[0] : null;
 		this.state = {
 			//collectionStats : stats,
 			activeDocumentType: docStats ? docStats.doc_type : null,
@@ -25,8 +25,8 @@ class CollectionAnalyser extends React.Component {
 
 	//only happens on the onchange of a document type
 	setFields() {
-		let select = document.getElementById("doctype_select");
-		let docType = select.options[select.selectedIndex].value;
+		const select = document.getElementById("doctype_select");
+		const docType = select.options[select.selectedIndex].value;
 		this.setState({activeDocumentType : docType});
 	}
 
@@ -49,14 +49,14 @@ class CollectionAnalyser extends React.Component {
 	}
 
 	loadAnalysis(callback) {
-		let analysisSelect = document.getElementById("analysisfield_select");
+		const analysisSelect = document.getElementById("analysisfield_select");
 		if(analysisSelect) {
-			let analysisField = analysisSelect.options[analysisSelect.selectedIndex].value;
-			let dateSelect = document.getElementById("datefield_select");
+			const analysisField = analysisSelect.options[analysisSelect.selectedIndex].value;
+			const dateSelect = document.getElementById("datefield_select");
 			if(dateSelect) {
-				let dateField = dateSelect.options[dateSelect.selectedIndex].value;
-				let stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
-				var facets = [];
+				const dateField = dateSelect.options[dateSelect.selectedIndex].value;
+				const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
+				const facets = [];
 
 				CollectionAPI.analyseField(
 					stats.service.collection, //TODO make this safe!
@@ -65,7 +65,7 @@ class CollectionAnalyser extends React.Component {
 					analysisField,
 					facets,
 					(data) => {
-						let timelineData = this.toTimelineData(data);
+						const timelineData = this.toTimelineData(data);
 						callback(data, timelineData);
 					}
 				);
@@ -76,13 +76,13 @@ class CollectionAnalyser extends React.Component {
 	}
 
 	toTimelineData(data) {
-		let timelineData = {
+		const timelineData = {
 			total: {timeline: [], prettyQuery : 'Total'},
 			present: {timeline: [], prettyQuery : 'Present'},
 			missing: {timeline: [], prettyQuery : 'Missing'}
 		};
 		if(data) {
-			for (let item in data.timeline) {
+			for (const item in data.timeline) {
 				timelineData.total.timeline.push({
 					year: data.timeline[item].year,
 					count: data.timeline[item].background_count,
@@ -147,11 +147,11 @@ class CollectionAnalyser extends React.Component {
 		if(this.props.collectionStats || this.state.collectionStats) {
 			//the state take precedence over the props, since it is possible to pass stats,
 			//but also allow for selecting a different collection
-			let stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
+			const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
 
 			//then determine the active document type stats for drawing the datefield and analysis field pull downs
 			let docStats = null;
-			for(var i=0;i<stats.collection_statistics.document_types.length;i++) {
+			for(let i=0;i<stats.collection_statistics.document_types.length;i++) {
 				if(stats.collection_statistics.document_types[i].doc_type == this.state.activeDocumentType) {
 					docStats = stats.collection_statistics.document_types[i];
 					break;
@@ -159,7 +159,7 @@ class CollectionAnalyser extends React.Component {
 			}
 
 			//the document type selection part
-			let docTypeOptions = stats.collection_statistics.document_types.map((docType) => {
+			const docTypeOptions = stats.collection_statistics.document_types.map((docType) => {
 				return (
 					<option key={docType.doc_type} value={docType.doc_type}>{docType.doc_type}</option>
 				)
@@ -203,8 +203,8 @@ class CollectionAnalyser extends React.Component {
 				}
 
 
-				let fieldTypes = Object.keys(docStats.fields);
-				let analysisFieldOptions = [];
+				const fieldTypes = Object.keys(docStats.fields);
+				const analysisFieldOptions = [];
 				fieldTypes.forEach((fieldType) => {
 					docStats.fields[fieldType].forEach((fieldName) => {
 						analysisFieldOptions.push(

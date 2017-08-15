@@ -8,9 +8,9 @@
     }
   },
   "rules": {
-//    "semi": 1,
-//    "no-var": 1,
-//    "prefer-const": 1,
+    "semi": 0,
+    "no-var": 1,
+    "prefer-const": 1,
 //    "max-len": ["error", { "ignoreRegExpLiterals": true,
 //      "code": 180,
 //      "ignoreStrings": true,

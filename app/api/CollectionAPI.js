@@ -2,8 +2,8 @@
 const CollectionAPI = {
 
 	getCollectionStats: function(collectionId, callback) {
-	    var url = _config.SEARCH_API_BASE + "/collections/show_stats?collectionId=" + collectionId;
-	    var xhr = new XMLHttpRequest();
+	    const url = _config.SEARCH_API_BASE + "/collections/show_stats?collectionId=" + collectionId;
+	    const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -43,8 +43,8 @@ const CollectionAPI = {
 
 	//Fetches the list of collections via the LABO proxy (which harvests directly from CKAN)
 	listCollections: function(callback) {
-	    var url = _config.SEARCH_API_BASE + '/ckan/list_collections';
-		var xhr = new XMLHttpRequest();
+	    const url = _config.SEARCH_API_BASE + '/ckan/list_collections';
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -60,12 +60,12 @@ const CollectionAPI = {
 	},
 
 	getCollectionInfo : function(collectionId, callback) {
-		var url = _config.SEARCH_API_BASE + '/ckan/collection_info/' + collectionId;
-		var xhr = new XMLHttpRequest();
+		const url = _config.SEARCH_API_BASE + '/ckan/collection_info/' + collectionId;
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
-					var respData = JSON.parse(xhr.responseText);
+					const respData = JSON.parse(xhr.responseText);
 					if(respData && !respData.error) {
 						callback(respData);
 					} else {
@@ -82,11 +82,11 @@ const CollectionAPI = {
 	},
 
 	getCollectionTimeLine(collectionId, docType, dateField, callback) {
-		var url = _config.SEARCH_API_BASE + '/collections/show_timeline';
+		let url = _config.SEARCH_API_BASE + '/collections/show_timeline';
 		url += '?collectionId=' + collectionId;
 		url += '&docType=' + docType;
 		url += '&dateField=' + dateField;
-		var xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -102,15 +102,15 @@ const CollectionAPI = {
 	},
 
 	analyseField: function(collectionId, docType, dateField, analysisField, facets, callback) {
-		var url = _config.SEARCH_API_BASE + '/collections/analyse_field';
-		var query = {
+		const url = _config.SEARCH_API_BASE + '/collections/analyse_field';
+		const query = {
 			'collectionId': collectionId,
 			'docType': docType,
 			'dateField': dateField,
 			'analysisField': analysisField,
 			'facets': facets
 		}
-		var xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {

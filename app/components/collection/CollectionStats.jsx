@@ -8,13 +8,13 @@ class CollectionStats extends React.Component {
 	}
 
 	render() {
-		let stats = {};
+		const stats = {};
 		if(this.props.data) {
 			if(this.props.data.collection_statistics) {
 
 				if(this.props.data.collection_statistics.document_types) {
-					let docTypeTabs = [];
-					let docTypeInfos = [];
+					const docTypeTabs = [];
+					const docTypeInfos = [];
 					let fieldTypeInfo = null;
 					stats.totalDocs = 0;
 
@@ -33,8 +33,8 @@ class CollectionStats extends React.Component {
 
 						//generate the tab contents
 						if(dt.fields) {
-							let fieldTypes = Object.keys(dt.fields).map((fieldType, j) => {
-								let fieldNames = dt.fields[fieldType].map((fieldName, k) => {
+							const fieldTypes = Object.keys(dt.fields).map((fieldType, j) => {
+								const fieldNames = dt.fields[fieldType].map((fieldName, k) => {
 									return(<li key={'fn__' + k}>{ElasticsearchDataUtil.toPrettyFieldName(fieldName)}</li>);
 								});
 								return (

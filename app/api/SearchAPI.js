@@ -20,7 +20,7 @@ const SearchAPI = {
 				function(data) { //send the results to the component output (see onOutput())
 					if(data) {
 						//calculate the current page
-						let pageNumber = Math.ceil(offset / pageSize) + 1;
+						const pageNumber = Math.ceil(offset / pageSize) + 1;
 						data.currentPage = data.results ? pageNumber : -1;
 
 						//add the currently selected date field
@@ -59,7 +59,7 @@ const SearchAPI = {
 
 	//returns null if the dateRange has -1 for start & end times
 	__formatDateRange(dateRange) {
-		let dr = null
+		const dr = null
 		if(dateRange) {
 			//then create the dateRange object for the Search API
 			if(dateRange.start != -1 && dateRange.end != -1) {
@@ -73,8 +73,8 @@ const SearchAPI = {
 	//TODO (maandag) add the sorting stuff
 	__fragmentSearch :function(collectionId, term, fieldCategory, searchLayers, selectedFacets, dateRange, sortParams, desiredFacets,
 		callback, offset=0 , size=10, innerHitsSize=3, innerHitsOffset=0, fragmentPath=null, fragmentFields=null) {
-		var url = _config.SEARCH_API_BASE + '/layered_search/' + collectionId
-		var params = {
+		const url = _config.SEARCH_API_BASE + '/layered_search/' + collectionId
+		const params = {
 			term : term,
 			fieldCategory : fieldCategory,
 			searchLayers : searchLayers,
@@ -89,7 +89,7 @@ const SearchAPI = {
 			fragmentPath : fragmentPath,
 			fragmentFields : fragmentFields
 		}
-		var xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -106,8 +106,8 @@ const SearchAPI = {
 
 	//Primarily called by the ItemDetailsRecipe for fetching all metadata of a single collection item (ES document)
 	getItemDetails :function(collectionId, itemId, callback) {
-		var url = _config.SEARCH_API_BASE + '/document/get_doc/' + collectionId + '/' + itemId;
-		var xhr = new XMLHttpRequest();
+		const url = _config.SEARCH_API_BASE + '/document/get_doc/' + collectionId + '/' + itemId;
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -124,11 +124,11 @@ const SearchAPI = {
 
 	//Sends your ES query to the Search API. Not used by any component at the moment
 	elasticSearch :function(collectionId, query, callback) {
-		var url = _config.SEARCH_API_BASE + "/search/";
+		let url = _config.SEARCH_API_BASE + "/search/";
 		if(collectionId) {
 			url += collectionId;
 		}
-		var xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {

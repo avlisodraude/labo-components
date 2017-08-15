@@ -99,8 +99,8 @@ class CollectionConfig {
 	}
 
 	getCollectionIndices() {
-		var indices = [this.getCollectionId()];
-		var stats = this.getCollectionStats();
+		const indices = [this.getCollectionId()];
+		const stats = this.getCollectionStats();
 		if(stats && stats.hasOwnProperty('collection_annotation_indices')) {
 			return indices.concat(
 				stats['collection_annotation_indices'].map((i) => {
@@ -157,7 +157,7 @@ class CollectionConfig {
 
 	//simply return the first date field by default (this function is used by QueryBuilder)
 	getPreferredDateField() {
-		let dfs = this.getDateFields();
+		const dfs = this.getDateFields();
 		if(dfs && dfs.length > 0) {
 			return dfs[0];
 		}
@@ -188,7 +188,7 @@ class CollectionConfig {
 		}
 
 		//then fetch any data that can be fetched from known schemas (DIDL, DC, ...)
-		let structuredData = MetadataSchemaUtil.extractStructuredData(result);
+		const structuredData = MetadataSchemaUtil.extractStructuredData(result);
 		if(structuredData) {
 			formattedResult = Object.assign(structuredData, formattedResult);
 		}
@@ -230,7 +230,7 @@ class CollectionConfig {
 
 	//the result object passed here was passed through getItemDetailData, so all possible data has already been extracted (bit ugly)
 	getResultSnippetData(result) {
-		let snippet = {
+		const snippet = {
 			id : result.resourceId,
 			type : result.docType,
 			title: result.title || 'No title for: ' + result.resourceId + '',
@@ -250,7 +250,7 @@ class CollectionConfig {
 	//TODO change this to a more index/db agnostic function. Also change the name
 	formatSearchResult(result) {
 		if(result && result._source) {
-			var formattedResult = JSON.parse(JSON.stringify(result._source));
+			const formattedResult = JSON.parse(JSON.stringify(result._source));
 			formattedResult._id = result._id;
 			formattedResult._score = result._score;
 			formattedResult._type = result._type;

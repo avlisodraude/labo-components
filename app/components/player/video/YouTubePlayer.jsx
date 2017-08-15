@@ -14,10 +14,10 @@ class YouTubePlayer extends React.Component {
 
 	componentDidMount() {
 		if(!document.getElementById('youtubeiframeapi')) {
-			var tag = document.createElement('script');
+			const tag = document.createElement('script');
 			tag.id = 'youtubeiframeapi';
 			tag.src = "https://www.youtube.com/iframe_api";
-			var firstScriptTag = document.getElementsByTagName('script')[0];
+			const firstScriptTag = document.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 			window.onYouTubeIframeAPIReady = this.onYouTubeIframeAPIReady.bind(this);
 		} else {
@@ -41,7 +41,7 @@ class YouTubePlayer extends React.Component {
 	//TODO add support for playing a certain fragment on start
 	onYouTubeIframeAPIReady() {
 		console.debug('called')
-		var loaded = false;
+		let loaded = false;
 		try {
     		if (YT && YT.loaded == 1) {
     			loaded = true;
@@ -50,7 +50,7 @@ class YouTubePlayer extends React.Component {
 			loaded = false;
 		}
 		if(loaded) {
-			let player = new YT.Player('video_player__' + this.props.mediaObject.id, {
+			const player = new YT.Player('video_player__' + this.props.mediaObject.id, {
 				height: '320',
 				width: '480',
 				videoId: this.getVideoId(),//M7lc1UVf-VE
@@ -83,7 +83,7 @@ class YouTubePlayer extends React.Component {
 	}
 
 	updateTime() {
-		var oldTime = this.videotime;
+		const oldTime = this.videotime;
 		if(this.state.player && this.state.player.getCurrentTime) {
 			this.videotime = this.state.player.getCurrentTime();
 		}

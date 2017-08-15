@@ -17,7 +17,7 @@ class FlexBox extends React.Component {
 	}
 
 	render() {
-		let header = (
+		const header = (
 			<div className="row fb-header" onClick={this.toggle.bind(this)}>
 				<div className="col-md-12">
 					<div className={
@@ -32,7 +32,7 @@ class FlexBox extends React.Component {
 		)
 
 		//the component's css class names
-		let classNames = [IDUtil.cssClassName('flex-box')]
+		const classNames = [IDUtil.cssClassName('flex-box')]
 		if(!this.state.visible) {
 			classNames.push('closed')
 		}

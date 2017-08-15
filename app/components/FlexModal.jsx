@@ -9,7 +9,7 @@ class FlexModal extends React.Component {
 	}
 
 	componentDidMount() {
-		var instance = $('#' + this.props.elementId).modal({
+		const instance = $('#' + this.props.elementId).modal({
 			keyboard : true,
 			backdrop : true,
 			show : true
@@ -31,7 +31,7 @@ class FlexModal extends React.Component {
 	}
 
 	render() {
-		let classNames = ['modal-dialog'];
+		const classNames = ['modal-dialog'];
 		if(this.props.size == 'large') {
 			classNames.push('modal-lg');
 		} else if(this.props.size == 'small') {

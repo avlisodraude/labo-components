@@ -27,8 +27,8 @@ Notes about this component:
 class ComparativeSearchRecipe extends React.Component {
 	constructor(props) {
 		super(props);
-		var user = this.props.user || 'JaapTest';
-		var collections = null;
+		const user = this.props.user || 'JaapTest';
+		let collections = null;
 		if(this.props.params.cids) {
 			collections = this.props.params.cids.split(',');
 		} else if(this.props.recipe.ingredients.collections) {
@@ -58,10 +58,10 @@ class ComparativeSearchRecipe extends React.Component {
 		} else if(data.pagingOutOfBounds) { //due to ES limitations
 			alert('The last page cannot be retrieved, please refine your search');
 		} else { //there is a normal response from the search API
-			let csr = this.state.combinedSearchResults;
-			let lineChartData = this.state.lineChartData;
+			const csr = this.state.combinedSearchResults;
+			const lineChartData = this.state.lineChartData;
 			if(!data.deleted) {
-				let timelineData = ElasticsearchDataUtil.searchResultsToTimeLineData(data);
+				const timelineData = ElasticsearchDataUtil.searchResultsToTimeLineData(data);
 				if(timelineData) {
 					//TODO add more information about the query
 					lineChartData[data.queryId] = {
@@ -87,12 +87,12 @@ class ComparativeSearchRecipe extends React.Component {
 	//TODO move this stuff to some utility that can transform query data in other formats suitable for other components
 	//The timeline is drawn based on the configured date field facet
 	prepareTimeline(queryId, queryOutput, dateField) {
-		var timelineData = [];
-		for (let key in queryOutput.aggregations) {
+		const timelineData = [];
+		for (const key in queryOutput.aggregations) {
 			if (key.indexOf(dateField) != -1) {
-				var buckets = queryOutput.aggregations[key][dateField].buckets;
+				const buckets = queryOutput.aggregations[key][dateField].buckets;
 				buckets.forEach((bucket) => {
-					var year = parseInt(bucket.key);
+					const year = parseInt(bucket.key);
 					if (!(isNaN(year))) {
 						timelineData.push({"year": year, "count": bucket.doc_count, "query": queryId});
 					}
@@ -109,7 +109,7 @@ class ComparativeSearchRecipe extends React.Component {
 	//TODO figure out how to call this without needing the QueryBuilder
 	gotoPage(queryId, pageNumber) {
 		if(this.state.combinedSearchResults[queryId]) {
-			var sr = this.state.combinedSearchResults[queryId];
+			const sr = this.state.combinedSearchResults[queryId];
 			SearchAPI.search(
 				queryId,
 				sr.collectionConfig,
@@ -130,7 +130,7 @@ class ComparativeSearchRecipe extends React.Component {
 
 	sortResults(queryId, sortParams) {
 		if(this.state.combinedSearchResults[queryId]) {
-			var sr = this.state.combinedSearchResults[queryId];
+			const sr = this.state.combinedSearchResults[queryId];
 			SearchAPI.search(
 				queryId,
 				sr.collectionConfig,
@@ -150,10 +150,10 @@ class ComparativeSearchRecipe extends React.Component {
 	}
 
 	render() {
-		var searchComponent = null;
-		var lineChart = null;
-		var paging = null;
-		var sortButtons = null;
+		let searchComponent = null;
+		let lineChart = null;
+		let paging = null;
+		let sortButtons = null;
 
 		//generates a tabbed pane with a search component for each collection + a collection browser
 		searchComponent = (
@@ -183,10 +183,10 @@ class ComparativeSearchRecipe extends React.Component {
 		}
 
 		//TODO put this in a Comerda Component
-		let aggregatedHits = Object.keys(this.state.combinedSearchResults).map((queryId, index) => {
+		const aggregatedHits = Object.keys(this.state.combinedSearchResults).map((queryId, index) => {
 
-			let searchResults = this.state.combinedSearchResults[queryId];
-			let collectionTitle = searchResults.collectionConfig.collectionInfo.title;
+			const searchResults = this.state.combinedSearchResults[queryId];
+			const collectionTitle = searchResults.collectionConfig.collectionInfo.title;
 
 			//draw the search hits in here, so it's possible to put the linechart in between the search box and the results
 			if(searchResults && searchResults.results && searchResults.results.length > 0) {
@@ -209,7 +209,7 @@ class ComparativeSearchRecipe extends React.Component {
 				}
 
 				//draw the list of search results
-				let items = searchResults.results.map((result, index) => {
+				const items = searchResults.results.map((result, index) => {
 					return (
 						<SearchHit
 							key={'__' + index}

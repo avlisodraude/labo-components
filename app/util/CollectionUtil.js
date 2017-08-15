@@ -43,7 +43,7 @@ const CollectionUtil = {
 
 	//returns the correct CollectionConfig instance based on the collectionId
 	getCollectionClass(collectionId, lookupMapping = true) {
-		var configClass = null;
+		let configClass = null;
 		if(lookupMapping) {
 			configClass = CollectionUtil.COLLECTION_MAPPING[collectionId];
 		}
@@ -55,13 +55,13 @@ const CollectionUtil = {
 
 	//called by the CollectionSelector
 	createCollectionConfig : function(collectionId, collectionStats, collectionInfo) {
-		var configClass = CollectionUtil.getCollectionClass(collectionId, true);
+		const configClass = CollectionUtil.getCollectionClass(collectionId, true);
 		return new configClass(collectionId, collectionStats, collectionInfo)
 	},
 
 
 	generateCollectionConfigs : function(collectionIds, callback, lookupMapping = true) {
-		let configs = [];
+		const configs = [];
 		collectionIds.forEach((cid) => {
 			CollectionUtil.generateCollectionConfig(cid, (config) => {
 				configs.push(config);
@@ -74,7 +74,7 @@ const CollectionUtil = {
 
 	//make sure this works also by passing the stats
 	generateCollectionConfig : function(collectionId, callback, lookupMapping = true) {
-		var configClass = CollectionUtil.getCollectionClass(collectionId, lookupMapping);
+		const configClass = CollectionUtil.getCollectionClass(collectionId, lookupMapping);
 
 		//load the stats & information asynchronously TODO (rewrite to promise is nicer)
 		CollectionUtil.loadCollectionStats(collectionId, callback, configClass)
@@ -107,8 +107,8 @@ const CollectionUtil = {
 		if(index == collectionId) {
 			return CollectionUtil.SEARCH_LAYER_MAPPING['default'];
 		}
-		var label = 'Unknown';
-		var temp = index.split('__');
+		let label = 'Unknown';
+		const temp = index.split('__');
 		if(temp.length > 1) {
 			label = CollectionUtil.SEARCH_LAYER_MAPPING[temp[1]];
 			label = label ? label : '';

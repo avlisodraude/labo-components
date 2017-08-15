@@ -33,7 +33,7 @@ class Annotation extends React.Component {
 		let fragInfo = null;
 
 		//determine the fragment information (and the asset ID so it can be possibly used for the label)
-		let ad = AnnotationUtil.extractAnnotationTargetDetails(this.props.annotation);
+		const ad = AnnotationUtil.extractAnnotationTargetDetails(this.props.annotation);
 		switch(ad.type) {
 			case 'temporal' :
 				icon = (<span className={IconUtil.getMimeTypeIcon('video')}></span>);break;
@@ -57,7 +57,7 @@ class Annotation extends React.Component {
 		}
 
 		//determine the css classes for the component
-		let classNames = ['list-group-item'];
+		const classNames = ['list-group-item'];
 		if(this.props.active) {
 			classNames.push('active');
 		}

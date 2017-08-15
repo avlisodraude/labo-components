@@ -5,7 +5,7 @@ const ElasticsearchDataUtil = {
 
 	toPrettyFieldName(esFieldName) {
 		if(esFieldName) {
-			let tmp = esFieldName.split('.');
+			const tmp = esFieldName.split('.');
 			if(tmp[tmp.length -1] == 'raw') {
 				tmp.pop();
 			}
@@ -25,7 +25,7 @@ const ElasticsearchDataUtil = {
 	toPrettyQuery(query) {
 		if(query) {
 			//console.debug(query);
-			let strList = []
+			const strList = []
 			if(query.term) {
 				strList.push('Search term: ' + query.term);
 			} else {
@@ -44,12 +44,12 @@ const ElasticsearchDataUtil = {
 	//TODO make sure the different date formats can be handled!
 	searchResultsToTimeLineData : function(data) {
 		if(data && data.dateField) {
-			var df = data.dateField;
-		 	var timelineData = [];
+			const df = data.dateField;
+		 	const timelineData = [];
 		 	if(data && data.results) {
 			 	if(data.aggregations && data.aggregations[df]) {
 					data.aggregations[df].forEach((a) => {
-						let y = new Date(a.date_millis).getFullYear();
+						const y = new Date(a.date_millis).getFullYear();
 						if (!(isNaN(y))) {
 							timelineData.push({
 								year: y,
@@ -70,7 +70,7 @@ const ElasticsearchDataUtil = {
 
 	getAggregationTitle(aggrId, configuredAggregations) {
 		let title = null;
-		for(let f of configuredAggregations) {
+		for(const f of configuredAggregations) {
 			if(f.field == aggrId) {
 				title = f.title;
 				break;
@@ -81,7 +81,7 @@ const ElasticsearchDataUtil = {
 
 	isHistogram(aggrId, configuredAggregations) {
 		let h = false;
-		for(let f of configuredAggregations) {
+		for(const f of configuredAggregations) {
 			if(f.field == aggrId) {
 				h = f.type == 'date_histogram';
 				break;
@@ -96,7 +96,7 @@ const ElasticsearchDataUtil = {
 	//See CollectionConfig.jsx for more insight
 	//TODO also extend this with autodection based on known schemata
 	extractFacetsFromStats : function(dateFields, stringFields, longFields, doubleFields) {
-		var facets = [];
+		const facets = [];
 		if(dateFields && dateFields.length > 0) {
 			//2010-03-15 voor dc:date
 			//DIDL 2016-01-12T14:37:36.671Z
@@ -112,16 +112,16 @@ const ElasticsearchDataUtil = {
 		}
 		//look for genre, subject, coverage & contributors in the string fields
 		if(stringFields && stringFields.length > 0) {
-			let genres = stringFields.filter((sf)=>{
+			const genres = stringFields.filter((sf)=>{
 				return sf.indexOf('genre') != -1;
 			});
-			let subjects = stringFields.filter((sf)=>{
+			const subjects = stringFields.filter((sf)=>{
 				return sf.indexOf('subject') != -1;
 			});
-			let locations = stringFields.filter((sf)=>{
+			const locations = stringFields.filter((sf)=>{
 				return sf.indexOf('coverage') != -1;
 			});
-			let contributors = stringFields.filter((sf)=>{
+			const contributors = stringFields.filter((sf)=>{
 				return sf.indexOf('contributor') != -1;
 			});
 			if(genres.length > 0) {

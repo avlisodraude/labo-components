@@ -34,7 +34,7 @@ const MetadataSchemaUtil = {
 	extractCMDData: function(result) {
 		if(result['cmd:CMD']) {
 			let resourceList = [];
-			let rl = result['cmd:CMD']['cmd:Resources']['cmd:ResourceProxyList']['cmd:ResourceProxy'];
+			const rl = result['cmd:CMD']['cmd:Resources']['cmd:ResourceProxyList']['cmd:ResourceProxy'];
 			if(rl.length && rl.length > 0) {
 				resourceList = rl.map((value) => {
 					return {
@@ -63,7 +63,7 @@ const MetadataSchemaUtil = {
 
 	extractDCData: function(result) {
 		if(result['dc:title']) {
-			let title = typeof(result['dc:title']) == 'object' ? result['dc:title'].join('; ') : result['dc:title'];
+			const title = typeof(result['dc:title']) == 'object' ? result['dc:title'].join('; ') : result['dc:title'];
 			let date = result['dc:date'];
 			if(date) {
 				date = typeof(result['dc:date']) == 'object' ? result['dc:date'].join('; ') : result['dc:date'];

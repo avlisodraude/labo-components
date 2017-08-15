@@ -31,7 +31,7 @@ class CollectionsRecipe extends React.Component {
 	}
 
 	onConfigsLoaded(configs) {
-		let selectedCollections = {}
+		const selectedCollections = {}
 		configs.forEach((conf) => {
 			selectedCollections[conf.collectionId] = conf;
 		});
@@ -44,7 +44,7 @@ class CollectionsRecipe extends React.Component {
 	onComponentOutput(componentClass, data) {
 		if(componentClass == 'CollectionSelector') {
 			if(data) {
-				let sc = this.state.selectedCollections;
+				const sc = this.state.selectedCollections;
 				sc[data.collectionId] = data;
 				this.setState(
 					{
@@ -71,11 +71,11 @@ class CollectionsRecipe extends React.Component {
 	}
 
 	removeCollection(collectionId) {
-		let collections = this.state.selectedCollections;
-		let ac = this.state.activeCollection;
+		const collections = this.state.selectedCollections;
+		const ac = this.state.activeCollection;
 		delete collections[collectionId];
 
-		let newStateObj = {
+		const newStateObj = {
 			selectedCollections : collections
 		}
 		//if you remove the selected collection also reset the active stats/visuals
@@ -88,7 +88,7 @@ class CollectionsRecipe extends React.Component {
 	}
 
 	setActiveCollection(e) {
-		let collectionId = e.target.id;
+		const collectionId = e.target.id;
 		this.setState({
 			activeCollection : collectionId,
 			fieldAnalysisStats : null, //reset the field stats
@@ -109,9 +109,9 @@ class CollectionsRecipe extends React.Component {
 
 	submitToRecipe(e) {
 		e.preventDefault();
-		let recipeId = this.refs.recipe.value;
-		var cids = Object.keys(this.state.selectedCollections);
-		var recipe = this.getRecipe(recipeId);
+		const recipeId = this.refs.recipe.value;
+		const cids = Object.keys(this.state.selectedCollections);
+		const recipe = this.getRecipe(recipeId);
 		if(cids && recipe) {
 			FlexRouter.gotoSearch(recipe.path, cids);
 		}
@@ -119,7 +119,7 @@ class CollectionsRecipe extends React.Component {
 
 	getRecipe(recipeId) {
 		if(this.props.recipe.ingredients.recipes) {
-			let tmp = this.props.recipe.ingredients.recipes.filter((r) => {
+			const tmp = this.props.recipe.ingredients.recipes.filter((r) => {
 				return r.id == recipeId;
 			});
 			if(tmp.length == 1) {
@@ -131,7 +131,7 @@ class CollectionsRecipe extends React.Component {
 
 	showCollectionStats(collectionId, e) {
 		e.stopPropagation();
-		let collectionData = this.getCollectionData(collectionId);
+		const collectionData = this.getCollectionData(collectionId);
 		if(collectionData) {
 			this.setState({
 				showStatsModal : true,
@@ -148,7 +148,7 @@ class CollectionsRecipe extends React.Component {
 	}
 
 	render() {
-		let activeData = this.getCollectionData(this.state.activeCollection);
+		const activeData = this.getCollectionData(this.state.activeCollection);
 
 		let collectionModal = null; //for selecting collections for the list
 		let collectionBlock = null; //shows all selected collections
@@ -160,9 +160,9 @@ class CollectionsRecipe extends React.Component {
 		let fieldAnalysisTimeline = null; //show the timeline at the bottom
 
 		if(this.state.selectedCollections) {
-			let items = Object.keys(this.state.selectedCollections).map((key) => {
-				let c = this.state.selectedCollections[key];
-				let classNames = ['list-group-item'];
+			const items = Object.keys(this.state.selectedCollections).map((key) => {
+				const c = this.state.selectedCollections[key];
+				const classNames = ['list-group-item'];
 				if(key == this.state.activeCollection) {
 					classNames.push('active');
 				}
@@ -179,7 +179,7 @@ class CollectionsRecipe extends React.Component {
 				)
 			});
 
-			let recipes = this.props.recipe.ingredients.recipes.map((r) => {
+			const recipes = this.props.recipe.ingredients.recipes.map((r) => {
 				return (<option id={r.id} value={r.id}>{r.label}</option>);
 			});
 			collectionBlock = (

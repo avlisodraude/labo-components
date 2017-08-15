@@ -73,7 +73,7 @@ class AnnotationStore {
 
 }
 
-var AppAnnotationStore = new AnnotationStore();
+const AppAnnotationStore = new AnnotationStore();
 
 //add support for emitting events
 MicroEvent.mixin(AnnotationStore);

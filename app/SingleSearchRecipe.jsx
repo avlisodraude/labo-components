@@ -15,8 +15,8 @@ import SearchAPI from './api/SearchAPI';
 class SingleSearchRecipe extends React.Component {
 	constructor(props) {
 		super(props);
-		var user = this.props.user || 'JaapTest';
-		var collectionId = null;
+		const user = this.props.user || 'JaapTest';
+		let collectionId = null;
 		if(this.props.params.cids) {
 			collectionId = this.props.params.cids.split(',')[0];
 		} else {
@@ -83,7 +83,7 @@ class SingleSearchRecipe extends React.Component {
 	}
 
 	setBrowserHistory(searchTerm, fieldCategory, offset, pageSize, selectedFacets, dateRange, sortParams, searchLayers, collection) {
-		let params = {
+		const params = {
 			fr : offset,
 			sz : pageSize,
 			cids : collection
@@ -119,7 +119,7 @@ class SingleSearchRecipe extends React.Component {
 		}
 
 		if(searchLayers) {
-			let sl = Object.keys(searchLayers).filter((l) => {
+			const sl = Object.keys(searchLayers).filter((l) => {
 				return searchLayers[l];
 			});
 			if(sl.length > 0) {
@@ -147,7 +147,7 @@ class SingleSearchRecipe extends React.Component {
 	*/
 	extractSearchParams() {
 		if(this.props.params) {
-			let numParams = Object.keys(this.props.params).length;
+			const numParams = Object.keys(this.props.params).length;
 			if(numParams == 0) {
 				return null;
 			} else if(numParams == 1 && this.props.params.cids) {
@@ -156,19 +156,19 @@ class SingleSearchRecipe extends React.Component {
 		} else {
 			return null;
 		}
-		let searchTerm = this.props.params.st ? this.props.params.st : '';
-		let fc = this.props.params.fc;
-		let fr = this.props.params.fr ? this.props.params.fr : 0;
-		let size = this.props.params.sz ? this.props.params.sz : 10;
-		let sf = this.props.params.sf;
-		let sl = this.props.params.sl;
-		let dr = this.props.params.dr;
-		let s = this.props.params.s;
+		const searchTerm = this.props.params.st ? this.props.params.st : '';
+		const fc = this.props.params.fc;
+		const fr = this.props.params.fr ? this.props.params.fr : 0;
+		const size = this.props.params.sz ? this.props.params.sz : 10;
+		const sf = this.props.params.sf;
+		const sl = this.props.params.sl;
+		const dr = this.props.params.dr;
+		const s = this.props.params.s;
 
 		//populate the field category
 		let fieldCategory = null;
 		if(fc) {
-			let tmp = this.state.collectionConfig.getMetadataFieldCategories();
+			const tmp = this.state.collectionConfig.getMetadataFieldCategories();
 			if(tmp) {
 				fieldCategory = tmp.filter((f) => {
 					return f.label == fc;
@@ -178,13 +178,13 @@ class SingleSearchRecipe extends React.Component {
 		}
 
 		//populate the facets
-		let selectedFacets = {};
+		const selectedFacets = {};
 		if(sf) {
-			let tmp = sf.split(',');
+			const tmp = sf.split(',');
 			tmp.forEach((aggr) => {
-				let a = aggr.split('|');
-				let key = a[0];
-				let value = a[1];
+				const a = aggr.split('|');
+				const key = a[0];
+				const value = a[1];
 				if(selectedFacets[key]) {
 					selectedFacets[key].push(value);
 				} else {
@@ -202,7 +202,7 @@ class SingleSearchRecipe extends React.Component {
 		//populate the date range TODO think of a way to include min/max :s
 		let dateRange = null;
 		if(dr) {
-			let tmp = dr.split('__');
+			const tmp = dr.split('__');
 			if(tmp.length == 3) {
 				dateRange = {
 					field : tmp[0],
@@ -215,7 +215,7 @@ class SingleSearchRecipe extends React.Component {
 		//populate the sort
 		let sortParams = null;
 		if(s) {
-			let tmp = s.split('__');
+			const tmp = s.split('__');
 			if(tmp.length == 2) {
 				sortParams = {
 					field : tmp[0],
@@ -244,7 +244,7 @@ class SingleSearchRecipe extends React.Component {
 	//FIXME this function is tied to the function returned by the search component (which is kind of weird, but works)
 	gotoPage(queryId, pageNumber) {
 		if(this.state.currentOutput) {
-			let sr = this.state.currentOutput;
+			const sr = this.state.currentOutput;
 			SearchAPI.search(
 				queryId,
 				sr.collectionConfig,
@@ -267,7 +267,7 @@ class SingleSearchRecipe extends React.Component {
 	//sortMode = {type : date/rel, order : desc/asc}
 	sortResults(queryId, sortParams) {
 		if(this.state.currentOutput) {
-			let sr = this.state.currentOutput;
+			const sr = this.state.currentOutput;
 			SearchAPI.search(
 				queryId,
 				sr.collectionConfig,
@@ -358,7 +358,7 @@ class SingleSearchRecipe extends React.Component {
 				}
 
 				//populate the list of search results
-				let items = this.state.currentOutput.results.map((result, index) => {
+				const items = this.state.currentOutput.results.map((result, index) => {
 					return (
 						<SearchHit
 							key={'__' + index}

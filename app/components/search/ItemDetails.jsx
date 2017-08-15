@@ -14,7 +14,7 @@ class ItemDetails extends React.Component {
 		let mediaBlock = null;
 		if(this.props.data['playableContent']) {
 			//TODO cluster all of the media players, so it's possible to draw them in a separate panel for each media type
-			let mediaItems = this.props.data['playableContent'].map((mediaItem, index) => {
+			const mediaItems = this.props.data['playableContent'].map((mediaItem, index) => {
 				let mediaPlayer = 'Unknown Media Object: ' + index;
 
 				/*

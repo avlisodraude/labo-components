@@ -36,7 +36,7 @@ class Histogram extends React.Component {
 	}
 
 	refreshAndRepaint(callback) {
-		var svg = document.getElementById("histogram_" + IDUtil.hashCode(this.props.queryId));
+		const svg = document.getElementById("histogram_" + IDUtil.hashCode(this.props.queryId));
 		while (svg.firstChild) {
 			svg.removeChild(svg.firstChild);
 		}
@@ -58,45 +58,45 @@ class Histogram extends React.Component {
 
 	repaint() {
 		//get the new data
-		var years = this.getGraphData();
-		var minYear = d3.min(years, function(d) {return d.year;});
-    	var maxYear = d3.max(years, function(d) {return d.year;});
-    	var maxCount = d3.max(years, function(d) {return d.count;});
+		const years = this.getGraphData();
+		const minYear = d3.min(years, function(d) {return d.year;});
+    	const maxYear = d3.max(years, function(d) {return d.year;});
+    	const maxCount = d3.max(years, function(d) {return d.count;});
 
 		//first define the dimensions of the graph
-		var svg = d3.select('#histogram_' + IDUtil.hashCode(this.props.queryId));
-		var margin = {top: 10, right: 30, bottom: 30, left: 30};
-		var width = +svg.attr("width") - margin.left - margin.right;
-    	var height = +svg.attr("height") - margin.top - margin.bottom;
+		const svg = d3.select('#histogram_' + IDUtil.hashCode(this.props.queryId));
+		const margin = {top: 10, right: 30, bottom: 30, left: 30};
+		const width = +svg.attr("width") - margin.left - margin.right;
+    	const height = +svg.attr("height") - margin.top - margin.bottom;
 
-    	var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    	const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 		//define the x scaling function
-		var x = d3.scaleLinear()
+		const x = d3.scaleLinear()
 			.domain([minYear, maxYear + 1]) //the x scale from lowest to highest year
 			.range([0, width]) //scale to the width of the svg
 
 		//define the y scaling function
-		var y = d3.scaleLinear()
+		const y = d3.scaleLinear()
 			.domain([0, maxCount]) //the highest count is the max of the y domain
 			.range([height, 0]);
 
-		var xAxis = d3.axisBottom()
+		const xAxis = d3.axisBottom()
 			.scale(x) //set scaling function defined by x as the scale
 			//.ticks(2) --> TODO fix this only show full years
 			.tickFormat(function(d) { return d + '';})
 
-		var yAxis = d3.axisLeft()
+		const yAxis = d3.axisLeft()
 			.scale(y) //set scaling function defined by x as the scale
 			//.ticks(2) --> TODO fix this only show full years
 			.tickFormat(function(d) { return d + '';})
 
 		//draw the bars for each year
-		var bar = g.selectAll("." + IDUtil.cssClassName('bar', this.CLASS_PREFIX))
+		const bar = g.selectAll("." + IDUtil.cssClassName('bar', this.CLASS_PREFIX))
 			.data(years)
 
 		//create new bars
-		var barEnter = bar.enter()
+		const barEnter = bar.enter()
 			.append("g")
 				.attr("class", IDUtil.cssClassName('bar', this.CLASS_PREFIX))
 				.attr("transform", function(d) { return "translate(" + x(d.year) + "," + y(d.count) + ")"; })//set the correct pos

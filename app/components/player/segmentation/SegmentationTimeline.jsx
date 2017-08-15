@@ -18,8 +18,8 @@ class SegmentationTimeline extends React.Component {
 	}
 
 	updateCanvasDimensions() {
-		var c = document.getElementById('timebar_canvas__' + this.props.mediaObject.id);
-		var container = document.getElementById('timebar__' + this.props.mediaObject.id);
+		const c = document.getElementById('timebar_canvas__' + this.props.mediaObject.id);
+		const container = document.getElementById('timebar__' + this.props.mediaObject.id);
 		if(container) {
 			c.width = container.offsetWidth;
 			c.height = container.offsetHeight;
@@ -45,13 +45,13 @@ class SegmentationTimeline extends React.Component {
 	}
 
 	componentDidUpdate() {
-		var c = document.getElementById("timebar_canvas__" + this.props.mediaObject.id);
+		const c = document.getElementById("timebar_canvas__" + this.props.mediaObject.id);
 		if(c.width == 0 && c.height == 0) {
 			this.updateCanvasDimensions();
 		}
-		var dur = -1;
-		var elapsed = -1;
-		var t = this.props.curPosition;
+		let dur = -1;
+		let elapsed = -1;
+		let t = this.props.curPosition;
         if(!t) {
             t = this.props.start;
         }
@@ -59,8 +59,8 @@ class SegmentationTimeline extends React.Component {
 	        dur = this.props.duration;
 	        var formattedTime = TimeUtil.formatTime(t);
 	        elapsed = c.width / 100 * (t / (dur / 100));
-	        var startPoint = c.width / 100 * (this.props.start / (dur / 100));
-	        var endPoint = c.width / 100 * (this.props.end / (dur / 100));
+	        const startPoint = c.width / 100 * (this.props.start / (dur / 100));
+	        const endPoint = c.width / 100 * (this.props.end / (dur / 100));
 	        var ctx = c.getContext("2d");
 	        ctx.clearRect (0, 0, c.width, c.height);
 	        ctx.fillStyle = "#FF0000";
@@ -74,7 +74,7 @@ class SegmentationTimeline extends React.Component {
 	        ctx.fillText(formattedTime, 10, c.height - 5);
 	    } else {
 			dur = this.props.end - this.props.start;
-			var dt = t - this.props.start;
+			const dt = t - this.props.start;
 			var formattedTime = TimeUtil.formatTime(t);
 			elapsed = c.width / 100 * (dt / (dur / 100));
 			var ctx = c.getContext("2d");
@@ -92,7 +92,7 @@ class SegmentationTimeline extends React.Component {
 	}
 
 	getMousePos(canvas, evt) {
-	    var rect = canvas.getBoundingClientRect();
+	    const rect = canvas.getBoundingClientRect();
 	    return {
 	      x: evt.clientX - rect.left,
 	      y: evt.clientY - rect.top

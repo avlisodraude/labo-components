@@ -9,7 +9,7 @@ const AnnotationUtil = {
 	getSegmentIndex(annotations, annotation) {
 		if(annotations && annotation) {
 			let i = 0;
-			for(let a of annotations) {
+			for(const a of annotations) {
 				if(a.target.selector) {
 					if(a.id == annotation.id) {
 						return i;
@@ -26,7 +26,7 @@ const AnnotationUtil = {
 		if(annotations) {
 			index = index < 0 ? 0 : index;
 			let i = 0;
-			for(let a of annotations) {
+			for(const a of annotations) {
 				if(a.target.selector) {
 					if(i == index) {
 						return a;
@@ -124,7 +124,7 @@ const AnnotationUtil = {
 
 	extractAnnotationTargetDetails : function(annotation) {
 		let frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(annotation);
-		let assetId = AnnotationUtil.extractAssetIdFromTargetSource(annotation);
+		const assetId = AnnotationUtil.extractAssetIdFromTargetSource(annotation);
 		if(frag) {
 			return { type : 'temporal', frag : frag, assetId : assetId }
 		} else {
@@ -168,9 +168,9 @@ const AnnotationUtil = {
 	},
 
 	extractTemporalFragmentFromURI : function(uri) {
-		let i = uri.indexOf('#t=');
+		const i = uri.indexOf('#t=');
 		if(i != -1) {
-			let arr = uri.substring(i + 3).split(',');
+			const arr = uri.substring(i + 3).split(',');
 			return {
 				start : parseFloat(arr[0]),
 				end : parseFloat(arr[1])
@@ -180,9 +180,9 @@ const AnnotationUtil = {
 	},
 
 	extractSpatialFragmentFromURI : function(uri) {
-		let i = uri.indexOf('#xywh=');
+		const i = uri.indexOf('#xywh=');
 		if(i != -1) {
-			let arr = uri.substring(i + 6).split(',');
+			const arr = uri.substring(i + 6).split(',');
 			return {
 				x : arr[0],
 				y : arr[1],
@@ -200,11 +200,11 @@ const AnnotationUtil = {
 
 	extractAnnotationCardTitle : function(annotation) {
 		if(annotation && annotation.body) {
-			let cards = annotation.body.filter((a) => {
+			const cards = annotation.body.filter((a) => {
 				return a.annotationType === 'metadata'
 			});
 			if(cards.length > 0) {
-				let title = cards[0].properties.filter((p) => {
+				const title = cards[0].properties.filter((p) => {
 					return p.key == 'title' || p.key == 'titel';
 				});
 				return title.length > 0 ? title[0].value : null;
@@ -218,7 +218,7 @@ const AnnotationUtil = {
 	*************************************************************************************/
 
 	isValidURL(url) {
-		var urlPattern =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+		const urlPattern =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 		return urlPattern.test(url);
 	}
 

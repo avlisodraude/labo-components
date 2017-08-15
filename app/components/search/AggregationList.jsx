@@ -11,7 +11,7 @@ class AggregationList extends React.Component {
 	//communicates the selected facets back to the parent component
 	//TODO update later!!
 	onOutput(e) {
-		let facets = this.props.selectedFacets;
+		const facets = this.props.selectedFacets;
 		if(facets[e.target.id]) {
 			delete facets[e.target.id];
 		} else {
@@ -29,11 +29,11 @@ class AggregationList extends React.Component {
 
 	//now all types of aggregations are drawn as simple lists of checkboxes. This should be updated
 	render() {
-		let facets = [];
+		const facets = [];
 		Object.keys(this.props.aggregations).forEach((key, index) => {
-			let options = this.props.aggregations[key].map((facet, fIndex) => {
-				let value = facet.date_millis ? facet.date_millis : facet.key
-				let facetId = key + '|' + value;
+			const options = this.props.aggregations[key].map((facet, fIndex) => {
+				const value = facet.date_millis ? facet.date_millis : facet.key
+				const facetId = key + '|' + value;
 				return (
 					<li key={'facet__' + index + '__' + fIndex}
 						className={IDUtil.cssClassName('facet-item', this.CLASS_PREFIX)}>

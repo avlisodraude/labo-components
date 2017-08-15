@@ -19,7 +19,7 @@ class LinkingForm extends React.Component {
 
 	constructor(props) {
 		super(props);
-		var api = this.props.config.apis ? this.props.config.apis[0].name : null;
+		const api = this.props.config.apis ? this.props.config.apis[0].name : null;
 		this.state = {
 			data: this.props.data ? this.props.data : [],
 			api : api,
@@ -36,7 +36,7 @@ class LinkingForm extends React.Component {
 
 	//TODO make sure that at least one common property is present in the linkData (when hooking up different APIs)
 	addLink(linkData) {
-		var links = this.state.data;
+		const links = this.state.data;
 		if(links && linkData) {
 			links.push(linkData);
 			this.setState({data : links}, this.onOutput.bind(this));
@@ -44,7 +44,7 @@ class LinkingForm extends React.Component {
 	}
 
 	removeLink(index) {
-		var links = this.state.data;
+		const links = this.state.data;
 		if(links) {
 			links.splice(index, 1);
 			this.setState({data : links}, this.onOutput.bind(this));
@@ -63,7 +63,7 @@ class LinkingForm extends React.Component {
 			ExternalAPI.search(this.state.api, this.refs.search.value, this.onSubmit.bind(this));
 		} else {
 			if(AnnotationUtil.isValidURL(this.refs.link_url.value)) {
-				let links = this.state.data;
+				const links = this.state.data;
 				links.push({
 					url : this.refs.link_url.value,
 					label : this.refs.link_label.value
@@ -109,7 +109,7 @@ class LinkingForm extends React.Component {
 		}
 
 		//generate the options from the config and add a default one
-		let apiOptions = this.props.config.apis.map((api, index) => {
+		const apiOptions = this.props.config.apis.map((api, index) => {
 			return (
 				<div className="radio-inline" key={'api__' + index}>
 					<label>
@@ -175,7 +175,7 @@ class LinkingForm extends React.Component {
 
 		//draw the search results (non-custom API only)
 		if(this.state.results.length > 0) {
-			let results = this.state.results.map((res, index) => {
+			const results = this.state.results.map((res, index) => {
 				let poster = null;
 				if(res.poster) {
 					poster = (<td><img src={res.poster} style={{maxWidth:'100px'}}/></td>);

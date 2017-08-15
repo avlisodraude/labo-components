@@ -11,7 +11,7 @@ class MetadataTable extends React.Component {
 	}
 
 	componentDidMount() {
-		let formatter = new JSONFormatter(this.props.data.rawData);
+		const formatter = new JSONFormatter(this.props.data.rawData);
 		formatter.openAtDepth(Infinity);
 		document.getElementById('__rawdata_' + IDUtil.hashCode(this.props.data.resourceId)).appendChild(formatter.render());
 	}
@@ -53,7 +53,7 @@ class MetadataTable extends React.Component {
 		}
 
 		//determine the component's main css classes
-		let classNames = ['table', IDUtil.cssClassName('metadata-table')];
+		const classNames = ['table', IDUtil.cssClassName('metadata-table')];
 
 		return (
 			<table className={classNames.join(' ')}>

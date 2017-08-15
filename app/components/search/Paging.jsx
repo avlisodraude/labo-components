@@ -16,7 +16,7 @@ class Paging extends React.Component {
 	}
 
 	render () {
-		let pagingButtons = []
+		const pagingButtons = []
 		let start = 1
 		let end = this.props.numPages;
 		let showPrevious = false;
@@ -86,7 +86,7 @@ class Paging extends React.Component {
 			}
 		}
 		//define css class names
-		let classNames = ['btn-group', IDUtil.cssClassName('paging')]
+		const classNames = ['btn-group', IDUtil.cssClassName('paging')]
 		return (
 			<div className={classNames.join(' ')} role="group" aria-label="...">
 				{pagingButtons}
