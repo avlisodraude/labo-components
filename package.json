@@ -1,12 +1,13 @@
 {
   "name": "labo-components",
-  "version": "1.0.19",
+  "version": "1.1",
   "description": "B&G UI components",
   "main": "webpack.config.js",
   "scripts": {
     "dev": "webpack --env=dev",
     "prod": "webpack --env=prod",
-    "watch": "webpack --env=watch --watch"
+    "watch": "webpack --env=watch --watch",
+    "prepublish" : "npm run prod"
   },
   "repository": {
     "type": "git",
