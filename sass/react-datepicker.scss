@@ -72,7 +72,7 @@
   display: inline-block;
   position: relative;
   width:20rem;
-  height:20rem;
+  height:21rem;
 }
 
 .react-datepicker__triangle {
@@ -81,7 +81,7 @@
 }
 
 .react-datepicker-popper {
-  z-index: 1;
+  z-index: 10;
 }
 
 .react-datepicker-popper[data-placement^="bottom"] {
