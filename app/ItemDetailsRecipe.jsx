@@ -364,7 +364,7 @@ class ItemDetailsRecipe extends React.Component {
 								</div>
 								<br/>
 							</div>
-						</div>
+						</div> 
 					</div>
 				</div>
 			)
