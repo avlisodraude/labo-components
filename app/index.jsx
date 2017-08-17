@@ -12,7 +12,7 @@ import '../sass/labo-components.scss';
 //cooking function
 //TODO the user variable is now filled with the INSTANCE_NAME from settings.py
 //	Instead the user object (with id, name & attributes) will be passed and should be properly handled
-export function cookRecipe (recipe, params, user, elementId) {
+export function cookRecipe (recipe, params, user, elementId, chickenStock=null) {
 	if(recipe.type === 'item-details') {
 		render(
 			<ItemDetailsRecipe recipe={recipe} params={params} user={user}/>,
