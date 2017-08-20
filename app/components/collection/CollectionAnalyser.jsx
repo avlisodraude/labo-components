@@ -6,6 +6,7 @@ import QueryComparisonLineChart from '../stats/QueryComparisonLineChart';
 import CollectionSelector from './CollectionSelector';
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 import FlexBox from '../FlexBox';
+import Autosuggest from 'react-autosuggest';
 
 //this component relies on the collection statistics as input
 class CollectionAnalyser extends React.Component {
@@ -14,13 +15,19 @@ class CollectionAnalyser extends React.Component {
 		super(props);
 		const stats = this.props.collectionStats ? this.props.collectionStats : null;
 		const docStats = stats ? stats.collection_statistics.document_types[0] : null;
+		let selectedAnalysisFieldOption = false;
+
 		this.state = {
 			//collectionStats : stats,
 			activeDocumentType: docStats ? docStats.doc_type : null,
-
+            value : '', //the label of the selected classification (autocomplete)
+            suggestionId : null, //stores the id/uri of the selected classification (e.g. GTAA URI)
+            suggestions : [], //current list of suggestions shown
+            isLoading : false, //loading the suggestions from the server
 			fieldAnalysisStats : null, //contains the results of the field analysis
 			fieldAnalysisTimeline: null //contains the timeline data
 		}
+        this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
 	}
 
 	//only happens on the onchange of a document type
@@ -48,32 +55,37 @@ class CollectionAnalyser extends React.Component {
 		}));
 	}
 
-	loadAnalysis(callback) {
-		const analysisSelect = document.getElementById("analysisfield_select");
-		if(analysisSelect) {
-			const analysisField = analysisSelect.options[analysisSelect.selectedIndex].value;
-			const dateSelect = document.getElementById("datefield_select");
-			if(dateSelect) {
-				const dateField = dateSelect.options[dateSelect.selectedIndex].value;
-				const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
-				const facets = [];
+    loadAnalysis(callback) {
+        const analysisSelect = document.getElementsByClassName("react-autosuggest__container");
 
-				CollectionAPI.analyseField(
-					stats.service.collection, //TODO make this safe!
-					this.state.activeDocumentType, // can be changed here
-					dateField,
-					analysisField,
-					facets,
-					(data) => {
-						const timelineData = this.toTimelineData(data);
-						callback(data, timelineData);
-					}
-				);
-			}
-		} else {
-			console.debug('No analysis select field available yet!');
-		}
-	}
+        if (analysisSelect) {
+            const analysisField =
+				this.selectedAnalysisFieldOption
+					? this.selectedAnalysisFieldOption.suggestion
+					: 'null__option';
+            const dateSelect = document.getElementById("datefield_select");
+
+            if (dateSelect) {
+                const dateField = dateSelect.options[dateSelect.selectedIndex].value;
+                const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
+                const facets = [];
+
+                CollectionAPI.analyseField(
+                    stats.service.collection, //TODO make this safe!
+                    this.state.activeDocumentType, // can be changed here
+                    dateField,
+                    analysisField,
+                    facets,
+                    (data) => {
+                        const timelineData = this.toTimelineData(data);
+                        callback(data, timelineData);
+                    }
+                );
+            }
+        } else {
+            console.debug('No analysis select field available yet!');
+        }
+    }
 
 	toTimelineData(data) {
 		const timelineData = {
@@ -81,6 +93,7 @@ class CollectionAnalyser extends React.Component {
 			present: {timeline: [], prettyQuery : 'Present'},
 			missing: {timeline: [], prettyQuery : 'Missing'}
 		};
+
 		if(data) {
 			for (const item in data.timeline) {
 				timelineData.total.timeline.push({
@@ -113,7 +126,7 @@ class CollectionAnalyser extends React.Component {
 
 	//redeives data from child components
 	onComponentOutput(componentClass, data) {
-		if(componentClass == 'CollectionSelector') {
+		if(componentClass === 'CollectionSelector') {
 			this.setState({
 				collectionStats : data ? data.collectionStats : null,
 				fieldAnalysisStats : null,
@@ -121,6 +134,82 @@ class CollectionAnalyser extends React.Component {
 			});
 		}
 	}
+
+    /* ------------------- functions specifically needed for react-autosuggest ------------------- */
+    onChange(event, { newValue }) {
+        this.setState({
+            chosenValue: newValue,
+            value: newValue
+        });
+    }
+
+    onSuggestionsFetchRequested({value}) {
+        this.setState({
+            suggestions: this.getSuggestions(value)
+        });
+    };
+
+    getAnalysisFieldsListNames(docStats) {
+        const availableSuggestions = [];
+
+        for (const key in docStats) {
+            if (docStats.hasOwnProperty(key)) {
+                for (const prop in docStats[key]) {
+                    availableSuggestions.push(docStats[key][prop])
+                }
+            }
+        }
+
+        return availableSuggestions;
+    }
+
+    getSuggestions(value, callback) {
+        const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
+
+        let docStats = null;
+        for (let i = 0; i < stats.collection_statistics.document_types.length; i++) {
+            if (stats.collection_statistics.document_types[i].doc_type === this.state.activeDocumentType) {
+                docStats = stats.collection_statistics.document_types[i];
+                break;
+            }
+        }
+
+        const analysisFieldSelectionList =  this.getAnalysisFieldsListNames(docStats.fields) || [];
+        const inputValue = value.trim().toLowerCase();
+        const inputLength = inputValue.length;
+
+        return inputLength <  0 ? [] : analysisFieldSelectionList.filter(analysisFieldName =>
+            analysisFieldName.toLowerCase().includes(inputValue)
+        );
+    }
+
+    onSuggestionSelected(event, {suggestion, suggestionValue, suggestionIndex, sectionIndex}) {
+		this.selectedAnalysisFieldOption = {suggestion};
+        //TODO: this fc runs the show after conf
+        this.analyseField( {suggestion, suggestionValue, suggestionIndex, sectionIndex});
+    }
+
+    getSuggestionValue(suggestion) {
+        return ElasticsearchDataUtil.toPrettyFieldName(suggestion);
+    }
+
+    //TODO the rendering should be adapted for different vocabularies
+    renderSuggestion(suggestion) {
+        return (
+            <span key={suggestion} value={suggestion}>{ElasticsearchDataUtil.toPrettyFieldName(suggestion)}</span>
+        );
+    }
+
+    onSuggestionsClearRequested() {
+        this.setState({
+            suggestions : []
+        });
+    }
+
+    shouldRenderSuggestions() {
+        return true;
+    }
+    /* ------------------- end of specific react-autosuggest functions ------------------- */
 
 	render() {
 		//input fields
@@ -134,6 +223,12 @@ class CollectionAnalyser extends React.Component {
 		let fieldAnalysisStats = null;
 		let collectionTimeline = null;
 
+        // Autosuggest will pass through all these props to the input.
+        const inputProps = {
+            placeholder: 'Search a field',
+            value: this.state.value,
+            onChange: this.onChange.bind(this)
+        };
 
 		//draw the collection selector
 		if(this.props.params.collectionSelector === true) {
@@ -202,32 +297,28 @@ class CollectionAnalyser extends React.Component {
 					);
 				}
 
-
-				const fieldTypes = Object.keys(docStats.fields);
-				const analysisFieldOptions = [];
-				fieldTypes.forEach((fieldType) => {
-					docStats.fields[fieldType].forEach((fieldName) => {
-						analysisFieldOptions.push(
-							<option key={fieldName} value={fieldName}>{ElasticsearchDataUtil.toPrettyFieldName(fieldName)}</option>
-						)
-					});
-				});
-
-				analysisFieldOptions.splice(0,0,<option key='null__option' value='null__option'>-- Select --</option>);
-
 				analysisFieldSelect = (
 					<div className="form-group">
 						<label htmlFor="analysisfield_select" className="col-sm-3">Analysis field</label>
-						<div className="col-sm-9">
-							<select className="form-control" id="analysisfield_select" onChange={this.analyseField.bind(this)}>
-								{analysisFieldOptions}
-							</select>
+						<div className="col-sm-9 collectionAnalyser-autosuggest">
+                            <Autosuggest
+                                ref="classifications"
+                                suggestions={this.state.suggestions}
+                                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
+                                onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
+                                onSuggestionSelected={this.onSuggestionSelected.bind(this)}
+                                getSuggestionValue={this.getSuggestionValue.bind(this)}
+                                renderSuggestion={this.renderSuggestion.bind(this)}
+								shouldRenderSuggestions={this.shouldRenderSuggestions.bind(this)}
+                                inputProps={inputProps}
+                            />
+
 						</div>
 					</div>
 				);
 			}
 
-			if(this.props.params.collectionStats == true) {
+			if(this.props.params.collectionStats === true) {
 				collectionStats = (<CollectionStats data={stats}/>);
 			}
 
@@ -250,6 +341,7 @@ class CollectionAnalyser extends React.Component {
 				}
 			}
 		}
+
 		return (
 			<div className={IDUtil.cssClassName('collection-analyser')}>
 				<div className="row">
@@ -263,11 +355,11 @@ class CollectionAnalyser extends React.Component {
 						</div>
 						<div className="row">
 							<div className="col-md-12">
-								<form className="form-horizontal">
+								<div className="form-horizontal">
 									{documentTypeSelect}
 									{dateFieldSelect}
 									{analysisFieldSelect}
-								</form>
+								</div>
 							</div>
 						</div>
 						<div className="row">
@@ -288,7 +380,6 @@ class CollectionAnalyser extends React.Component {
 			</div>
 		)
 	}
-
 };
 
 export default CollectionAnalyser;
