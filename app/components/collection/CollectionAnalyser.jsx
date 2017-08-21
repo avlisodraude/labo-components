@@ -5,12 +5,10 @@ import FieldAnalysisStats from './FieldAnalysisStats';
 import QueryComparisonLineChart from '../stats/QueryComparisonLineChart';
 import CollectionSelector from './CollectionSelector';
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
-import FlexBox from '../FlexBox';
 import Autosuggest from 'react-autosuggest';
 
 //this component relies on the collection statistics as input
 class CollectionAnalyser extends React.Component {
-
 	constructor(props) {
 		super(props);
 		const stats = this.props.collectionStats ? this.props.collectionStats : null;
@@ -34,7 +32,10 @@ class CollectionAnalyser extends React.Component {
 	setFields() {
 		const select = document.getElementById("doctype_select");
 		const docType = select.options[select.selectedIndex].value;
-		this.setState({activeDocumentType : docType});
+		this.setState({
+            value: '',
+			activeDocumentType : docType
+		});
 	}
 
 	analyseField() {
@@ -61,7 +62,7 @@ class CollectionAnalyser extends React.Component {
         if (analysisSelect) {
             const analysisField =
 				this.selectedAnalysisFieldOption
-					? this.selectedAnalysisFieldOption.suggestion
+					? this.selectedAnalysisFieldOption
 					: 'null__option';
             const dateSelect = document.getElementById("datefield_select");
 
@@ -124,7 +125,7 @@ class CollectionAnalyser extends React.Component {
 		}
 	}
 
-	//redeives data from child components
+	//receives data from child components
 	onComponentOutput(componentClass, data) {
 		if(componentClass === 'CollectionSelector') {
 			this.setState({
@@ -184,19 +185,19 @@ class CollectionAnalyser extends React.Component {
     }
 
     onSuggestionSelected(event, {suggestion, suggestionValue, suggestionIndex, sectionIndex}) {
-		this.selectedAnalysisFieldOption = {suggestion};
+		this.selectedAnalysisFieldOption = suggestion.value;
         //TODO: this fc runs the show after conf
-        this.analyseField( {suggestion, suggestionValue, suggestionIndex, sectionIndex});
+        this.analyseField();
     }
 
     getSuggestionValue(suggestion) {
-        return ElasticsearchDataUtil.toPrettyFieldName(suggestion);
+        return suggestion.beautifiedValue;
     }
 
     //TODO the rendering should be adapted for different vocabularies
     renderSuggestion(suggestion) {
         return (
-            <span key={suggestion} value={suggestion}>{ElasticsearchDataUtil.toPrettyFieldName(suggestion)}</span>
+            <span key={suggestion.value} value={suggestion.value}>{suggestion.beautifiedValue}</span>
         );
     }
 
@@ -206,6 +207,8 @@ class CollectionAnalyser extends React.Component {
         });
     }
 
+    // Necessary "return true" to enable autosuggestion on input field so the user gets the
+	// complete list of options without having to start typing.
     shouldRenderSuggestions() {
         return true;
     }
@@ -273,16 +276,18 @@ class CollectionAnalyser extends React.Component {
 				</div>
 			);
 
-
 			//the analysis and date field selection part
 			if(docStats) {
 				let dateFieldOptions = null;
 				if(docStats.fields.date) { //only if there are date fields available
-					dateFieldOptions = docStats.fields.date.map((dateField) => {
+					const sortedDateFields = ElasticsearchDataUtil.sortAndBeautifyArray(docStats.fields.date);
+
+					dateFieldOptions = sortedDateFields.map((dateField) => {
 						return (
-							<option key={dateField} value={dateField}>{ElasticsearchDataUtil.toPrettyFieldName(dateField)}</option>
+							<option key={dateField.value} value={dateField.value}>{dateField.beautifiedValue}</option>
 						)
 					});
+
 					dateFieldOptions.splice(0,0,<option key='null__option' value='null__option'>-- Select --</option>);
 
 					dateFieldSelect = (
@@ -297,13 +302,16 @@ class CollectionAnalyser extends React.Component {
 					);
 				}
 
+				//sort suggestions with original and beautified values.
+				const sortedAndBeautified = ElasticsearchDataUtil.sortAndBeautifyArray(this.state.suggestions);
+
 				analysisFieldSelect = (
 					<div className="form-group">
 						<label htmlFor="analysisfield_select" className="col-sm-3">Analysis field</label>
 						<div className="col-sm-9 collectionAnalyser-autosuggest">
                             <Autosuggest
                                 ref="classifications"
-                                suggestions={this.state.suggestions}
+                                suggestions={sortedAndBeautified}
                                 onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
                                 onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
                                 onSuggestionSelected={this.onSuggestionSelected.bind(this)}
@@ -323,14 +331,14 @@ class CollectionAnalyser extends React.Component {
 			}
 
 			//draw the field analysis stats (if configured this way)
-			if(this.props.params && this.props.params.fieldAnalysisStats == true) {
+			if(this.props.params && this.props.params.fieldAnalysisStats === true) {
 				if(this.state.fieldAnalysisStats) {
 					fieldAnalysisStats = (<FieldAnalysisStats data={this.state.fieldAnalysisStats}/>);
 				}
 			}
 
 			//draw the timeline
-			if(this.props.params && this.props.params.timeline == true) {
+			if(this.props.params && this.props.params.timeline === true) {
 				if(this.state.fieldAnalysisTimeline) {
 					collectionTimeline = (
 						<QueryComparisonLineChart

@@ -170,7 +170,34 @@ const ElasticsearchDataUtil = {
 			}
 		}
 		return facets.length > 0 ? facets : null;
+	},
+
+    /**
+     * This method accepts an array and returns the beautified sorted version
+     *
+     * @param : arrayToSort (array to be sorted)
+     *
+     * @Use: ElasticsearchDataUtil.sortAndBeautifyArray(analysisFieldOptions);
+     * Note: Don't forget to import this library in the class that will make use of this method as
+     * import ElasticsearchDataUtil from 'path-to-file/ElasticsearchDataUtil';
+	 * TODO: Extend this method to make it more flexible, ie, let the user determine the returned
+	 * output array with key value names.
+     */
+    sortAndBeautifyArray(arrayToSort) {
+        let temp = arrayToSort.map(function(el, i) {
+            return { value: el.toLowerCase(), beautifiedValue: ElasticsearchDataUtil.toPrettyFieldName(el) };
+        });
+        // sorting the mapped array containing the reduced values
+        return temp.sort(function (a, b) {
+            if (a.beautifiedValue > b.beautifiedValue) {
+                return 1;
+            }
+            if (a.beautifiedValue < b.beautifiedValue) {
+                return -1;
+            }
+            return 0;
+        });
 	}
-}
+};
 
 export default ElasticsearchDataUtil;
