@@ -148,7 +148,7 @@ class CollectionsRecipe extends React.Component {
 	}
 
 	render() {
-		const activeData = this.getCollectionData(this.state.activeCollection);
+		const collectionConfig = this.getCollectionData(this.state.activeCollection);
 
 		let collectionModal = null; //for selecting collections for the list
 		let collectionBlock = null; //shows all selected collections
@@ -236,21 +236,22 @@ class CollectionsRecipe extends React.Component {
 					owner={this}
 					size="large"
 					title="Collection stats">
-						<CollectionStats data={this.state.activeCollectionStats}/>
+						<CollectionStats collectionConfig={collectionConfig}/>
 				</FlexModal>
 			)
 		}
 
 		//TODO make sure that this is only shown when a collection has been selected
-		if(activeData) {
+		if(collectionConfig) {
 			let collectionAnalyser = null;
 			let fieldAnalysisStats = null;
 
 			//the collection analyser outputs the field analysis & timeline stats in onComponentOutput
 			collectionAnalyser = (
 				<CollectionAnalyser
+					key={collectionConfig.collectionId}
 					params={this.props.recipe.ingredients.collectionAnalyser}
-					collectionStats={activeData.collectionStats}
+					collectionConfig={collectionConfig}
 					onOutput={this.onComponentOutput.bind(this)}
 				/>
 			);

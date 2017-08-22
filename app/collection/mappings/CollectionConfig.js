@@ -261,6 +261,33 @@ class CollectionConfig {
 		return null;
 	}
 
+	//e.g. a field could be "bga:segment.bg:recordings.bg:recording.bg:startdate"
+	toPrettyFieldName(esFieldName) {
+		if(esFieldName) {
+			//first split the field based on a dot
+			const tmp = esFieldName.split('.');
+
+			//if the last field is called raw or keyword (ES reserved names), drop it
+			if(tmp[tmp.length -1] == 'raw' || tmp[tmp.length -1] == 'keyword') {
+				tmp.pop();
+			}
+			//take the leaf field and make it the first in the pretty name
+			let fn = tmp[tmp.length-1];
+
+			//remove any prefix particle separated by ':'
+			if(fn.indexOf(':') != -1) {
+				fn = fn.substring(fn.indexOf(':') + 1);
+			}
+
+			//add between brackets the parent of the leaf field
+			if(tmp.length > 1) {
+			 	fn += ' (in: ' + tmp[tmp.length-2] + ')';
+			}
+			return fn
+		}
+		return esFieldName;
+	}
+
 }
 
 export default CollectionConfig;

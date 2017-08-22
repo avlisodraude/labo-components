@@ -3,24 +3,6 @@ import TimeUtil from './TimeUtil';
 //TODO maybe move this to some other utility class
 const ElasticsearchDataUtil = {
 
-	toPrettyFieldName(esFieldName) {
-		if(esFieldName) {
-			const tmp = esFieldName.split('.');
-			if(tmp[tmp.length -1] == 'raw') {
-				tmp.pop();
-			}
-			let fn = tmp[tmp.length-1];
-			if(fn.indexOf(':') != -1) {
-				fn = fn.substring(fn.indexOf(':') + 1);
-			}
-			if(tmp.length > 1) {
-			 	fn += ' (in: ' + tmp[tmp.length-2] + ')';
-			}
-			return fn
-		}
-		return esFieldName;
-	},
-
 	//transforms a query from the QueryBuilder into something readable for the user
 	toPrettyQuery(query) {
 		if(query) {
@@ -183,9 +165,9 @@ const ElasticsearchDataUtil = {
 	 * TODO: Extend this method to make it more flexible, ie, let the user determine the returned
 	 * output array with key value names.
      */
-    sortAndBeautifyArray(arrayToSort) {
+    sortAndBeautifyArray(arrayToSort, collectionConfig) {
         let temp = arrayToSort.map(function(el, i) {
-            return { value: el.toLowerCase(), beautifiedValue: ElasticsearchDataUtil.toPrettyFieldName(el) };
+            return { value: el.toLowerCase(), beautifiedValue: collectionConfig.toPrettyFieldName(el) };
         });
         // sorting the mapped array containing the reduced values
         return temp.sort(function (a, b) {

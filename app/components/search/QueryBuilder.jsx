@@ -235,7 +235,7 @@ class QueryBuilder extends React.Component {
 					df.splice(index,1);
 					df.push({
 						field: data.field,
-						title : ElasticsearchDataUtil.toPrettyFieldName(data.field),
+						title : this.props.collectionConfig.toPrettyFieldName(data.field),
 						id : data.field,
 						operator : 'AND',
 						size : 10,

@@ -9,16 +9,17 @@ class CollectionStats extends React.Component {
 
 	render() {
 		const stats = {};
-		if(this.props.data) {
-			if(this.props.data.collection_statistics) {
+		if(this.props.collectionConfig && this.props.collectionConfig.collectionStats) {
+			const collectionStats = this.props.collectionConfig.collectionStats;
+			if(collectionStats.collection_statistics) {
 
-				if(this.props.data.collection_statistics.document_types) {
+				if(collectionStats.collection_statistics.document_types) {
 					const docTypeTabs = [];
 					const docTypeInfos = [];
 					let fieldTypeInfo = null;
 					stats.totalDocs = 0;
 
-					this.props.data.collection_statistics.document_types.forEach(function(dt, i) {
+					collectionStats.collection_statistics.document_types.forEach(function(dt, i) {
 						stats.totalDocs += dt.doc_count;
 
 						//generate the tabs
@@ -35,7 +36,7 @@ class CollectionStats extends React.Component {
 						if(dt.fields) {
 							const fieldTypes = Object.keys(dt.fields).map((fieldType, j) => {
 								const fieldNames = dt.fields[fieldType].map((fieldName, k) => {
-									return(<li key={'fn__' + k}>{ElasticsearchDataUtil.toPrettyFieldName(fieldName)}</li>);
+									return(<li key={'fn__' + k}>{this.props.collectionConfig.toPrettyFieldName(fieldName)}</li>);
 								});
 								return (
 									<li className="component-category" key={'ft__' + j}>

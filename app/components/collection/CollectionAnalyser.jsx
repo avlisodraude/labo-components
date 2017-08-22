@@ -11,12 +11,13 @@ import Autosuggest from 'react-autosuggest';
 class CollectionAnalyser extends React.Component {
 	constructor(props) {
 		super(props);
-		const stats = this.props.collectionStats ? this.props.collectionStats : null;
+		const collectionConfig = this.props.collectionConfig ? this.props.collectionConfig : null;
+		const stats = collectionConfig ? collectionConfig.collectionStats : null;
 		const docStats = stats ? stats.collection_statistics.document_types[0] : null;
 		let selectedAnalysisFieldOption = false;
 
 		this.state = {
-			//collectionStats : stats,
+			collectionConfig : collectionConfig,
 			activeDocumentType: docStats ? docStats.doc_type : null,
             value : '', //the label of the selected classification (autocomplete)
             suggestionId : null, //stores the id/uri of the selected classification (e.g. GTAA URI)
@@ -68,11 +69,10 @@ class CollectionAnalyser extends React.Component {
 
             if (dateSelect) {
                 const dateField = dateSelect.options[dateSelect.selectedIndex].value;
-                const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
                 const facets = [];
 
                 CollectionAPI.analyseField(
-                    stats.service.collection, //TODO make this safe!
+                    this.state.collectionConfig.collectionId, //TODO make this safe!
                     this.state.activeDocumentType, // can be changed here
                     dateField,
                     analysisField,
@@ -153,10 +153,13 @@ class CollectionAnalyser extends React.Component {
     getAnalysisFieldsListNames(docStats) {
         const availableSuggestions = [];
 
-        for (const key in docStats) {
-            if (docStats.hasOwnProperty(key)) {
-                for (const prop in docStats[key]) {
-                    availableSuggestions.push(docStats[key][prop])
+        for (const fieldType in docStats) {
+            if (docStats.hasOwnProperty(fieldType)) {
+                for (const fieldName in docStats[fieldType]) {
+                	//each field can have multiple fieldTypes so make sure it's not already added
+                	if(availableSuggestions.indexOf(docStats[fieldType][fieldName]) == -1) {
+                    	availableSuggestions.push(docStats[fieldType][fieldName])
+                    }
                 }
             }
         }
@@ -165,7 +168,7 @@ class CollectionAnalyser extends React.Component {
     }
 
     getSuggestions(value, callback) {
-        const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
+        const stats = this.state.collectionConfig.collectionStats;
 
         let docStats = null;
         for (let i = 0; i < stats.collection_statistics.document_types.length; i++) {
@@ -217,35 +220,43 @@ class CollectionAnalyser extends React.Component {
 	render() {
 		//input fields
 		let collectionSelector = null;
-		let documentTypeSelect = null;
-		let dateFieldSelect = null;
-		let analysisFieldSelect = null;
-
-		//output components
-		let collectionStats = null;
-		let fieldAnalysisStats = null;
-		let collectionTimeline = null;
-
-        // Autosuggest will pass through all these props to the input.
-        const inputProps = {
-            placeholder: 'Search a field',
-            value: this.state.value,
-            onChange: this.onChange.bind(this)
-        };
+		let analysisBlock = null;
 
 		//draw the collection selector
 		if(this.props.params.collectionSelector === true) {
 			collectionSelector = (
-				<CollectionSelector onOutput={this.onComponentOutput.bind(this)} showSelect={true}
-							showBrowser={false}/>
+				<div className="row">
+					<div className="col-md-12">
+						<form className="form-horizontal">
+							<CollectionSelector onOutput={this.onComponentOutput.bind(this)} showSelect={true}
+								showBrowser={false}/>
+						</form>
+					</div>
+				</div>
 			)
 		}
 
 		//only draw the rest when a collection is selected (either using the selector or via the props)
-		if(this.props.collectionStats || this.state.collectionStats) {
+		if(this.state.collectionConfig && this.state.collectionConfig.collectionStats) {
+			let documentTypeSelect = null;
+			let dateFieldSelect = null;
+			let analysisFieldSelect = null;
+
+			//output components
+			let collectionStats = null;
+			let fieldAnalysisStats = null;
+			let collectionTimeline = null;
+
+	        // Autosuggest will pass through all these props to the input.
+	        const inputProps = {
+	            placeholder: 'Search a field',
+	            value: this.state.value,
+	            onChange: this.onChange.bind(this)
+	        };
+
 			//the state take precedence over the props, since it is possible to pass stats,
 			//but also allow for selecting a different collection
-			const stats = this.state.collectionStats ? this.state.collectionStats : this.props.collectionStats;
+			const stats = this.state.collectionConfig.collectionStats;
 
 			//then determine the active document type stats for drawing the datefield and analysis field pull downs
 			let docStats = null;
@@ -280,7 +291,10 @@ class CollectionAnalyser extends React.Component {
 			if(docStats) {
 				let dateFieldOptions = null;
 				if(docStats.fields.date) { //only if there are date fields available
-					const sortedDateFields = ElasticsearchDataUtil.sortAndBeautifyArray(docStats.fields.date);
+					const sortedDateFields = ElasticsearchDataUtil.sortAndBeautifyArray(
+						docStats.fields.date,
+						this.props.collectionConfig
+					);
 
 					dateFieldOptions = sortedDateFields.map((dateField) => {
 						return (
@@ -303,7 +317,10 @@ class CollectionAnalyser extends React.Component {
 				}
 
 				//sort suggestions with original and beautified values.
-				const sortedAndBeautified = ElasticsearchDataUtil.sortAndBeautifyArray(this.state.suggestions);
+				const sortedAndBeautified = ElasticsearchDataUtil.sortAndBeautifyArray(
+					this.state.suggestions,
+					this.state.collectionConfig
+				);
 
 				analysisFieldSelect = (
 					<div className="form-group">
@@ -327,7 +344,7 @@ class CollectionAnalyser extends React.Component {
 			}
 
 			if(this.props.params.collectionStats === true) {
-				collectionStats = (<CollectionStats data={stats}/>);
+				collectionStats = (<CollectionStats collectionConfig={this.state.collectionConfig}/>);
 			}
 
 			//draw the field analysis stats (if configured this way)
@@ -348,19 +365,10 @@ class CollectionAnalyser extends React.Component {
 					);
 				}
 			}
-		}
 
-		return (
-			<div className={IDUtil.cssClassName('collection-analyser')}>
+			analysisBlock = (
 				<div className="row">
 					<div className="col-md-12">
-						<div className="row">
-							<div className="col-md-12">
-								<form className="form-horizontal">
-									{collectionSelector}
-								</form>
-							</div>
-						</div>
 						<div className="row">
 							<div className="col-md-12">
 								<div className="form-horizontal">
@@ -383,6 +391,28 @@ class CollectionAnalyser extends React.Component {
 								{collectionTimeline}
 							</div>
 						</div>
+					</div>
+				</div>
+			)
+		} else {
+			//if there are no stats available
+			analysisBlock = (
+				<div className="row">
+					<div className="col-md-12">
+						<h5>
+							This collection is available in the registry, but is absent in the media suite index
+						</h5>
+					</div>
+				</div>
+			)
+		}
+
+		return (
+			<div className={IDUtil.cssClassName('collection-analyser')}>
+				<div className="row">
+					<div className="col-md-12">
+						{collectionSelector}
+						{analysisBlock}
 					</div>
 				</div>
 			</div>

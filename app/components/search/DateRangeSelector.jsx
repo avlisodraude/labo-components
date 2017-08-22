@@ -194,7 +194,7 @@ class DateRangeSelector extends React.Component {
 
         if (this.props.collectionConfig.getDateFields() && this.props.dateRange) {
             const options = this.props.collectionConfig.getDateFields().map((df, index) => {
-                return (<option key={'df__' + index} value={df}>{ElasticsearchDataUtil.toPrettyFieldName(df)}</option>);
+                return (<option key={'df__' + index} value={df}>{this.props.collectionConfig.toPrettyFieldName(df)}</option>);
             });
             dateFieldSelect = (
                 <select className="form-control" value={this.props.dateRange.field}

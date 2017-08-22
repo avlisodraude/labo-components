@@ -2,19 +2,27 @@
 
 @import "./_bootstrap-overrides.scss";
 
+
 /* import bootstrap SASS first, since some variables are reused in _component-variables.scss */
 
 @import "../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
 
 /* then import the component variables */
 
 @import "./_variables.scss";
 
+
 /* finally import the actual component styles that use the component variables, you can change the variables at the top */
 
 @import "./_components.scss";
 
-/* Specifically for the react date picker styling */
-@import './react-datepicker.scss';
 
-@import './analysisfield-select-autosuggest';
+/* React date picker styling */
+
+@import './_react-datepicker.scss';
+
+
+/* React autosuggest styling */
+
+@import './_react-autosuggest.scss';
