@@ -98,6 +98,7 @@ class QueryComparisonLineChart extends React.Component {
 		const xAxis = d3.axisBottom()
 			.scale(x)
 			.tickSize(-height, 0)
+            .tickFormat(d3.format("d"));
 
 		const yAxis = d3.axisLeft()
 			.scale(y)
