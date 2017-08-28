@@ -30,7 +30,6 @@ class DatePickerSelector extends React.Component {
 
     //Update date's range
     componentWillReceiveProps(nextProps) {
-        console.log('nextprops', nextProps.range);
         if (this.props !== nextProps && nextProps !== null) {
             this.setState({
                 startDate: moment(nextProps.range.fullMin),

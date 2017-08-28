@@ -45,7 +45,6 @@ class DateRangeSelector extends React.Component {
             ( this.props.dateRange.start === -1 && this.props.dateRange.end === -1)
         ) {
             const range = this.getDateRange(this.props.dateRange.field);
-            // this.updateDatePickerRange(range);
             this.setState({fieldUpdate: false});
         }
     }
