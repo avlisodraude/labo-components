@@ -4,12 +4,13 @@ import moment from 'moment';
 class DatePickerSelector extends React.Component {
 
     constructor(props) {
+        console.log('props date picker', props.range);
         super(props);
         let startDate = null;
         let endDate = null;
-        if(this.props.range) {
-            startDate = moment(this.props.range.min);
-            endDate = moment(this.props.range.max);
+        if (this.props.range) {
+            startDate = moment(this.props.range.fullMin);
+            endDate = moment(this.props.range.fullMax);
         }
         this.state = {
             startDate: startDate,
@@ -25,6 +26,17 @@ class DatePickerSelector extends React.Component {
     startingDateChanged(d) {
         this.props.getNewDate(d, this.state.endDate);
         this.setState({startDate: d});
+    }
+
+    //Update date's range
+    componentWillReceiveProps(nextProps) {
+        console.log('nextprops', nextProps.range);
+        if (this.props !== nextProps && nextProps !== null) {
+            this.setState({
+                startDate: moment(nextProps.range.fullMin),
+                endDate: moment(nextProps.range.fullMax)
+            });
+        }
     }
 
     endDateChanged(d) {

@@ -34,37 +34,6 @@ class DateRangeSelector extends React.Component {
         };
     }
 
-    componentDidMount() {
-        if (this.props.dateRange && this.props.selectorType == 'date-slider') {
-            const range = this.getDateRange(this.props.dateRange.field);
-
-            if (range) {
-                const slider = document.getElementById('__slider_' + IDUtil.hashCode(this.props.queryId));
-                noUiSlider.create(slider, {
-                    start: [0, range.max],
-                    step: 1,
-                    margin: 1,
-                    connect: true,
-                    range: range,
-                    tooltips: true,
-                    format: {
-                        to: function (value) {
-                            return parseInt(value);
-                        },
-                        from: function (value) {
-                            return value;
-                        }
-                    }
-                });
-
-                slider.noUiSlider.on('set', this.onSliderUpdate.bind(this));
-                this.setState({
-                    slider: slider
-                })
-            }
-        }
-    }
-
     //only update on a new search
     shouldComponentUpdate(nextProps, nextState) {
         return nextProps.searchId != this.props.searchId;
@@ -72,13 +41,14 @@ class DateRangeSelector extends React.Component {
 
     //updates only when the date field has changed or whenever there is a completely new search
     componentDidUpdate() {
-        if (this.state.fieldUpdate || (this.props.dateRange.start == -1 && this.props.dateRange.end == -1)) {
+        if (this.state.fieldUpdate ||
+            ( this.props.dateRange.start === -1 && this.props.dateRange.end === -1)
+        ) {
             const range = this.getDateRange(this.props.dateRange.field);
-            this.updateSliderRange(range);
+            // this.updateDatePickerRange(range);
             this.setState({fieldUpdate: false});
         }
     }
-
 
     currentSelectionHasResults() {
         return this.props.aggregations &&
@@ -97,17 +67,6 @@ class DateRangeSelector extends React.Component {
         )
     }
 
-    updateSliderRange(range) {
-        if (range && this.state.slider) {
-            this.state.slider.noUiSlider.updateOptions({
-                range: range,
-                start: [range.min, range.max]
-            }, false);
-        } else {
-
-        }
-    }
-
     //FIXME This only works if the dateField was already queried as an aggregation!!!
     //So when the user selects a field that is not already queried, a new search should be done
     getDateRange(dateField) {
@@ -117,33 +76,17 @@ class DateRangeSelector extends React.Component {
                 const min = TimeUtil.getYearFromDate(
                     aggr[0].date_millis
                 );
+                const fullMin = aggr[0].date_millis;
                 const max = TimeUtil.getYearFromDate(
-                    aggr[aggr.length - 1].date_millis
-                ) + 1;
-                if (max > min) {
-                    return {
-                        min: min,
-                        max: max
-                    }
-                }
-            } else {
-                console.debug(dateField + ' is currently not part of the configured facets');
-            }
-        }
-        return null;
-    }
-
-    getDateRangeTimeStamp(dateField) {
-        if (this.props.aggregations) {
-            const aggr = this.props.aggregations[dateField];
-            if (aggr && aggr.length > 0) {
-                const min = aggr[0].date_millis;
-                const max = aggr[aggr.length - 1].date_millis + 1;
+                    aggr[aggr.length - 1].date_millis) + 1;
+                const fullMax = aggr[aggr.length - 1].date_millis + 1;
 
                 if (max > min) {
                     return {
                         min: min,
-                        max: max
+                        max: max,
+                        fullMin: fullMin,
+                        fullMax: fullMax
                     }
                 }
             } else {
@@ -173,20 +116,6 @@ class DateRangeSelector extends React.Component {
         }
     }
 
-    //whenever you move the slider
-    onSliderUpdate(values, handle, unencoded, tap, positions) {
-        const df = this.props.dateRange.field;
-        if (this.props.aggregations) {
-            if (this.props.aggregations[df]) {
-                this.onOutput({
-                    field: this.props.dateRange.field,
-                    start: TimeUtil.yearToUNIXTime(parseInt(values[0])),
-                    end: TimeUtil.yearToUNIXTime(parseInt(values[1]))
-                });
-            }
-        }
-    }
-
     render() {
         let dateFieldSelect = null;
         const hasResults = this.currentSelectionHasResults();
@@ -211,7 +140,7 @@ class DateRangeSelector extends React.Component {
             )
         }
 
-        if (this.props.selectorType == 'date-picker') {
+        if (this.props.selectorType === 'date-picker') {
             return (
                 <div className="datePickerSelector">
                     <div className={IDUtil.cssClassName('date-range-select')}>
@@ -224,7 +153,7 @@ class DateRangeSelector extends React.Component {
                                 dataForDatePicker={this.props}
                                 collectionConfig={this.props.collectionConfig}
                                 aggregations={this.props.aggregations}
-                                range={this.getDateRangeTimeStamp(this.props.dateRange.field)}
+                                range={this.getDateRange(this.props.dateRange.field)}
                                 getNewDate={this.getNewDate.bind(this)}
                             />
                         </div>
