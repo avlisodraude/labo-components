@@ -413,3 +413,10 @@
 .bg__comparative-search-recipe {} /* ComparativeSearchRecipe.jsx */
 
 .bg__single-search-recipe {} /* SingleSearchRecipe.jsx */
+
+.input-group-addon {
+	&.btn-effect:hover {
+		background-color: #ddd;
+		cursor: pointer;
+	}
+}

@@ -544,7 +544,7 @@ class QueryBuilder extends React.Component {
 										<div className="input-group">
 											<input type="text" className="form-control"
 												id="search_term" ref="searchTerm" placeholder="Search"/>
-											<span className="input-group-addon" on={this.newSearch.bind(this)}><i className="fa fa-search"></i></span>
+											<span className="input-group-addon btn-effect" onClick={this.newSearch.bind(this)}><i className="fa fa-search"></i></span>
 										</div>
 									</div>
 									<div className="col-sm-6">
