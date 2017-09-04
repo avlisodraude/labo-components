@@ -52,6 +52,16 @@ class QueryBuilder extends React.Component {
 
 	constructor(props) {
 		super(props);
+		let collectionHits = null;
+		if(props.collectionConfig && props.collectionConfig.collectionStats) {
+			let stats = props.collectionConfig.collectionStats;
+			if(stats && stats.collection_statistics && stats.collection_statistics.document_types) {
+				let docTypes = stats.collection_statistics.document_types;
+				if(docTypes.length > 0) {
+					collectionHits = docTypes[0].doc_count;
+				}
+			}
+		}
 		this.state = {
 			searchLayers : null, //filled in onLoadCollectionConfig()
 			displayFacets : false, //filled in onLoadCollectionConfig()
@@ -61,7 +71,7 @@ class QueryBuilder extends React.Component {
 			selectedDateRange : null,
 			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
 			currentPage : -1,
-            currentCollectionHits: props.collectionConfig.collectionStats.collection_statistics.document_types[0].doc_count || null
+            currentCollectionHits: collectionHits
         }
         this.CLASS_PREFIX = 'qb';
         this.dateFieldTypeSelected = null;
@@ -382,11 +392,16 @@ class QueryBuilder extends React.Component {
             let layerOptions = null;
             let resultBlock = null;
             let fieldCategorySelector = null;
-            const currentCollection = this.props.collectionConfig.collectionInfo.title || null;
+            let currentCollectionTitle = this.props.collectionConfig.collectionId;
+
+            //collectionInfo comes from CKAN, which can be empty
+            if(this.props.collectionConfig.collectionInfo) {
+            	currentCollectionTitle = this.props.collectionConfig.collectionInfo.title || null;
+            }
 
             if (this.props.header) {
                 heading = (<div>
-                        <h3>Searching in :&nbsp;{currentCollection}</h3>
+                        <h3>Searching in :&nbsp;{currentCollectionTitle}</h3>
                         <h4>Total amount of records in this collection: {this.state.currentCollectionHits}</h4>
                     </div>
                 )

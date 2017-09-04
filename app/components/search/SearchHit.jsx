@@ -31,18 +31,22 @@ class SearchHit extends React.Component {
 		this.setState({showModal: true});
 	}
 
+	safeModalId(resourceId) {
+		return resourceId.replace(/@/g, '').replace(/:/g, '').replace(/./g, '') + '__modal'
+	}
+
 	render() {
 		const result = this.props.collectionConfig.getItemDetailData(this.props.result, this.props.dateField);
 		//TODO get rid of this separate piece of data
 		const snippet = this.props.collectionConfig.getResultSnippetData(result);
-		const modalID = result.resourceId.replace('@', '_') + '__modal';
+		const modalID = this.safeModalId(result.resourceId);
 		let modal = null;
 		if(this.state.showModal) {
 			modal = (
 				<FlexModal
 					elementId={modalID}
 					stateVariable="showModal"
-					key={result.resourceId + '__modal'}
+					key={modalID}
 					owner={this}
 					size="large"
 					title={result.title}>

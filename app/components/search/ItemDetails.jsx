@@ -62,7 +62,7 @@ class ItemDetails extends React.Component {
 				</div>
 			);
 
-			}
+		}
 		return (
 			<div className={IDUtil.cssClassName('item-details')}>
 				<h4>Metadata</h4>
