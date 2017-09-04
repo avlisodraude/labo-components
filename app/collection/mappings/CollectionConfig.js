@@ -164,6 +164,11 @@ class CollectionConfig {
 		return null;
 	}
 
+	//if the data has translations within its metadata
+	getPreferredLanguage() {
+		return null;
+	}
+
 	//Try to generate at least some date facets to be able to draw a timeline
 	//TODO the queryDataFormat can be detected from a retrieved date (implement this somewhere)
 	getFacets() {

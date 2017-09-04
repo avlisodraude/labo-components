@@ -23,6 +23,7 @@ import MotUConfig from '../collection/mappings/MotUConfig';
 import EYEConfig from '../collection/mappings/EYEConfig';
 import ArtTubeConfig from '../collection/mappings/ArtTubeConfig';
 import RVDContractsConfig from '../collection/mappings/RVDContractsConfig';
+import OpenBeeldenNISVConfig from '../collection/mappings/OpenBeeldenNISVConfig';
 import TimeUtil from '../util/TimeUtil';
 
 const CollectionUtil = {
@@ -38,7 +39,8 @@ const CollectionUtil = {
 		'nisv' : NISVConfig,
 		'motu' : MotUConfig,
 		'arttube' : ArtTubeConfig,
-		'rvd' : RVDContractsConfig
+		'rvd' : RVDContractsConfig,
+		'open-beelden-beeldengeluid' : OpenBeeldenNISVConfig
 	},
 
 	//returns the correct CollectionConfig instance based on the collectionId
