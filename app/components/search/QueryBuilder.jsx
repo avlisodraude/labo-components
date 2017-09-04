@@ -10,7 +10,7 @@ import FieldCategorySelector from './FieldCategorySelector';
 import DateRangeSelector from './DateRangeSelector';
 import AggregationBox from './AggregationBox';
 import AggregationList from './AggregationList';
-
+import CollectionConfig from '../../collection/mappings/CollectionConfig';
 /*
 Notes about this component:
 
@@ -60,9 +60,11 @@ class QueryBuilder extends React.Component {
 			desiredFacets : null, //these will now be more dynamic than just taken from a config!
 			selectedDateRange : null,
 			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
-			currentPage : -1
-		}
-		this.CLASS_PREFIX = 'qb'
+			currentPage : -1,
+            currentCollectionHits: props.collectionConfig.collectionStats.collection_statistics.document_types[0].doc_count || null
+        }
+        this.CLASS_PREFIX = 'qb';
+        this.dateFieldTypeSelected = null;
 	}
 
 	/*---------------------------------- COMPONENT INIT --------------------------------------*/
@@ -74,7 +76,6 @@ class QueryBuilder extends React.Component {
 		//TODO make sure how the browse history works outside of the recipes
 		if(this.props.searchParams) {
 			window.onpopstate = function(event) {
-	  			//console.debug("location: " + document.location + ", state: " + JSON.stringify(event.state));
 	  			document.location.href=document.location;
 			};
 		}
@@ -333,43 +334,56 @@ class QueryBuilder extends React.Component {
 		)
 	}
 
-	//communicates all that is required for a parent component to draw hits & statistics
-	onOutput(data) {
-		//this propagates the query output back to the recipe, who will delegate it further to any configured visualisation
-		if(this.props.onOutput) {
-	  		this.props.onOutput(this.constructor.name, data);
-		}
-		if(data) {
-			this.setState({
-				aggregations : data.aggregations, //for drawing the AggregationBox/List
-				totalHits : data.totalHits, //shown in the stats
-				totalUniqueHits : data.totalUniqueHits, //shown in the stats
-				currentPage : data.currentPage, //remembering the page we're at
-				selectedSortParams : data.params.sort, //remembering the sort settings
-				searchId : data.searchId //so involved components know that a new search was done
-			});
-		} else {
-			this.setState({
-				aggregations : null,
-				totalHits : 0,
-				totalUniqueHits : 0,
-				currentPage : -1,
-				searchId : null
-			});
-		}
-	}
+    // Returns the total amount of 'aggregations' per date field selected
+    totalNumberByDateField(data){
+        return data.aggregations[data.dateField].map(x => x.doc_count)
+            .filter(x => x != null).reduce(function(accumulator, currentValue) {
+                return accumulator + currentValue;
+            });
+    }
 
-	render() {
-		if(this.props.collectionConfig) {
-			let heading = null;
-			let layerOptions = null;
-			let resultBlock = null;
-			let fieldCategorySelector = null;
+    //communicates all that is required for a parent component to draw hits & statistics
+    onOutput(data) {
+        //this propagates the query output back to the recipe, who will delegate it further to any configured visualisation
+        if (this.props.onOutput) {
+            this.props.onOutput(this.constructor.name, data);
+        }
+        if (data) {
+            this.setState({
+                aggregations: data.aggregations, //for drawing the AggregationBox/List
+                totalHits: data.totalHits, //shown in the stats
+                totalUniqueHits: data.totalUniqueHits, //shown in the stats
+                currentPage: data.currentPage, //remembering the page we're at
+                selectedSortParams: data.params.sort, //remembering the sort settings
+                searchId: data.searchId, //so involved components know that a new search was done
+                hitsBasedOnDateField: this.totalNumberByDateField(data) || 0
+            });
+        } else {
+            this.setState({
+                aggregations: null,
+                totalHits: 0,
+                totalUniqueHits: 0,
+                currentPage: -1,
+                searchId: null
+            });
+        }
+    }
 
-			//draw a heading with the name of the collection (if configured that way)
-			if(this.props.header) {
-				heading = (<h3>Search through:&nbsp;{this.props.collectionConfig.getSearchIndex()}</h3>)
-			}
+    render() {
+        if (this.props.collectionConfig) {
+            let heading = null;
+            let layerOptions = null;
+            let resultBlock = null;
+            let fieldCategorySelector = null;
+            const currentCollection = this.props.collectionConfig.collectionInfo.title || null;
+
+            if (this.props.header) {
+                heading = (<div>
+                        <h3>Searching in :&nbsp;{currentCollection}</h3>
+                        <h4>Total amount of records in this collection: {this.state.currentCollectionHits}</h4>
+                    </div>
+                )
+            }
 
 			//draw the field category selector
 			fieldCategorySelector = (
@@ -406,6 +420,9 @@ class QueryBuilder extends React.Component {
 				let aggrView = null; //either a box or list (TODO the list might not work properly anymore!)
 				let aggregationBox = null;
 				let dateRangeSelector = null;
+                let dateFieldTypeSelectedString = "";
+                let hitsBasedOnDateField = this.state.hitsBasedOnDateField;
+                let currentSearchTerm = this.refs.searchTerm.value || null;
 
 				//populate the aggregation/facet selection area/box
 				if(this.state.aggregations) {
@@ -444,27 +461,42 @@ class QueryBuilder extends React.Component {
 						)
 					}
 
-					//draw the time slider
-					//FIXME it will disappear when there are no results!
-					if(this.props.dateRangeSelector && this.state.selectedDateRange) {
-						console.debug(this.state.selectedDateRange);
-						dateRangeSelector = (
-							<DateRangeSelector
-								queryId={this.props.queryId}
-								searchId={this.state.searchId} //for determining when the component should rerender
-								collection={this.props.collectionConfig.getSearchIndex()} //for creating a guid
-								collectionConfig={this.props.collectionConfig} //for determining available date fields & aggregations
-								dateRange={this.state.selectedDateRange} //for activating the selected date field
-								selectorType={this.props.dateRangeSelector} //the type of selector: a slider or two date pickers
-								aggregations={this.state.aggregations} //to fetch the date aggregations
-								onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
-							/>
-						);
-					}
-				}
+                    //draw the time slider
+                    //FIXME it will disappear when there are no results!
+                    if (this.props.dateRangeSelector && this.state.selectedDateRange) {
+                        this.dateFieldTypeSelected = {fullName: this.state.selectedDateRange.field, beautifiedName: this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)} || {};
+                        if(this.dateFieldTypeSelected) {
+                            dateFieldTypeSelectedString = "- Total number of hits for  \""
+                                + currentSearchTerm
+                                + "\" with selected date field  \""
+                                +  this.dateFieldTypeSelected.beautifiedName
+                                + "\": " + hitsBasedOnDateField;
+                        }
 
-				//populate the result stats
-				resultStats = (<h6>Found media objects: {this.state.totalHits}</h6>);
+                        dateRangeSelector = (
+                            <DateRangeSelector
+                                queryId={this.props.queryId}
+                                searchId={this.state.searchId} //for determining when the component should rerender
+                                collection={this.props.collectionConfig.getSearchIndex()} //for creating a guid
+                                collectionConfig={this.props.collectionConfig} //for determining available date fields & aggregations
+                                dateRange={this.state.selectedDateRange} //for activating the selected date field
+                                selectorType={this.props.dateRangeSelector} //the type of selector: a slider or two date pickers
+                                aggregations={this.state.aggregations} //to fetch the date aggregations
+                                onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
+                            />
+                        );
+                    }
+                }
+
+                //populate the result stats
+                resultStats = (
+                    <div>
+                        <h4>
+                            -  Total number of hits for <b>"{currentSearchTerm}"</b>:  <b>{this.state.totalHits}</b>
+                        </h4>
+                        <h4>{dateFieldTypeSelectedString}</h4>
+                    </div>
+                );
 
 				resultBlock = (
 					<div>
@@ -504,7 +536,7 @@ class QueryBuilder extends React.Component {
 										<div className="input-group">
 											<input type="text" className="form-control"
 												id="search_term" ref="searchTerm" placeholder="Search"/>
-											<span className="input-group-addon"><i className="fa fa-search"></i></span>
+											<span className="input-group-addon" on={this.newSearch.bind(this)}><i className="fa fa-search"></i></span>
 										</div>
 									</div>
 									<div className="col-sm-6">

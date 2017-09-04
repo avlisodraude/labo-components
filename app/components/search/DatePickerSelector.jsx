@@ -4,7 +4,6 @@ import moment from 'moment';
 class DatePickerSelector extends React.Component {
 
     constructor(props) {
-        console.log('props date picker', props.range);
         super(props);
         let startDate = null;
         let endDate = null;
