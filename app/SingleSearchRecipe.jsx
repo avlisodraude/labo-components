@@ -171,7 +171,7 @@ class SingleSearchRecipe extends React.Component {
 			const tmp = this.state.collectionConfig.getMetadataFieldCategories();
 			if(tmp) {
 				fieldCategory = tmp.filter((f) => {
-					return f.label == fc;
+					return f.id == fc;
 				})
 				fieldCategory = fieldCategory.length == 1 ? fieldCategory[0] : null;
 			}
@@ -206,8 +206,8 @@ class SingleSearchRecipe extends React.Component {
 			if(tmp.length == 3) {
 				dateRange = {
 					field : tmp[0],
-					start : tmp[1],
-					end : tmp[2]
+					start : parseInt(tmp[1]),
+					end : parseInt(tmp[2])
 				}
 			}
 		}

@@ -81,8 +81,8 @@ class QueryBuilder extends React.Component {
 		}
 	}
 
-	//TODO
 	init(config) {
+		//determine the search layers by checking the URL params
 		let searchLayers = null;
 		if(config.getCollectionIndices()) {
 			searchLayers = {};
@@ -94,16 +94,21 @@ class QueryBuilder extends React.Component {
 				}
 			});
 		}
+		//apply the date range from the URL
+		let selectedDateRange = {
+			field : config.getPreferredDateField(),
+			start : null,
+			end : null
+		}
+		if(this.props.searchParams && this.props.searchParams.dateRange) {
+			selectedDateRange= this.props.searchParams.dateRange;
+		}
 		//TODO setting the state here is a bit weird. Let's redo this by looking at the URL params first
 		this.setState({
 			searchLayers: searchLayers,
 			desiredFacets : config.getFacets(),
 			displayFacets: config.facets ? true : false,
-			selectedDateRange : {
-				field : config.getPreferredDateField(),
-				start : -1,
-				end : -1
-			},
+			selectedDateRange : selectedDateRange,
 			selectedSortParams : {
 				field : '_score',
 				order : 'desc'
@@ -117,7 +122,7 @@ class QueryBuilder extends React.Component {
 					this.props.collectionConfig,
 					this.state.searchLayers,
 					this.props.searchParams.searchTerm,
-					this.props.fieldCategory,
+					this.props.searchParams.fieldCategory,
 					this.state.desiredFacets,
 					this.props.searchParams.selectedFacets,
 					this.props.searchParams.dateRange,
@@ -141,8 +146,8 @@ class QueryBuilder extends React.Component {
 		//reset the date range
 		const dr = this.state.selectedDateRange;
 		if(dr) {
-			dr.start = -1;
-			dr.end = -1;
+			dr.start = null;
+			dr.end = null;
 		}
 		this.setState(
 			{
@@ -150,8 +155,8 @@ class QueryBuilder extends React.Component {
 				fieldCategory : null,
 				selectedDateRange : {
 					field : dr.field, //reset the range, but keep the date field selected
-					start : -1,
-					end : -1
+					start : null,
+					end : null
 				}
 			},
 			SearchAPI.search(
@@ -244,7 +249,6 @@ class QueryBuilder extends React.Component {
 						display: true
 					});
 				}
-
 				//do a new query based on the datefield and date range
 				this.setState(
 					{
@@ -335,7 +339,7 @@ class QueryBuilder extends React.Component {
 	}
 
     // Returns the total amount of 'aggregations' per date field selected
-    totalNumberByDateField(data){
+    totalNumberByDateField(data) {
         return data.aggregations[data.dateField].map(x => x.doc_count)
             .filter(x => x != null).reduce(function(accumulator, currentValue) {
                 return accumulator + currentValue;
@@ -464,7 +468,10 @@ class QueryBuilder extends React.Component {
                     //draw the time slider
                     //FIXME it will disappear when there are no results!
                     if (this.props.dateRangeSelector && this.state.selectedDateRange) {
-                        this.dateFieldTypeSelected = {fullName: this.state.selectedDateRange.field, beautifiedName: this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)} || {};
+                        this.dateFieldTypeSelected = {
+                        	fullName: this.state.selectedDateRange.field,
+                        	beautifiedName: this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)
+                        } || {};
                         if(this.dateFieldTypeSelected) {
                             dateFieldTypeSelectedString = "- Total number of hits for  \""
                                 + currentSearchTerm
@@ -475,12 +482,10 @@ class QueryBuilder extends React.Component {
 
                         dateRangeSelector = (
                             <DateRangeSelector
-                                queryId={this.props.queryId}
+                            	queryId={this.props.queryId} //used for the guid (is it still needed?)
                                 searchId={this.state.searchId} //for determining when the component should rerender
-                                collection={this.props.collectionConfig.getSearchIndex()} //for creating a guid
                                 collectionConfig={this.props.collectionConfig} //for determining available date fields & aggregations
                                 dateRange={this.state.selectedDateRange} //for activating the selected date field
-                                selectorType={this.props.dateRangeSelector} //the type of selector: a slider or two date pickers
                                 aggregations={this.state.aggregations} //to fetch the date aggregations
                                 onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
                             />

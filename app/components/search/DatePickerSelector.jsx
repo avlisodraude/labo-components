@@ -5,54 +5,53 @@ class DatePickerSelector extends React.Component {
 
     constructor(props) {
         super(props);
-        let startDate = null;
-        let endDate = null;
-        if (this.props.range) {
-            startDate = moment(this.props.range.fullMin);
-            endDate = moment(this.props.range.fullMax);
-        }
-        this.state = {
-            startDate: startDate,
-            endDate: endDate,
-            minDate: startDate,
-            maxDate: endDate
-        };
-
-        this.startingDateChanged = this.startingDateChanged.bind(this);
-        this.endDateChanged = this.endDateChanged.bind(this);
     }
 
-    startingDateChanged(d) {
-        this.props.getNewDate(d, this.state.endDate);
-        this.setState({startDate: d});
+    getStartDate() {
+        if (this.props.dateRange) {
+            if(this.props.dateRange.start) {
+                return moment(this.props.dateRange.start);
+            }
+        }
+        return null;
     }
 
-    //Update date's range
-    componentWillReceiveProps(nextProps) {
-        if (this.props !== nextProps && nextProps !== null) {
-            this.setState({
-                startDate: moment(nextProps.range.fullMin),
-                endDate: moment(nextProps.range.fullMax)
-            });
+    getEndDate() {
+        if (this.props.dateRange) {
+            if(this.props.dateRange.end) {
+                return moment(this.props.dateRange.end);
+            }
         }
+        return null;
+    }
+
+    startDateChanged(d) {
+        this.props.onOutput(this.constructor.name, {
+            start : d,
+            end: this.getEndDate()
+        });
     }
 
     endDateChanged(d) {
-        this.props.getNewDate(this.state.startDate, d);
-        this.setState({endDate: d});
+        this.props.onOutput(this.constructor.name, {
+            start : this.getStartDate(),
+            end : d
+        });
     }
 
     render() {
+        const startDate = this.getStartDate();
+        const endDate = this.getEndDate();
         return (
             <div className="col-md-7">
                 <div className="row pull-left ">
                     <div className="col-md-6">
                         <DatePicker
-                            selected={this.state.startDate}
+                            selected={startDate}
                             selectsStart
-                            startDate={this.state.startDate}
-                            minDate={this.state.minDate}
-                            onChange={this.startingDateChanged}
+                            startDate={startDate}
+                            minDate={null}
+                            onChange={this.startDateChanged.bind(this)}
                             showMonthDropdown
                             showYearDropdown
                             dropdownMode="select"
@@ -61,11 +60,11 @@ class DatePickerSelector extends React.Component {
                     </div>
                     <div className="col-md-6">
                         <DatePicker
-                            selected={this.state.endDate}
+                            selected={endDate}
                             selectsEnd
-                            startDate={this.state.startDate}
-                            maxDate={this.state.maxDate}
-                            onChange={this.endDateChanged}
+                            startDate={startDate}
+                            maxDate={null}
+                            onChange={this.endDateChanged.bind(this)}
                             showMonthDropdown
                             showYearDropdown
                             dropdownMode="select"

@@ -40,7 +40,8 @@ const CollectionUtil = {
 		'motu' : MotUConfig,
 		'arttube' : ArtTubeConfig,
 		'rvd' : RVDContractsConfig,
-		'open-beelden-beeldengeluid' : OpenBeeldenNISVConfig
+		'open-beelden-beeldengeluid' : OpenBeeldenNISVConfig,
+		'open-beelden-eye' : OpenBeeldenNISVConfig
 	},
 
 	//returns the correct CollectionConfig instance based on the collectionId
