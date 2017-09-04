@@ -29,16 +29,6 @@ class CollectionAnalyser extends React.Component {
         this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
 	}
 
-	//only happens on the onchange of a document type
-	setFields() {
-		const select = document.getElementById("doctype_select");
-		const docType = select.options[select.selectedIndex].value;
-		this.setState({
-            value: '',
-			activeDocumentType : docType
-		});
-	}
-
 	analyseField() {
 		this.setState({
 			fieldAnalysisStats : null,
@@ -276,17 +266,6 @@ class CollectionAnalyser extends React.Component {
 
 			docTypeOptions.splice(0,0,<option key='null__option' value='null__option'>-- Select --</option>);
 
-			documentTypeSelect = (
-				<div className="form-group">
-					<label htmlFor="doctype_select" className="col-sm-3">Document type</label>
-					<div className="col-sm-9">
-						<select className="form-control" id="doctype_select" onChange={this.setFields.bind(this)}>
-							{docTypeOptions}
-						</select>
-					</div>
-				</div>
-			);
-
 			//the analysis and date field selection part
 			if(docStats) {
 				let dateFieldOptions = null;
@@ -372,7 +351,6 @@ class CollectionAnalyser extends React.Component {
 						<div className="row">
 							<div className="col-md-12">
 								<div className="form-horizontal">
-									{documentTypeSelect}
 									{dateFieldSelect}
 									{analysisFieldSelect}
 								</div>
