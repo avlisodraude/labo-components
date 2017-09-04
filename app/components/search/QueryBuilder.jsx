@@ -427,13 +427,16 @@ class QueryBuilder extends React.Component {
 						</label>
 					)
 				})
-				if(layers) {
-					layerOptions = (
-						<div className={IDUtil.cssClassName('search-layers', this.CLASS_PREFIX)}>
-							{layers}
-						</div>
-					)
-				}
+				// Hide collection metada tickbox from current search interface.
+				//https://github.com/CLARIAH/wp5_mediasuite/issues/130
+				// it could be enabled once we have more options to provide.
+				// if(layers) {
+				// 	layerOptions = (
+				// 		<div className={IDUtil.cssClassName('search-layers', this.CLASS_PREFIX)}>
+				// 			{layers}
+				// 		</div>
+				// 	)
+				// }
 			}
 
 			//only draw this when there are search results
@@ -570,7 +573,7 @@ class QueryBuilder extends React.Component {
 						</div>
 					</div>
 					<div className="separator"></div>
-					{layerOptions}
+					{/*{layerOptions}*/}
 					<div className="separator"></div>
 					{resultBlock}
 				</div>
