@@ -51,6 +51,7 @@ class DatePickerSelector extends React.Component {
                             selectsStart
                             startDate={startDate}
                             minDate={null}
+                            maxDate={moment()}
                             onChange={this.startDateChanged.bind(this)}
                             showMonthDropdown
                             showYearDropdown
@@ -63,7 +64,8 @@ class DatePickerSelector extends React.Component {
                             selected={endDate}
                             selectsEnd
                             startDate={startDate}
-                            maxDate={null}
+                            minDate={null}
+                            maxDate={moment()}
                             onChange={this.endDateChanged.bind(this)}
                             showMonthDropdown
                             showYearDropdown

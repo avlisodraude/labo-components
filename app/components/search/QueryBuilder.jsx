@@ -340,10 +340,13 @@ class QueryBuilder extends React.Component {
 
     // Returns the total amount of 'aggregations' per date field selected
     totalNumberByDateField(data) {
-        return data.aggregations[data.dateField].map(x => x.doc_count)
-            .filter(x => x != null).reduce(function(accumulator, currentValue) {
+        const bucketCounts = data.aggregations[data.dateField].map(x => x.doc_count).filter(x => x != null);
+        if(bucketCounts.length > 0 ) {
+        	return bucketCounts.reduce(function(accumulator, currentValue) {
                 return accumulator + currentValue;
             });
+        }
+        return 0;
     }
 
     //communicates all that is required for a parent component to draw hits & statistics
