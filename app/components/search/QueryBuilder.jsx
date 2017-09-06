@@ -4,6 +4,7 @@ import SearchAPI from '../../api/SearchAPI';
 import CollectionUtil from '../../util/CollectionUtil';
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 import IDUtil from '../../util/IDUtil';
+import TimeUtil from '../../util/TimeUtil';
 
 //ui controls for assembling queries
 import FieldCategorySelector from './FieldCategorySelector';
@@ -74,7 +75,6 @@ class QueryBuilder extends React.Component {
             currentCollectionHits: collectionHits
         }
         this.CLASS_PREFIX = 'qb';
-        this.dateFieldTypeSelected = null;
 	}
 
 	/*---------------------------------- COMPONENT INIT --------------------------------------*/
@@ -350,13 +350,17 @@ class QueryBuilder extends React.Component {
 
     // Returns the total amount of 'aggregations' per date field selected
     totalNumberByDateField(data) {
-        const bucketCounts = data.aggregations[data.dateField].map(x => x.doc_count).filter(x => x != null);
-        if(bucketCounts.length > 0 ) {
-        	return bucketCounts.reduce(function(accumulator, currentValue) {
-                return accumulator + currentValue;
-            });
-        }
-        return 0;
+        let bucketCounts = 0;
+        /*
+        if(data.aggregations && data.aggregations[data.dateField]) {
+        	bucketCounts = data.aggregations[data.dateField].map(x => x.doc_count).filter(x => x != null);
+        	if(bucketCounts.length > 0 ) {
+	        	return bucketCounts.reduce(function(accumulator, currentValue) {
+	                return accumulator + currentValue;
+	            });
+	        }
+        }*/
+        return bucketCounts;
     }
 
     //communicates all that is required for a parent component to draw hits & statistics
@@ -445,8 +449,8 @@ class QueryBuilder extends React.Component {
 				let aggrView = null; //either a box or list (TODO the list might not work properly anymore!)
 				let aggregationBox = null;
 				let dateRangeSelector = null;
-                let dateFieldTypeSelectedString = "";
-                let hitsBasedOnDateField = this.state.hitsBasedOnDateField;
+
+                //let countsBasedOnDateRange = null;
                 let currentSearchTerm = this.refs.searchTerm.value || null;
 
 				//populate the aggregation/facet selection area/box
@@ -489,17 +493,32 @@ class QueryBuilder extends React.Component {
                     //draw the time slider
                     //FIXME it will disappear when there are no results!
                     if (this.props.dateRangeSelector && this.state.selectedDateRange) {
-                        this.dateFieldTypeSelected = {
-                        	fullName: this.state.selectedDateRange.field,
-                        	beautifiedName: this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)
-                        } || {};
-                        if(this.dateFieldTypeSelected) {
-                            dateFieldTypeSelectedString = "- Total number of hits for  \""
-                                + currentSearchTerm
-                                + "\" with selected date field  \""
-                                +  this.dateFieldTypeSelected.beautifiedName
-                                + "\": " + hitsBasedOnDateField;
-                        }
+                        //let selectedDateField = null;
+                        //let info = null;
+                        if(this.state.selectedDateRange.field) {
+	                        /*selectedDateField = this.props.collectionConfig.toPrettyFieldName(
+	                        	this.state.selectedDateRange.field
+	                        )
+	                        info = 'Selected date field: "' + selectedDateField + '"';
+	                        let tmp = []
+	                        if(this.state.selectedDateRange.start) {
+	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start));
+	                        }
+	                        if(this.state.selectedDateRange.end) {
+	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end));
+	                        }
+	                        if(tmp.length > 0) {
+	                        	info += '\nSelected date range: ' + tmp.join(' - ');
+	                        }
+	                        countsBasedOnDateRange = (
+	                        	<li>
+	                        		{this.state.hitsBasedOnDateField} hits based on your
+	                        		<span className="tooltip-info" title={info}>
+	                        			&nbsp;current selection
+	                        		</span>
+	                        	</li>
+	                        )*/
+	                    }
 
                         dateRangeSelector = (
                             <DateRangeSelector
@@ -517,10 +536,9 @@ class QueryBuilder extends React.Component {
                 //populate the result stats
                 resultStats = (
                     <div>
-                        <h4>
-                            -  Total number of hits for <b>"{currentSearchTerm}"</b>:  <b>{this.state.totalHits}</b>
-                        </h4>
-                        <h4>{dateFieldTypeSelectedString}</h4>
+                        <div>
+                            Total number of results based on <em>"{currentSearchTerm}"</em> and selected filters: <b>{this.state.totalHits}</b>
+                        </div>
                     </div>
                 );
 
@@ -572,7 +590,6 @@ class QueryBuilder extends React.Component {
 							</form>
 						</div>
 					</div>
-					<div className="separator"></div>
 					{/*{layerOptions}*/}
 					<div className="separator"></div>
 					{resultBlock}

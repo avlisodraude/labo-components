@@ -37,6 +37,10 @@ const TimeUtil = {
 
 	yearToUNIXTime : function(year) {
 		return new Date(year + '-01-01').valueOf();
+	},
+
+	UNIXTimeToPrettyDate(epochMillis) {
+		return moment(epochMillis).format('DD-MM-YYYY');
 	}
 
 }
