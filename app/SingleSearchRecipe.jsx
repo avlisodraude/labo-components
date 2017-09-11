@@ -354,6 +354,7 @@ class SingleSearchRecipe extends React.Component {
 					sortButtons = <Sorting
 						sortResults={this.sortResults.bind(this)}
 						sortParams={this.state.currentOutput.params.sort}
+						collectionConfig={this.state.collectionConfig}
 						dateField={this.state.currentOutput.dateField}/>
 				}
 

@@ -17,6 +17,7 @@ import CollectionAPI from '../api/CollectionAPI';
 import CollectionConfig from '../collection/mappings/CollectionConfig';
 import NISVConfig from '../collection/mappings/NISVConfig';
 import NISVCatalogueConfig from '../collection/mappings/NISVCatalogueConfig';
+import NISVProgramGuidePageConfig from '../collection/mappings/NISVProgramGuidePageConfig';
 import NISVProgramGuideConfig from '../collection/mappings/NISVProgramGuideConfig';
 import TwitterConfig from '../collection/mappings/TwitterConfig';
 import MotUConfig from '../collection/mappings/MotUConfig';
@@ -33,7 +34,8 @@ const CollectionUtil = {
 		'nisv-catalogue-aggr': NISVCatalogueConfig,
 		'nisv-catalogue-radio': NISVCatalogueConfig,
 		'nisv-catalogue-tv': NISVCatalogueConfig,
-		'nisv_programguides': NISVProgramGuideConfig,
+		'nisv_programguides': NISVProgramGuidePageConfig,
+		'nisv-program-guides': NISVProgramGuideConfig,
 		'eye-collection-desmet' : EYEConfig,
 		'twitter' : TwitterConfig,
 		'nisv' : NISVConfig,

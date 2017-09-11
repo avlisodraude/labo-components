@@ -101,6 +101,7 @@ const SearchAPI = {
 			}
 		}
 		xhr.open("POST", url);
+		xhr.timeout = 50000;
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(JSON.stringify(params));
 	},
