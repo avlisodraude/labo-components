@@ -25,13 +25,14 @@ import EYEConfig from '../collection/mappings/EYEConfig';
 import ArtTubeConfig from '../collection/mappings/ArtTubeConfig';
 import RVDContractsConfig from '../collection/mappings/RVDContractsConfig';
 import OpenBeeldenNISVConfig from '../collection/mappings/OpenBeeldenNISVConfig';
+import KBNewspaperConfig from '../collection/mappings/KBNewspaperConfig';
 import TimeUtil from '../util/TimeUtil';
 
 const CollectionUtil = {
 
 	COLLECTION_MAPPING : {
-		'labs-catalogue-aggr': NISVCatalogueConfig,//should be removed when the data is deleted later on
 		'nisv-catalogue-aggr': NISVCatalogueConfig,
+		'nisv-catalogue-aggr-es5': NISVCatalogueConfig,
 		'nisv-catalogue-radio': NISVCatalogueConfig,
 		'nisv-catalogue-tv': NISVCatalogueConfig,
 		'nisv_programguides': NISVProgramGuidePageConfig,
@@ -43,7 +44,8 @@ const CollectionUtil = {
 		'arttube' : ArtTubeConfig,
 		'rvd' : RVDContractsConfig,
 		'open-beelden-beeldengeluid' : OpenBeeldenNISVConfig,
-		'open-beelden-eye' : OpenBeeldenNISVConfig
+		'open-beelden-eye' : OpenBeeldenNISVConfig,
+		'kb-newspapers' : KBNewspaperConfig
 	},
 
 	//returns the correct CollectionConfig instance based on the collectionId

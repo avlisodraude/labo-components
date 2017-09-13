@@ -66,7 +66,7 @@ class Sorting extends React.Component {
 					&nbsp;
 					{relOrderIcon}
 				</button>
-				<button className={dateClass} title={this.props.collectionConfig.toPrettyFieldName(this.props.dateField)}
+				<button className={dateClass} title={'Sort by: ' + this.props.collectionConfig.toPrettyFieldName(this.props.dateField)}
 					onClick={this.sortResults.bind(this, this.props.dateField, dateOrder)}>
 					<i className="fa fa-calendar"></i>
 					&nbsp;

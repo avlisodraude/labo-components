@@ -6,6 +6,7 @@ Currently uses:
 	TODO
 		- check out the flexplayer to see how to update annotations here
 		- check out ViewDir!: https://viewdir.github.io/
+		- make sure to draw overlays only on the appropriate page!!!
 */
 
 import AnnotationAPI from '../../../api/AnnotationAPI';
@@ -41,7 +42,8 @@ class FlexImageViewer extends React.Component {
 			this.loadAnnotations();
 
 			//then listen to any changes that happen in the API
-			AppAnnotationStore.bind(this.props.mediaObject.url, this.onChange.bind(this));
+			//TODO nu moeten alle mediaobjecten in de gaten gehouden worden -> optimaliseren
+			//AppAnnotationStore.bind(this.props.mediaObject.url, this.onChange.bind(this));
 		} else {
 			this.initViewer();
 		}
@@ -65,11 +67,13 @@ class FlexImageViewer extends React.Component {
 	}
 
 	loadAnnotations() {
+		this.initViewer();
+		/*
 		AppAnnotationStore.getMediaObjectAnnotations(
 			this.props.mediaObject.url,
 			this.state.user,
 			this.onLoadAnnotations.bind(this)
-		);
+		);*/
 	}
 
 	//FIXME make sure this works again for the new annotations
@@ -101,44 +105,73 @@ class FlexImageViewer extends React.Component {
 	-------------------------- VIEWER INITIALIZATION ----------------
 	---------------------------------------------------------------*/
 
+	getSources() {
+		return this.props.mediaObjects.map(mo => {
+			const index = mo.url.indexOf('.tif');
+			let moClone = JSON.parse(JSON.stringify(mo));
+			moClone.infoUrl = mo.url.substring(0, index + 4) + '/info.json'
+        	return moClone;
+		})
+	}
+
+	//the mediaObject with a width & height is the one selected via the URL and should be highlighted
+	getInitialPage(sources) {
+		let index = -1;
+		for(let i=0;i<sources.length;i++) {
+			if(sources[i].w && sources[i].h) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
+
 	initViewer() {
-		const i = this.props.mediaObject.url.indexOf('.tif');
-        const infoUrl = this.props.mediaObject.url.substring(0, i + 4) + '/info.json'
+		//const i = this.props.mediaObject.url.indexOf('.tif');
+        //const infoUrl = this.props.mediaObject.url.substring(0, i + 4) + '/info.json'
 		//setup the basic viewer
+
+		const sources = this.getSources();
+		const initialPage = this.getInitialPage(sources);
 		this.viewer = OpenSeadragon({
-			id: 'img_viewer__' + this.props.mediaObject.id,
+			//id: 'img_viewer__' + this.props.mediaObject.id,
+			id: 'img_viewer' ,
 			prefixUrl: '/static/node_modules/openseadragon/build/openseadragon/images/',
 			showSelectionControl: true,
-			sequenceMode : false,
+			sequenceMode : true,
 			preserveViewport: true,
 			height: '100px',
 
 			//in case of a simple image
-			tileSources: [infoUrl],
+			tileSources: sources.map(s => s.infoUrl),
+			initialPage : initialPage != -1 ? initialPage : 0
 		});
 
 		//make sure the selection button tooltips have translations (otherwise annoying debug messages)
 		OpenSeadragon.setString('Tooltips.SelectionToggle', 'Toggle selection');
 		OpenSeadragon.setString('Tooltips.SelectionConfirm', 'Confirm selection');
 
-		if(this.props.mediaObject.w && this.props.mediaObject.h) {// if it has a width and height it's a region
-			this.viewer.addHandler('canvas-click', function(target, info) {
-		        // The canvas-click event gives us a position in web coordinates.
-		        const webPoint = target.position;
-		        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
-		        const viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
-		        // Convert from viewport coordinates to image coordinates.
-		        const imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
-		        // Show the results.
-		        console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
-		    }.bind(this));
+		//for debugging only
+		this.viewer.addHandler('canvas-click', function(target, info) {
+	        // The canvas-click event gives us a position in web coordinates.
+	        const webPoint = target.position;
+	        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
+	        const viewportPoint = this.viewer.viewport.pointFromPixel(webPoint);
+	        // Convert from viewport coordinates to image coordinates.
+	        const imagePoint = this.viewer.viewport.viewportToImageCoordinates(viewportPoint);
+	        // Show the results.
+	        console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
+	    }.bind(this));
+
+		//create an overlay of the selected region on the selected page
+		if(initialPage != -1) {
+		    let activeMediaObject = sources[initialPage];
 		    this.viewer.addHandler('open', function(target, info) {
-		        console.debug(this.props.mediaObject);
 		        const r = this.viewer.viewport.imageToViewportRectangle(
-		            parseInt(this.props.mediaObject.x),
-		            parseInt(this.props.mediaObject.y),
-		            parseInt(this.props.mediaObject.w),
-		            parseInt(this.props.mediaObject.h)
+		            parseInt(activeMediaObject.x),
+		            parseInt(activeMediaObject.y),
+		            parseInt(activeMediaObject.w),
+		            parseInt(activeMediaObject.h)
 		        );
 		        const elt = document.createElement("div");
 		        elt.className = IDUtil.cssClassName('highlight', this.CLASS_PREFIX);
@@ -158,6 +191,7 @@ class FlexImageViewer extends React.Component {
 				startRotatedHeight: 0.1, // only used if startRotated=true; value is relative to image height
 				restrictToImage: false, // true = do not allow any part of the selection to be outside the image
 				onSelection: function(rect) {
+					/*
 					this.addEmptyAnnotation.call(
 						this,
 						AnnotationUtil.generateW3CEmptyAnnotation(
@@ -174,7 +208,7 @@ class FlexImageViewer extends React.Component {
 								rotation : rect.rotation
 							}
 						)
-					);
+					);*/
 				}.bind(this), // callback
 				prefixUrl: '/static/vendor/openseadragonselection-master/images/',
 				navImages: { // overwrites OpenSeadragon's options
@@ -325,7 +359,7 @@ class FlexImageViewer extends React.Component {
 			this.renderAll();
 		}
 		return (
-			<div id={'img_viewer__' + this.props.mediaObject.id} className={IDUtil.cssClassName('flex-image-viewer')}></div>
+			<div id="img_viewer" className={IDUtil.cssClassName('flex-image-viewer')}></div>
 		)
 	}
 

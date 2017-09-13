@@ -200,6 +200,179 @@ class ItemDetailsRecipe extends React.Component {
 		}
 	}
 
+	checkMediaObjectIsSelected(mediaObject) {
+		if(mediaObject.url == this.props.params.fragmentUrl) {
+			mediaObject.start = this.props.params.s;
+			mediaObject.end = this.props.params.e;
+			mediaObject.x = this.props.params.x;
+			mediaObject.y = this.props.params.y;
+			mediaObject.w = this.props.params.w;
+			mediaObject.h = this.props.params.h;
+			return true;
+		}
+		return false;
+	}
+
+	/************************************************************************
+	************************ CALLED BY RENDER *******************************
+	*************************************************************************/
+
+	getRenderedMediaContent() {
+		//first get all of the media contents per media type
+		let tabs = [
+			this.getVideoTabContents(),
+			this.getAudioTabContents(),
+			this.getImageTabContents(),
+			this.getApplicationTabContents()
+		].filter(t => t != null);
+
+		//generate the tabs
+		const mediaTabs = tabs.map((tab, index) => {
+			const iconClass = IconUtil.getMimeTypeIcon(tab.type);
+			const active = this.props.params.fragmentUrl ? tab.active : index == 0;
+			return (
+				<li key={tab.type + '__tab'}
+					className={active ? 'active' : ''}>
+					<a data-toggle="tab" href={'#' + tab.type + '__content'}>
+						<span className={iconClass}></span>&nbsp;{tab.type}
+					</a>
+				</li>
+			)
+		}, this)
+
+		//then the contents of the tabs
+		const mediaTabContents = tabs.map((tab, index) => {
+			const active = this.props.params.fragmentUrl ? tab.active : index == 0;
+			return (
+				<div key={tab.type + '__content'}
+					id={tab.type + '__content'}
+					className={active ? 'tab-pane active' : 'tab-pane'}>
+					<div className={IDUtil.cssClassName('media-player', this.CLASS_PREFIX)}>
+						{tab.content}
+					</div>
+				</div>
+			);
+		}, this);
+
+		//finally generate the mediaPanel
+		return (
+			<FlexBox title="Related media objects">
+				<ul className="nav nav-tabs">
+					{mediaTabs}
+				</ul>
+				<div className="tab-content">
+					{mediaTabContents}
+				</div>
+			</FlexBox>
+		);
+	}
+
+	//each video will get a separate player (for now)
+	getVideoTabContents() {
+		let isActive = false;
+		const videos = this.state.itemData.playableContent.filter(content => {
+			return content.mimeType.indexOf('video') != -1;
+		})
+		if(videos.length > 0) {
+			const content = videos.map((mediaObject, index) => {
+				mediaObject.id = 'video__' + index;
+				if(!isActive) {
+					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
+				}
+				return (
+					<FlexPlayer
+						user={this.state.user} //current user
+						mediaObject={mediaObject} //TODO make this plural for playlist support
+						active={this.state.activeMediaTab == index}
+						enableFragmentMode={false} //add this to config
+						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
+						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
+						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
+					/>
+				);
+			});
+			return {type : 'video', content : content, active : isActive}
+		}
+		return null;
+	}
+
+	//each audio item will get a separate video player (for now)
+	getAudioTabContents() {
+		let isActive = false;
+		const audios = this.state.itemData.playableContent.filter(content => {
+			return content.mimeType.indexOf('audio') != -1;
+		})
+		if(audios.length > 0) {
+			const content = audios.map((mediaObject, index) => {
+				mediaObject.id = 'audio__' + index;
+				if(!isActive) {
+					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
+				}
+				return (
+					<FlexPlayer
+						user={this.state.user} //current user
+						mediaObject={mediaObject} //TODO make this plural for playlist support
+						active={this.state.activeMediaTab == index}
+						enableFragmentMode={false} //add this to config
+						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
+						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
+						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
+					/>
+				);
+			});
+			return {type : 'audio', content : content, active : isActive}
+		}
+		return null;
+	}
+
+	//images all go into one image viewer (as a playlist)
+	getImageTabContents() {
+		let isActive = false;
+		const images = this.state.itemData.playableContent.filter(content => {
+			return content.mimeType.indexOf('image') != -1;
+		});
+		if(images.length > 0) {
+			images.forEach((mediaObject, index) => {
+				mediaObject.id = 'application__' + index;
+				if(!isActive) {
+					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
+				}
+			})
+			const content = (
+				<FlexImageViewer
+					user={this.state.user} //current user
+					mediaObjects={images}//TODO make this plural for playlist support
+					annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
+					annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
+					editAnnotation={this.editAnnotation.bind(this)} //each annotation support should call this function
+					setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
+				/>
+			)
+			return {type : 'image', content : content, active : isActive}
+		}
+	}
+
+	//application mimetypes will be loaded into iFrames
+	getApplicationTabContents() {
+		let isActive = false;
+		const applications = this.state.itemData.playableContent.filter(content => {
+			return content.mimeType.indexOf('application') != -1;
+		})
+		if(applications.length > 0) {
+			const content = applications.map((mediaObject, index) => {
+				mediaObject.id = 'application__' + index;
+				if(!isActive) {
+					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
+				}
+				return (
+					<iframe src={mediaObject.url} width="650" height="550"/>
+				);
+			});
+			return {type : 'application', content : content, active : isActive}
+		}
+		return null;
+	}
+
 	render() {
 		if(!this.state.itemData) {
 			return (<h4>Loading item</h4>);
@@ -213,8 +386,7 @@ class ItemDetailsRecipe extends React.Component {
 			const source = null;
 			let metadataPanel = null;
 			let mediaPanel = null;
-			let mediaTabs = null;
-			let mediaTabContents = null;
+
 
 			//on the top level we only check if there is any form of annotationSupport
 			if(this.props.recipe.ingredients.annotationSupport) {
@@ -254,98 +426,7 @@ class ItemDetailsRecipe extends React.Component {
 
 			//media objects
 			if(this.state.itemData.playableContent) {
-				const mediaObjectTypes = [];
-
-				//first generate the tabs
-				mediaTabs = this.state.itemData.playableContent.map((mediaObject, index) => {
-					const iconClass = IconUtil.getMimeTypeIcon(mediaObject.mimeType);
-					return (
-						<li key={index + '__mt'}
-							className={this.state.activeMediaTab == index ? 'active' : ''}>
-							<a data-toggle="tab" href={'#__mo' + index}>
-								<span className={iconClass}></span>&nbsp;#{index}
-							</a>
-						</li>
-					)
-				}, this)
-
-				//then generate the tab contents
-				mediaTabContents = this.state.itemData.playableContent.map((mediaObject, index) => {
-					let mediaPlayer = 'Unknown Media Object: ' + index;
-					mediaObject.id = index; //assign an ID so each player has a unique ID for the UI
-					//assume that the first item of the playable content is the main one
-					if(mediaObject.url == this.props.params.fragmentUrl) {//TODO test this better
-						mediaObject.start = this.props.params.s;
-						mediaObject.end = this.props.params.e;
-						mediaObject.x = this.props.params.x;
-						mediaObject.y = this.props.params.y;
-						mediaObject.w = this.props.params.w;
-						mediaObject.h = this.props.params.h;
-					}
-					if(mediaObject.mimeType.indexOf('video') != -1) {//render a video player
-						mediaPlayer = (
-							<FlexPlayer
-								user={this.state.user} //current user
-								mediaObject={mediaObject} //TODO make this plural for playlist support
-								active={this.state.activeMediaTab == index}
-								enableFragmentMode={false} //add this to config
-								annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
-								annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-								setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
-							/>
-						);
-					} else if (mediaObject.mimeType.indexOf('audio') != -1) { //TODO integrate audio within the flex player
-						mediaPlayer = (
-							<FlexPlayer
-								user={this.state.user} //current user
-								mediaObject={mediaObject} //TODO make this plural for playlist support
-								active={this.state.activeMediaTab == index}
-								enableFragmentMode={false} //add this to config
-								annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
-								annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-								setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
-							/>
-						);
-					} else if (mediaObject.mimeType.indexOf('image') != -1) { //TODO detect a iiif url and create a cool iiif component
-						mediaPlayer = (
-							<FlexImageViewer
-								user={this.state.user} //current user
-								mediaObject={mediaObject}//TODO make this plural for playlist support
-								active={this.state.activeMediaTab == index}
-								annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
-								annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-								editAnnotation={this.editAnnotation.bind(this)} //each annotation support should call this function
-								setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
-							/>
-						);
-					} else if(mediaObject.mimeType.indexOf('application') != -1) { //e.g. for old Flash players
-						mediaPlayer = (
-							<iframe src={mediaObject.url} width="650" height="550"/>
-						);
-					}
-
-					return (
-						<div key={index + '__mtc'}
-							id={'__mo' + index}
-							className={this.state.activeMediaTab == index ? 'tab-pane active' : 'tab-pane'}>
-							<div className={IDUtil.cssClassName('media-player', this.CLASS_PREFIX)}>
-								{mediaPlayer}
-							</div>
-						</div>
-					);
-				}, this);
-
-				//finally generate the mediaPanel
-				mediaPanel = (
-					<FlexBox title="Related media objects">
-						<ul className="nav nav-tabs">
-							{mediaTabs}
-						</ul>
-						<div className="tab-content">
-							{mediaTabContents}
-						</div>
-					</FlexBox>
-				);
+				mediaPanel = this.getRenderedMediaContent();
 			}
 
 			return (
@@ -364,7 +445,7 @@ class ItemDetailsRecipe extends React.Component {
 								</div>
 								<br/>
 							</div>
-						</div> 
+						</div>
 					</div>
 				</div>
 			)
