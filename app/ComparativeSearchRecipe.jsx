@@ -203,6 +203,7 @@ class ComparativeSearchRecipe extends React.Component {
 				if(searchResults.params.sort) {
 					sortButtons = <Sorting
 						queryId={queryId}
+						collectionConfig={searchResults.collectionConfig}
 						sortResults={this.sortResults.bind(this)}
 						sortParams={searchResults.params.sort}
 						dateField={searchResults.dateField}/>
