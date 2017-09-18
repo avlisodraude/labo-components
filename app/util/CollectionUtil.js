@@ -37,6 +37,7 @@ const CollectionUtil = {
 		'nisv-catalogue-tv': NISVCatalogueConfig,
 		'nisv_programguides': NISVProgramGuidePageConfig,
 		'nisv-program-guides': NISVProgramGuideConfig,
+		'nisv-tv-guides': NISVProgramGuideConfig,
 		'eye-collection-desmet' : EYEConfig,
 		'twitter' : TwitterConfig,
 		'nisv' : NISVConfig,

@@ -58,8 +58,11 @@ class DateRangeSelector extends React.Component {
     onComponentOutput(componentClass, data) {
         if(componentClass == 'DatePickerSelector') {
             const df = this.props.dateRange.field;
+            console.debug('got something back', data);
             if (this.props.aggregations && data) {
+                console.debug('there is data');
                 if (this.props.aggregations[df]) {
+                    console.debug('the field exists in the aggregation');
                     this.onOutput({
                         field: this.props.dateRange.field,
                         start: data.start ? data.start.valueOf() : null,

@@ -163,6 +163,7 @@ class CollectionsRecipe extends React.Component {
 			const items = Object.keys(this.state.selectedCollections).map((key) => {
 				const c = this.state.selectedCollections[key];
 				const classNames = ['list-group-item'];
+				const collectionTitle = c.collectionInfo ? c.collectionInfo.title : c.collectionId;
 				if(key == this.state.activeCollection) {
 					classNames.push('active');
 				}
@@ -170,7 +171,7 @@ class CollectionsRecipe extends React.Component {
 					<li key={key} id={key} className={classNames.join(' ')} onClick={this.setActiveCollection.bind(this)}>
 						<span className="fa fa-remove" onClick={this.removeCollection.bind(this, key)}></span>
 						&nbsp;
-						{c.collectionInfo.title}
+						{collectionTitle}
 						<button className="btn btn-default" style={{float : 'right', marginTop : '-5px'}}
 							onClick={this.showCollectionStats.bind(this, key)} title="Inspect collection">
 							<span className="fa fa-bar-chart text-muted"></span>

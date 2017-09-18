@@ -364,9 +364,19 @@ class ItemDetailsRecipe extends React.Component {
 				if(!isActive) {
 					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
 				}
-				return (
-					<iframe src={mediaObject.url} width="650" height="550"/>
-				);
+				if(mediaObject.mimeType == 'application/javascript') {
+					return (
+						<div style={{margin : '10px'}}>
+							Deze media kan i.v.m. beperkingen m.b.t. auteursrecht niet binnen de media suite worden afgespeeld
+							<br/>
+							<a href={mediaObject.url} target="_external_js">Bekijk de media extern</a>
+						</div>
+					)
+				} else {
+					return (
+						<iframe src={mediaObject.url} width="650" height="550"/>
+					);
+				}
 			});
 			return {type : 'application', content : content, active : isActive}
 		}
