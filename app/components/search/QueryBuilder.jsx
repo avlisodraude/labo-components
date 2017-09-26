@@ -364,6 +364,31 @@ class QueryBuilder extends React.Component {
 		])
 	}
 
+	resetDateRange() {
+		this.setState({
+			selectedDateRange : {
+				field : this.props.collectionConfig.getPreferredDateField(),
+				start : null,
+				end : null
+			}
+		},
+		this.doSearch([
+			this.props.queryId,
+			this.props.collectionConfig,
+			this.state.searchLayers,
+			this.refs.searchTerm.value,
+			this.state.fieldCategory,
+			this.state.desiredFacets,
+			this.state.selectedFacets,
+			null, //reset the date range
+			this.state.selectedSortParams,
+			0,
+			this.props.pageSize,
+			this.onOutput.bind(this),
+			true
+		]))
+	}
+
     // Returns the total amount of 'aggregations' per date field selected
     totalNumberByDateField(data) {
         let bucketCounts = 0;
@@ -468,6 +493,7 @@ class QueryBuilder extends React.Component {
 				let aggrView = null; //either a box or list (TODO the list might not work properly anymore!)
 				let aggregationBox = null;
 				let dateRangeSelector = null;
+				let dateRangeCrumb = null;
 
                 //let countsBasedOnDateRange = null;
                 let currentSearchTerm = this.refs.searchTerm.value || null;
@@ -509,7 +535,6 @@ class QueryBuilder extends React.Component {
 						)
 					}
 
-                    //draw the time slider
                     //FIXME it will disappear when there are no results!
                     if (this.props.dateRangeSelector && this.state.selectedDateRange) {
                         //let selectedDateField = null;
@@ -539,6 +564,36 @@ class QueryBuilder extends React.Component {
 	                        )*/
 	                    }
 
+	                    if(this.state.selectedDateRange.start || this.state.selectedDateRange.end) {
+	                    	let info = '';
+	                    	let tmp = []
+	                        if(this.state.selectedDateRange.start) {
+	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start));
+	                        } else {
+	                        	tmp.push('everything before');
+	                        }
+	                        if(this.state.selectedDateRange.end) {
+	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end));
+	                        } else {
+	                        	tmp.push('up until now');
+	                        }
+	                        if(tmp.length > 0) {
+	                        	info = tmp.join(' - ');
+	                        	info += ' (using: '+this.state.selectedDateRange.field+')';
+	                        }
+	                    	dateRangeCrumb = (
+	                    		<div className={IDUtil.cssClassName('breadcrumbs', this.CLASS_PREFIX)}>
+									<div key="date_crumb" className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)}
+										title="current date range">
+										<em>Selected date range:&nbsp;</em>
+										{info}
+										&nbsp;
+										<i className="fa fa-close" onClick={this.resetDateRange.bind(this)}></i>
+									</div>
+								</div>
+	                    	)
+	                    }
+
                         dateRangeSelector = (
                             <DateRangeSelector
                             	queryId={this.props.queryId} //used for the guid (is it still needed?)
@@ -566,6 +621,7 @@ class QueryBuilder extends React.Component {
 					<div>
 						{resultStats}
 						<div className="separator"></div>
+						{dateRangeCrumb}
 						<div className="row">
 							<div className="col-md-12">
 								{dateRangeSelector}

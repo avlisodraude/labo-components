@@ -191,6 +191,19 @@
 
 .bg__query-builder { /* QueryBuilder.jsx */
 	.bg__qb__search-layers {}
+
+	.bg__qb__breadcrumbs {
+		.bg__qb__crumb {
+			display: inline-block;
+	    	margin: 0px 5px 5px 0px;
+	    	i {
+	    		cursor: pointer;
+		    	&:hover {
+		    		text-decoration:underline;
+		    	}
+		    }
+		}
+	}
 }
 
 .bg__query-factory {
