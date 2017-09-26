@@ -161,16 +161,16 @@ class QueryFactory extends React.Component {
 
 		//for drawing the tabs
 		const cells = this.state.openQueries.map(function(queryId, index) {
-			//TODO draw some stuff
+
 			const queryData = this.state.openQueryData[queryId];
 			let title = queryData.collectionConfig.collectionId;
 			if(queryData.collectionConfig.collectionInfo) {
 				title = queryData.collectionConfig.collectionInfo.title;
 			}
 			return (
-				<div className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)}>
+				<div key={queryId + '__qbw'} className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)}>
 					<h5>
-						{'Query #' + (index + 1) + ' (' + queryData.collectionConfig.collectionInfo.title + ')'}
+						{'Query ID ' + queryId + ' (' + queryData.collectionConfig.collectionInfo.title + ')'}
 						&nbsp;
 						<i className="fa fa-close" style={{float : 'right'}}
 							onClick={this.closeQuery.bind(this, queryId)}>

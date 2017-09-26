@@ -339,8 +339,7 @@ class CollectionAnalyser extends React.Component {
 					collectionTimeline = (
 						<QueryComparisonLineChart
 							data={this.state.fieldAnalysisTimeline}
-							comparisonId="1"
-							searchId={IDUtil.guid()}/>
+							comparisonId={IDUtil.guid()}/>
 					);
 				}
 			}

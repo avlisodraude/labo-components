@@ -31,21 +31,21 @@ class QueryComparisonLineChart extends React.Component {
 
 	//only update if the search id is different
 	shouldComponentUpdate(nextProps, nextState) {
-		return nextProps.searchId != this.props.searchId;
+		return nextProps.comparisonId != this.props.comparisonId;
 	}
 
 	componentDidUpdate() {
-		this.refreshAndRepaint(
-			this.repaint.bind(this)
-		);
+		const svg = document.getElementById("qclc_" + IDUtil.hashCode(this.props.comparisonId));
+		this.refreshAndRepaint(svg, svg.firstChild, this.repaint.bind(this))
 	}
 
-	refreshAndRepaint(callback) {
-		const svg = document.getElementById("qclc_" + IDUtil.hashCode(this.props.comparisonId));
-		while (svg.firstChild) {
-			svg.removeChild(svg.firstChild);
+	refreshAndRepaint(svg, child, callback) {
+		if (child) {
+			svg.removeChild(child);
+			this.refreshAndRepaint(svg, svg.firstChild, callback);
+		} else {
+			callback();
 		}
-		callback();
 	}
 
 	getGraphData() {

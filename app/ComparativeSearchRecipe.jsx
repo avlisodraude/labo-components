@@ -79,7 +79,7 @@ class ComparativeSearchRecipe extends React.Component {
 			this.setState({
 				combinedSearchResults : csr,
 				lineChartData : lineChartData,
-				searchId : data.searchId //for updating the line chart
+				comparisonId : IDUtil.guid() //for updating the line chart
 			});
 		}
 	}
@@ -175,8 +175,7 @@ class ComparativeSearchRecipe extends React.Component {
 					<FlexBox title="Search results plotted on a time line">
 						<QueryComparisonLineChart
 							data={this.state.lineChartData}
-							comparisonId="1"
-							searchId={this.state.searchId}/>
+							comparisonId={this.state.comparisonId}/>
 					</FlexBox>
 				);
 			}
