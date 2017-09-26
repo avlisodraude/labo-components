@@ -8,7 +8,9 @@ const CollectionAPI = {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
 					if(xhr.responseText && xhr.responseText.indexOf('does not exist') == -1) {
-						callback(JSON.parse(xhr.responseText));
+						callback(
+							CollectionAPI.__filterAggregationStatusDocumentType(JSON.parse(xhr.responseText))
+						);
 					} else {
 						callback(null);
 					}
@@ -20,6 +22,14 @@ const CollectionAPI = {
 		xhr.open("POST", url);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(JSON.stringify({collectionId : collectionId}));
+	},
+
+	__filterAggregationStatusDocumentType(stats) {
+		if(stats && stats.collection_statistics && stats.collection_statistics.document_types) {
+			let docTypes = stats.collection_statistics.document_types;
+			stats.collection_statistics.document_types = docTypes.filter((dt) => dt.doc_type != 'aggregation_status');
+		}
+		return stats;
 	},
 
 	/*
