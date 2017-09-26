@@ -53,26 +53,17 @@ class QueryBuilder extends React.Component {
 
 	constructor(props) {
 		super(props);
-		let collectionHits = null;
-		if(props.collectionConfig && props.collectionConfig.collectionStats) {
-			let stats = props.collectionConfig.collectionStats;
-			if(stats && stats.collection_statistics && stats.collection_statistics.document_types) {
-				let docTypes = stats.collection_statistics.document_types;
-				if(docTypes.length > 0) {
-					collectionHits = docTypes[0].doc_count;
-				}
-			}
-		}
 		this.state = {
-			searchLayers : null, //filled in onLoadCollectionConfig()
-			displayFacets : false, //filled in onLoadCollectionConfig()
+			searchLayers : this.getInitialSearchLayers(this.props.collectionConfig),
+			displayFacets : this.props.collectionConfig.facets ? true : false,
 			aggregations : {},
 			selectedFacets : this.props.searchParams ? this.props.searchParams.selectedFacets : {},
-			desiredFacets : null, //these will now be more dynamic than just taken from a config!
-			selectedDateRange : null,
+			desiredFacets : this.props.collectionConfig.getFacets(),
+			selectedDateRange : this.getInitialDateRange(this.props.collectionConfig),
 			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
+			selectedSortParams : this.getInitialSortParams(this.props.collectionConfig),
 			currentPage : -1,
-            currentCollectionHits: collectionHits,
+            currentCollectionHits: this.getCollectionHits(this.props.collectionConfig),
             isSearching : false
         }
         this.CLASS_PREFIX = 'qb';
@@ -82,7 +73,25 @@ class QueryBuilder extends React.Component {
 
 	//TODO also provide an option to directly pass a config, this is pretty annoying with respect to reusability
 	componentDidMount() {
-		this.init(this.props.collectionConfig);
+		//do an initial search in case there are search params in the URL
+        if(this.props.searchParams && this.refs.searchTerm) {
+			this.refs.searchTerm.value = this.props.searchParams.searchTerm;
+			this.doSearch([
+				this.props.queryId,
+				this.props.collectionConfig,
+				this.state.searchLayers,
+				this.props.searchParams.searchTerm,
+				this.state.fieldCategory,
+				this.state.desiredFacets,
+				this.state.selectedFacets,
+				this.state.selectedDateRange,
+				this.state.selectedSortParams,
+				this.props.searchParams.from,
+				this.props.searchParams.pageSize,
+				this.onOutput.bind(this),
+				false
+			]);
+		}
 		//make sure the search is done again when flipping back through the history (a bit weird, but it seems ok for now)
 		//TODO make sure how the browse history works outside of the recipes
 		if(this.props.searchParams) {
@@ -92,8 +101,20 @@ class QueryBuilder extends React.Component {
 		}
 	}
 
-	init(config) {
-		//determine the search layers by checking the URL params
+	//checks the initial sort params based on the URL params and the config (called only by the constructor)
+	getInitialSortParams() {
+		let sortParams = {
+			field : '_score',
+			order : 'desc'
+		}
+		if(this.props.searchParams.sortParams) {
+			sortParams = this.props.searchParams.sortParams;
+		}
+		return sortParams;
+	}
+
+	//checks the search layers based on the URL params and the config (called only by the constructor)
+	getInitialSearchLayers(config) {
 		let searchLayers = null;
 		if(config.getCollectionIndices()) {
 			searchLayers = {};
@@ -105,46 +126,35 @@ class QueryBuilder extends React.Component {
 				}
 			});
 		}
-		//apply the date range from the URL
+		return searchLayers;
+	}
+
+	//determine the initial date range based on the URL params and config (called only by the constructor)
+	getInitialDateRange() {
 		let selectedDateRange = {
-			field : config.getPreferredDateField(),
+			field : this.props.collectionConfig.getPreferredDateField(),
 			start : null,
 			end : null
 		}
 		if(this.props.searchParams && this.props.searchParams.dateRange) {
 			selectedDateRange= this.props.searchParams.dateRange;
 		}
-		//TODO setting the state here is a bit weird. Let's redo this by looking at the URL params first
-		this.setState({
-			searchLayers: searchLayers,
-			desiredFacets : config.getFacets(),
-			displayFacets: config.facets ? true : false,
-			selectedDateRange : selectedDateRange,
-			selectedSortParams : {
-				field : '_score',
-				order : 'desc'
-			} //by default sort by relevance
-		}, () => {
-			//do an initial search (only if there is a search term or a facet selected)
-			if(this.props.searchParams && this.refs.searchTerm) {
-				this.refs.searchTerm.value = this.props.searchParams.searchTerm;
-				this.doSearch([
-					this.props.queryId,
-					this.props.collectionConfig,
-					this.state.searchLayers,
-					this.props.searchParams.searchTerm,
-					this.props.searchParams.fieldCategory,
-					this.state.desiredFacets,
-					this.props.searchParams.selectedFacets,
-					this.props.searchParams.dateRange,
-					this.props.searchParams.sortParams,
-					this.props.searchParams.from,
-					this.props.searchParams.pageSize,
-					this.onOutput.bind(this),
-					false
-				]);
+		return selectedDateRange;
+	}
+
+	//called by the constructor once to get the amount of documents in the entire collection
+	getCollectionHits(config) {
+		let collectionHits = -1;
+		if(config && config.collectionStats) {
+			let stats = config.collectionStats;
+			if(stats && stats.collection_statistics && stats.collection_statistics.document_types) {
+				let docTypes = stats.collection_statistics.document_types;
+				if(docTypes.length > 0) {
+					collectionHits = docTypes[0].doc_count;
+				}
 			}
-		});
+		}
+		return collectionHits;
 	}
 
 	/*---------------------------------- SEARCH --------------------------------------*/
@@ -173,11 +183,7 @@ class QueryBuilder extends React.Component {
 			{
 				selectedFacets : {},
 				fieldCategory : null,
-				selectedDateRange : {
-					field : dr.field, //reset the range, but keep the date field selected
-					start : null,
-					end : null
-				}
+				selectedDateRange : dr
 			},
 			this.doSearch([
 				this.props.queryId,
