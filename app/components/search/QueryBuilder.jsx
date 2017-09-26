@@ -72,7 +72,8 @@ class QueryBuilder extends React.Component {
 			selectedDateRange : null,
 			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
 			currentPage : -1,
-            currentCollectionHits: collectionHits
+            currentCollectionHits: collectionHits,
+            isSearching : false
         }
         this.CLASS_PREFIX = 'qb';
 	}
@@ -127,7 +128,7 @@ class QueryBuilder extends React.Component {
 			//do an initial search (only if there is a search term or a facet selected)
 			if(this.props.searchParams && this.refs.searchTerm) {
 				this.refs.searchTerm.value = this.props.searchParams.searchTerm;
-				SearchAPI.search(
+				this.doSearch([
 					this.props.queryId,
 					this.props.collectionConfig,
 					this.state.searchLayers,
@@ -141,12 +142,21 @@ class QueryBuilder extends React.Component {
 					this.props.searchParams.pageSize,
 					this.onOutput.bind(this),
 					false
-				);
+				]);
 			}
 		});
 	}
 
 	/*---------------------------------- SEARCH --------------------------------------*/
+
+	doSearch(args) {
+		this.setState(
+			{
+				isSearching : true
+			},
+			SearchAPI.search(...args)
+		)
+	}
 
 	//this resets the paging
 	newSearch(e) {
@@ -169,7 +179,7 @@ class QueryBuilder extends React.Component {
 					end : null
 				}
 			},
-			SearchAPI.search(
+			this.doSearch([
 				this.props.queryId,
 				this.props.collectionConfig,
 				this.state.searchLayers,
@@ -183,7 +193,7 @@ class QueryBuilder extends React.Component {
 				this.props.pageSize,
 				this.onOutput.bind(this),
 				true
-			)
+			])
 		)
 	}
 
@@ -193,7 +203,7 @@ class QueryBuilder extends React.Component {
 		searchLayers[e.target.id] = !searchLayers[e.target.id];
 		this.setState(
 			{searchLayers : searchLayers},
-			SearchAPI.search(
+			this.doSearch([
 				this.props.queryId,
 				this.props.collectionConfig,
 				searchLayers,
@@ -207,7 +217,7 @@ class QueryBuilder extends React.Component {
 				this.props.pageSize,
 				this.onOutput.bind(this),
 				true
-			)
+			])
 		);
 	}
 
@@ -218,7 +228,7 @@ class QueryBuilder extends React.Component {
 			//TODO update the selected facets
 			this.setState(
 				{selectedFacets : data.selectedFacets, desiredFacets : data.desiredFacets},
-				SearchAPI.search(
+				this.doSearch([
 					this.props.queryId,
 					this.props.collectionConfig,
 					this.state.searchLayers,
@@ -232,7 +242,7 @@ class QueryBuilder extends React.Component {
 					this.props.pageSize,
 					this.onOutput.bind(this),
 					true
-				)
+				])
 			)
 		} else if(componentClass == 'DateRangeSelector') {
 			const df = this.state.desiredFacets;
@@ -265,7 +275,7 @@ class QueryBuilder extends React.Component {
 						desiredFacets : df,
 						selectedDateRange : data
 					},
-					SearchAPI.search(
+					this.doSearch([
 						this.props.queryId,
 						this.props.collectionConfig,
 						this.state.searchLayers,
@@ -279,7 +289,7 @@ class QueryBuilder extends React.Component {
 						this.props.pageSize,
 						this.onOutput.bind(this),
 						true
-					)
+					])
 				)
 			} else {
 				console.debug('this is not supposed to happen! (no date range...)');
@@ -289,7 +299,7 @@ class QueryBuilder extends React.Component {
 				{
 					fieldCategory : data
 				},
-				SearchAPI.search(
+				this.doSearch([
 					this.props.queryId,
 					this.props.collectionConfig,
 					this.state.searchLayers,
@@ -303,7 +313,7 @@ class QueryBuilder extends React.Component {
 					this.props.pageSize,
 					this.onOutput.bind(this),
 					true
-				)
+				])
 			)
 		}
 	}
@@ -312,7 +322,7 @@ class QueryBuilder extends React.Component {
 
 	//this function is piped back to the owner via onOutput()
 	gotoPage(pageNumber) {
-		SearchAPI.search(
+		this.doSearch([
 			this.props.queryId,
 			this.props.collectionConfig,
 			this.state.searchLayers,
@@ -326,12 +336,12 @@ class QueryBuilder extends React.Component {
 			this.props.pageSize,
 			this.onOutput.bind(this),
 			true
-		)
+		])
 	}
 
 	//this function is piped back to the owner via onOutput()
 	sortResults(sortParams) {
-		SearchAPI.search(
+		this.doSearch([
 			this.props.queryId,
 			this.props.collectionConfig,
 			this.state.searchLayers,
@@ -345,7 +355,7 @@ class QueryBuilder extends React.Component {
 			this.props.pageSize,
 			this.onOutput.bind(this),
 			true
-		)
+		])
 	}
 
     // Returns the total amount of 'aggregations' per date field selected
@@ -377,7 +387,8 @@ class QueryBuilder extends React.Component {
                 currentPage: data.currentPage, //remembering the page we're at
                 selectedSortParams: data.params.sort, //remembering the sort settings
                 searchId: data.searchId, //so involved components know that a new search was done
-                hitsBasedOnDateField: this.totalNumberByDateField(data) || 0
+                hitsBasedOnDateField: this.totalNumberByDateField(data) || 0,
+                isSearching: false
             });
         } else {
             this.setState({
@@ -385,7 +396,8 @@ class QueryBuilder extends React.Component {
                 totalHits: 0,
                 totalUniqueHits: 0,
                 currentPage: -1,
-                searchId: null
+                searchId: null,
+                isSearching: false
             });
         }
     }
@@ -393,6 +405,7 @@ class QueryBuilder extends React.Component {
     render() {
         if (this.props.collectionConfig) {
             let heading = null;
+            let searchIcon = null;
             let layerOptions = null;
             let resultBlock = null;
             let fieldCategorySelector = null;
@@ -537,7 +550,8 @@ class QueryBuilder extends React.Component {
                 resultStats = (
                     <div>
                         <div>
-                            Total number of results based on <em>"{currentSearchTerm}"</em> and selected filters: <b>{this.state.totalHits}</b>
+                            Total number of results based on <em>"{currentSearchTerm}"</em>
+                            and selected filters: <b>{this.state.totalHits}</b>
                         </div>
                     </div>
                 );
@@ -567,6 +581,13 @@ class QueryBuilder extends React.Component {
 				)
 			}
 
+			//determine which icon to show after the search input
+			if(this.state.isSearching) {
+				searchIcon = (<span className="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>)
+			} else {
+				searchIcon = (<i className="fa fa-search"></i>)
+			}
+
 			//render the stuff on screen
 			return (
 				<div className={IDUtil.cssClassName('query-builder')}>
@@ -580,7 +601,9 @@ class QueryBuilder extends React.Component {
 										<div className="input-group">
 											<input type="text" className="form-control"
 												id="search_term" ref="searchTerm" placeholder="Search"/>
-											<span className="input-group-addon btn-effect" onClick={this.newSearch.bind(this)}><i className="fa fa-search"></i></span>
+											<span className="input-group-addon btn-effect" onClick={this.newSearch.bind(this)}>
+												{searchIcon}
+											</span>
 										</div>
 									</div>
 									<div className="col-sm-6">
