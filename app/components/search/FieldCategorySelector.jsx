@@ -1,5 +1,5 @@
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from 'react-tooltip'; //https://www.npmjs.com/package/react-tooltip
 import IDUtil from '../../util/IDUtil';
 
 //TODO this component is not used yet and does not have a proper component ID yet

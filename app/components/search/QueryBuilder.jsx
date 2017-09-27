@@ -107,7 +107,7 @@ class QueryBuilder extends React.Component {
 			field : '_score',
 			order : 'desc'
 		}
-		if(this.props.searchParams.sortParams) {
+		if(this.props.searchParams && this.props.searchParams.sortParams) {
 			sortParams = this.props.searchParams.sortParams;
 		}
 		return sortParams;
