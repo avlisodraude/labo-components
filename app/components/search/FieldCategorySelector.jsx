@@ -42,25 +42,22 @@ class FieldCategorySelector extends React.Component {
 			});
 			options.splice(0,0, <option value="null_option">Search in: all fields</option>)
 			fieldCategorySelector = (
-				<select className="form-control"
-					value={this.props.fieldCategory ? this.props.fieldCategory.id : null}
-					onChange={this.changeStringField.bind(this)}>
-					{options}
-				</select>
-			)
-		}
-
-		return (
-			<div className={IDUtil.cssClassName('field-category-selector')}>
+				<div className={IDUtil.cssClassName('field-category-selector')}>
 				<div className="input-group">
 					<span className="input-group-addon btn-effect" data-tip={includedFields} data-html={true}>
 						<i className="fa fa-info"></i>
 					</span>
-					{fieldCategorySelector}
+					<select className="form-control"
+						value={this.props.fieldCategory ? this.props.fieldCategory.id : null}
+						onChange={this.changeStringField.bind(this)}>
+						{options}
+					</select>
 				</div>
 				<ReactTooltip />
-			</div>
-		)
+			</div>);
+		}
+
+		return fieldCategorySelector;
 	}
 
 }

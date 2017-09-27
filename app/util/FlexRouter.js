@@ -35,6 +35,7 @@ const FlexRouter = {
 		return arr[0] + "//" + arr[2];
 	},
 
+	//TODO extend this function so it is optional to put the params in the URL
 	setBrowserHistory : function(params, stateTitle) {
 		let url = document.location.pathname;
 		if(params && typeof(params) == 'object' && Object.keys(params).length > 0) {
