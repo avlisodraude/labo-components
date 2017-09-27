@@ -1,4 +1,6 @@
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
+import ReactTooltip from 'react-tooltip';
+import IDUtil from '../../util/IDUtil';
 
 //TODO this component is not used yet and does not have a proper component ID yet
 class FieldCategorySelector extends React.Component {
@@ -27,6 +29,13 @@ class FieldCategorySelector extends React.Component {
 
 	render() {
 		let fieldCategorySelector = null;
+		let includedFields = 'All metadata fields (classified as text field) are included in your search';
+		if(this.props.fieldCategory) {
+			includedFields = 'The following metadata fields are included in this category:<br/><br/>';
+			includedFields += this.props.fieldCategory.fields.map(
+				(f) => this.props.collectionConfig.toPrettyFieldName(f)
+			).join('<br/>');
+		}
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
 			const options = this.props.collectionConfig.getMetadataFieldCategories().map((fc) => {
 				return (<option value={fc.id}>{fc.label}</option>);
@@ -41,7 +50,17 @@ class FieldCategorySelector extends React.Component {
 			)
 		}
 
-		return fieldCategorySelector
+		return (
+			<div className={IDUtil.cssClassName('field-category-selector')}>
+				<div className="input-group">
+					<span className="input-group-addon btn-effect" data-tip={includedFields} data-html={true}>
+						<i className="fa fa-info"></i>
+					</span>
+					{fieldCategorySelector}
+				</div>
+				<ReactTooltip />
+			</div>
+		)
 	}
 
 }
