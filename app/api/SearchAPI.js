@@ -18,7 +18,7 @@ const SearchAPI = {
 				sortParams,
 				desiredFacets,
 				function(data) { //send the results to the component output (see onOutput())
-					if(data) {
+					if(data && data.params) {
 						//calculate the current page
 						const pageNumber = Math.ceil(offset / pageSize) + 1;
 						data.currentPage = data.results ? pageNumber : -1;
@@ -74,7 +74,7 @@ const SearchAPI = {
 	__fragmentSearch :function(collectionId, term, fieldCategory, searchLayers, selectedFacets, dateRange, sortParams, desiredFacets,
 		callback, offset=0 , size=10, innerHitsSize=3, innerHitsOffset=0, fragmentPath=null, fragmentFields=null) {
 		let url = _config.SEARCH_API_BASE + '/layered_search/' + collectionId
-		url += '?token=' + _chickenStock;
+		url += '?cid=' + _clientId + '&token=' + _chickenStock;
 		const params = {
 			term : term,
 			fieldCategory : fieldCategory,

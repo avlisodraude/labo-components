@@ -410,7 +410,8 @@ class QueryBuilder extends React.Component {
         if (this.props.onOutput) {
             this.props.onOutput(this.constructor.name, data);
         }
-        if (data) {
+        console.debug(data);
+        if (data && !data.error) {
             this.setState({
                 aggregations: data.aggregations, //for drawing the AggregationBox/List
                 totalHits: data.totalHits, //shown in the stats
@@ -430,6 +431,10 @@ class QueryBuilder extends React.Component {
                 searchId: null,
                 isSearching: false
             });
+        }
+
+        if(data && data.error == 'access denied') {
+        	alert('The system is not allowed to search through this collection');
         }
     }
 
