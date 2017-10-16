@@ -11,6 +11,7 @@ import FlexImageViewer from './components/player/image/FlexImageViewer';
 import MetadataTable from './components/search/MetadataTable';
 
 import SearchAPI from './api/SearchAPI';
+import PlayoutAPI from './api/PlayoutAPI';
 
 import AnnotationAPI from './api/AnnotationAPI';
 import AnnotationUtil from './util/AnnotationUtil'
@@ -121,7 +122,7 @@ class ItemDetailsRecipe extends React.Component {
 	onLoadItemData(collectionId, resourceId, data) {
 		let found = data ? data.found : false;
 		if(collectionId && found != false) {
-			CollectionUtil.generateCollectionConfig(collectionId, function(config){
+			CollectionUtil.generateCollectionConfig(collectionId, function(config) {
 				const itemDetailData = config.getItemDetailData(data);
 				found = itemDetailData == null ? false : true;
 				if(found) {
@@ -136,12 +137,22 @@ class ItemDetailsRecipe extends React.Component {
 							}
 						}
 					}
-					this.setState({
+					let desiredState = {
 						itemData : itemDetailData,
 						annotationTarget : this.getAnnotationTarget.call(this, itemDetailData),
 						found : true,
 						activeMediaTab : activeMediaTab
-					});
+					}
+					if (config.requiresPlayoutAccess() && itemDetailData.playableContent) {
+						PlayoutAPI.requestAccess(
+							collectionId,
+							itemDetailData.playableContent[0].assetId,
+							desiredState,
+							this.onLoadPlayoutAccess.bind(this)
+						)
+					} else {
+						this.setState(desiredState);
+					}
 				}
 			}.bind(this));
 		}
@@ -153,6 +164,12 @@ class ItemDetailsRecipe extends React.Component {
 			})
 			console.debug('this item does not exist');
 		}
+	}
+
+	//TODO call this after the details are loaded
+	onLoadPlayoutAccess(accessApproved, desiredState) {
+		console.debug('state approved: ' + accessApproved);
+		this.setState(desiredState);
 	}
 
 	/* ------------------------------------------------------------------------------

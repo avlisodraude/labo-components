@@ -47,6 +47,7 @@ export function cookRecipe (recipe, params, user, elementId) {
 export {default as AnnotationAPI} from './api/AnnotationAPI';
 export {default as CollectionAPI} from './api/CollectionAPI';
 export {default as SearchAPI} from './api/SearchAPI';
+export {default as PlayoutAPI} from './api/PlayoutAPI';
 
 //collection components
 export {default as CollectionSelector} from './components/collection/CollectionSelector';

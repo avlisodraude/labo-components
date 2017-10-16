@@ -74,7 +74,7 @@ const SearchAPI = {
 	__fragmentSearch :function(collectionId, term, fieldCategory, searchLayers, selectedFacets, dateRange, sortParams, desiredFacets,
 		callback, offset=0 , size=10, innerHitsSize=3, innerHitsOffset=0, fragmentPath=null, fragmentFields=null) {
 		let url = _config.SEARCH_API_BASE + '/layered_search/' + collectionId
-		url += '?cid=' + _clientId + '&token=' + _chickenStock;
+		url += '?cid=' + _clientId + '&at=' + _chickenStock;
 		const params = {
 			term : term,
 			fieldCategory : fieldCategory,

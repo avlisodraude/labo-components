@@ -49,8 +49,9 @@ class HTML5VideoPlayer extends React.Component {
 	render() {
 		return (
 			<video className={IDUtil.cssClassName('html5-video-player')}
-				id={'video_player__' + this.props.mediaObject.id} controls>
+				id={'video_player__' + this.props.mediaObject.id} controls crossOrigin="use-credentials">
 				<source src={this.props.mediaObject.url}></source>
+				Your browser does not support the video tag
 			</video>
 		)
 	}
