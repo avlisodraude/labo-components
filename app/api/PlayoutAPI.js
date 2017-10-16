@@ -22,8 +22,8 @@ const PlayoutAPI = {
 			}
 		}
 		xhr.open("POST", url);
+		xhr.withCredentials = true;
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		xhr.setRequestHeader("withCredentials", "true");
 		xhr.send(JSON.stringify(data));
 	}
 

@@ -589,8 +589,7 @@ class FlexPlayer extends React.Component {
 						eventCallbacks={playerEventCallbacks}
 						onPlayerReady={this.onPlayerReady.bind(this)}/>
 					);
-				} else if (this.props.mediaObject.url.indexOf('.mp4') != -1 ||
-					this.props.mediaObject.url.indexOf('nisv-catalogue-aggr') != -1) {
+				} else if (this.props.mediaObject.url.indexOf('.mp4') != -1) {
 					player = (
 						<JWPlayer mediaObject={this.props.mediaObject}
 						eventCallbacks={playerEventCallbacks}
