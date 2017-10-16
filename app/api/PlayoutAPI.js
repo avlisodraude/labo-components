@@ -7,7 +7,7 @@ const PlayoutAPI = {
 			clientId: _clientId,
 			at: _chickenStock
 		}
-		var url = 'http://jjb-play.nl:20999/api/play/' + collectionId + '/' + videoId;
+		var url = _play + '/api/play/' + collectionId + '/' + videoId;
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
