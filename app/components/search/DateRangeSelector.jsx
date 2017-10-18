@@ -2,6 +2,7 @@ import IDUtil from '../../util/IDUtil';
 import TimeUtil from '../../util/TimeUtil';
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 import DatePickerSelector from './DatePickerSelector';
+import moment from 'moment';
 //https://facebook.github.io/react/blog/2013/07/11/react-v0-4-prop-validation-and-default-values.html
 /*
 	Currently based on noUIslider.js
@@ -70,6 +71,26 @@ class DateRangeSelector extends React.Component {
         }
     }
 
+    getMinDate() {
+        if(this.props.dateRange && this.props.dateRange.field) {
+            const buckets = this.props.aggregations[this.props.dateRange.field];
+            if(buckets && buckets.length > 0) {
+                return moment(buckets[0].date_millis, 'x')
+            }
+        }
+        return null
+    }
+
+    getMaxDate() {
+        if(this.props.dateRange && this.props.dateRange.field) {
+            const buckets = this.props.aggregations[this.props.dateRange.field];
+            if(buckets && buckets.length > 0) {
+                return moment(buckets[buckets.length -1].date_millis, 'x')
+            }
+        }
+        return null
+    }
+
     render() {
         let dateFieldSelect = null;
 
@@ -77,6 +98,8 @@ class DateRangeSelector extends React.Component {
             const options = this.props.collectionConfig.getDateFields().map((df, index) => {
                 return (<option key={'df__' + index} value={df}>{this.props.collectionConfig.toPrettyFieldName(df)}</option>);
             });
+            options.splice(0,0, <option key={'df__default_value' } value="null_option">Select date field</option>);
+
             dateFieldSelect = (
                 <select className="form-control" value={this.props.dateRange.field}
                         onChange={this.changeDateField.bind(this)}>
@@ -93,6 +116,8 @@ class DateRangeSelector extends React.Component {
                             {dateFieldSelect}
                         </div>
                         <DatePickerSelector
+                            minDate={this.getMinDate()}
+                            maxDate={this.getMaxDate()}
                             dateRange={this.props.dateRange}
                             onOutput={this.onComponentOutput.bind(this)}
                         />

@@ -105,15 +105,18 @@ class AggregationBox extends React.Component {
 
 		//draw a tab for each found aggregation (TODO make this actually the desired facets, so it's possible to show empty results)
 		const tabs = this.props.desiredFacets.map((aggr, index) => {
-			return (
-				<li key={index + '__tab'} className={index == 0 ? 'active' : ''}>
-					<a data-toggle="tab" href={'#__aggr_' + IDUtil.hashCode(this.props.queryId + '-' + index)}>
-						{aggr.title}
-						&nbsp;
-						<span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, aggr.field)}></span>
-					</a>
-				</li>
-			)
+		    if (this.props.desiredFacets[index].type !== "date_histogram") {
+                return (
+                    <li key={index + '__tab'} className={index == 0 ? 'active' : ''}>
+                        <a data-toggle="tab" href={'#__aggr_' + IDUtil.hashCode(this.props.queryId + '-' + index)}>
+                            {aggr.title}
+                            &nbsp;
+                            <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, aggr.field)}></span>
+                        </a>
+                    </li>
+                )
+
+		    }
 		});
 
 		//add a button for opening the collection selector last
@@ -147,53 +150,42 @@ class AggregationBox extends React.Component {
 			)
 		}
 
-
 		//the contents contain the actual facets
 		const tabContents = this.props.desiredFacets.map((aggr, index) => {
 			let visualisation = null;
-			//always generate a histogram for date histogram aggregations
-			if(ElasticsearchDataUtil.isHistogram(aggr.field, this.props.desiredFacets)) {
-				visualisation = (
-					<Histogram
-						queryId={this.props.queryId}
-						data={this.props.aggregations[aggr.field]}
-						title={aggr.field}
-						searchId={this.props.searchId}/>
-				)
-			} else {
-				if(this.props.aggregations[aggr.field] && this.props.aggregations[aggr.field].length > 0) {
-					//generate a word cloud for regular aggregations
-					//TODO create a component for this!
+            if (this.props.aggregations[aggr.field] && this.props.aggregations[aggr.field].length > 0) {
+                //generate a word cloud for regular aggregations
+                //TODO create a component for this!
 
-					const terms = this.props.aggregations[aggr.field].map((aggrData) => {
-						const classNames = [IDUtil.cssClassName('tag-cloud-item', this.CLASS_PREFIX)]
-						if(this.isSelected(aggr.field, aggrData.key)) {
-							classNames.push('active');
-						}
-						return (
-							<span
-								key={aggr.field + '|' + aggrData.key} className={classNames.join(' ')}
-								onClick={this.toggleSelectedFacet.bind(this, aggr.field, aggrData.key)}>
+                const terms = this.props.aggregations[aggr.field].map((aggrData) => {
+                    const classNames = [IDUtil.cssClassName('tag-cloud-item', this.CLASS_PREFIX)]
+                    if (this.isSelected(aggr.field, aggrData.key)) {
+                        classNames.push('active');
+                    }
+                    return (
+						<span
+							key={aggr.field + '|' + aggrData.key} className={classNames.join(' ')}
+							onClick={this.toggleSelectedFacet.bind(this, aggr.field, aggrData.key)}>
 									{aggrData.key}&nbsp;({aggrData.doc_count})
 							</span>
-						)
-					}, this);
-					visualisation = (
-						<div className={IDUtil.cssClassName('tag-cloud', this.CLASS_PREFIX)}>
-							{terms}
-						</div>
-					)
+                    )
+                }, this);
+                visualisation = (
+					<div className={IDUtil.cssClassName('tag-cloud', this.CLASS_PREFIX)}>
+                        {terms}
+					</div>
+                )
 
-				} else {
-					//if there is no data found within the desired aggregation/facet
-					visualisation = (
-						<div>
-							<br/>
-							<div className="alert alert-danger">No data found for this aggregation</div>
-						</div>
-					)
-				}
-			}
+            } else {
+                //if there is no data found within the desired aggregation/facet
+                visualisation = (
+					<div>
+						<br/>
+						<div className="alert alert-danger">No data found for this aggregation</div>
+					</div>
+                )
+            }
+
 			return (
 				<div key={index + '__tab_c'} id={'__aggr_' + IDUtil.hashCode(this.props.queryId + '-' + index)}
 					className={index == 0 ? 'tab-pane active' : 'tab-pane'} style={{overflow: 'auto'}}>

@@ -11,6 +11,7 @@ import FieldCategorySelector from './FieldCategorySelector';
 import DateRangeSelector from './DateRangeSelector';
 import AggregationBox from './AggregationBox';
 import AggregationList from './AggregationList';
+import Histogram from '../stats/Histogram';
 import CollectionConfig from '../../collection/mappings/CollectionConfig';
 /*
 Notes about this component:
@@ -53,13 +54,14 @@ class QueryBuilder extends React.Component {
 
 	constructor(props) {
 		super(props);
+		let initialDateRange = this.getInitialDateRange(this.props.collectionConfig);
 		this.state = {
 			searchLayers : this.getInitialSearchLayers(this.props.collectionConfig),
 			displayFacets : this.props.collectionConfig.facets ? true : false,
 			aggregations : {},
 			selectedFacets : this.props.searchParams ? this.props.searchParams.selectedFacets : {},
-			desiredFacets : this.props.collectionConfig.getFacets(),
-			selectedDateRange : this.getInitialDateRange(this.props.collectionConfig),
+			desiredFacets : this.getInitialDesiredFacets(this.props.collectionConfig, initialDateRange),
+			selectedDateRange : initialDateRange,
 			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
 			selectedSortParams : this.getInitialSortParams(this.props.collectionConfig),
 			currentPage : -1,
@@ -99,6 +101,19 @@ class QueryBuilder extends React.Component {
 	  			document.location.href=document.location;
 			};
 		}
+	}
+
+	getInitialDesiredFacets(config, dateRange) {
+		let df = this.props.collectionConfig.getFacets()
+		if(dateRange.field) {
+			df.push({
+				field: dateRange.field,
+				title : config.toPrettyFieldName(dateRange.field),
+				id : dateRange.field,
+				type : 'date_histogram'
+			});
+		}
+		return df;
 	}
 
 	//checks the initial sort params based on the URL params and the config (called only by the constructor)
@@ -269,10 +284,7 @@ class QueryBuilder extends React.Component {
 						field: data.field,
 						title : this.props.collectionConfig.toPrettyFieldName(data.field),
 						id : data.field,
-						operator : 'AND',
-						size : 10,
-						type : 'date_histogram',
-						display: true
+						type : 'date_histogram'
 					});
 				}
 				//do a new query based on the datefield and date range
@@ -365,12 +377,13 @@ class QueryBuilder extends React.Component {
 	}
 
 	resetDateRange() {
+		const newDateRange = {
+			field : 'null_option',
+			start : null,
+			end : null
+		}
 		this.setState({
-			selectedDateRange : {
-				field : this.props.collectionConfig.getPreferredDateField(),
-				start : null,
-				end : null
-			}
+			selectedDateRange : newDateRange
 		},
 		this.doSearch([
 			this.props.queryId,
@@ -380,7 +393,7 @@ class QueryBuilder extends React.Component {
 			this.state.fieldCategory,
 			this.state.desiredFacets,
 			this.state.selectedFacets,
-			null, //reset the date range
+			newDateRange, //reset the date range
 			this.state.selectedSortParams,
 			0,
 			this.props.pageSize,
@@ -410,7 +423,7 @@ class QueryBuilder extends React.Component {
         if (this.props.onOutput) {
             this.props.onOutput(this.constructor.name, data);
         }
-        console.debug(data);
+
         if (data && !data.error) {
             this.setState({
                 aggregations: data.aggregations, //for drawing the AggregationBox/List
@@ -446,6 +459,7 @@ class QueryBuilder extends React.Component {
             let resultBlock = null;
             let fieldCategorySelector = null;
             let currentCollectionTitle = this.props.collectionConfig.collectionId;
+            let histo = null;
 
             //collectionInfo comes from CKAN, which can be empty
             if(this.props.collectionConfig.collectionInfo) {
@@ -499,6 +513,7 @@ class QueryBuilder extends React.Component {
 				let aggregationBox = null;
 				let dateRangeSelector = null;
 				let dateRangeCrumb = null;
+                let visualisation = null;
 
                 //let countsBasedOnDateRange = null;
                 let currentSearchTerm = this.refs.searchTerm.value || null;
@@ -539,6 +554,33 @@ class QueryBuilder extends React.Component {
 							</div>
 						)
 					}
+
+					// Display the histogram only if an option other than the default is selected
+					// and the length of the data is greater than 0.
+					 if (this.state.selectedDateRange.field !== 'null_option'  &&
+						 this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
+                         this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
+                        histo = (
+							<Histogram
+								queryId={this.props.queryId}
+								data={this.state.aggregations[this.state.selectedDateRange.field]}
+								title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
+								searchId={this.state.searchId}/>
+                        )
+                     } else {
+                         //if there is no data found within the desired aggregation/facet
+                         if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
+                             this.state.aggregations[this.state.selectedDateRange.field].length === 0 &&
+                             this.state.selectedDateRange.field !== 'null_option') {
+
+                             visualisation = (
+								 <div>
+									 <br/>
+									 <div className="alert alert-danger">No data found for this Date Type Field</div>
+								 </div>
+                             )
+                         }
+					 }
 
                     //FIXME it will disappear when there are no results!
                     if (this.props.dateRangeSelector && this.state.selectedDateRange) {
@@ -630,6 +672,8 @@ class QueryBuilder extends React.Component {
 						<div className="row">
 							<div className="col-md-12">
 								{dateRangeSelector}
+								{histo}
+                                {visualisation}
 							</div>
 						</div>
 						<div className="separator"></div>
