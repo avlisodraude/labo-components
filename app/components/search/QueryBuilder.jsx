@@ -563,7 +563,7 @@ class QueryBuilder extends React.Component {
                              visualisation = (
 								 <div>
 									 <br/>
-									 <div className="alert alert-danger">No data found for this aggregation</div>
+									 <div className="alert alert-danger">No data found for this Date Type Field</div>
 								 </div>
                              )
                           }
