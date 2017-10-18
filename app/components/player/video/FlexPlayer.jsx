@@ -73,7 +73,12 @@ class FlexPlayer extends React.Component {
 		this.loadAnnotations();
 
 		//then listen to any changes that happen in the API
-		AppAnnotationStore.bind(this.props.mediaObject.url, this.onChange.bind(this));
+		AppAnnotationStore.bind(
+			AnnotationUtil.removeSourceUrlParams(
+				this.props.mediaObject.url
+			),
+			this.onChange.bind(this)
+		);
 	}
 
 	onChange(eventType, data, annotation, index) {
@@ -408,7 +413,7 @@ class FlexPlayer extends React.Component {
 	playAnnotation(annotation) {
 		if(annotation && annotation.target) {
 			//TODO make sure to check the mimeType and also add support for images/spatial targets!!
-			if(annotation.target.source == this.props.mediaObject.url) {
+			if(annotation.target.source == AnnotationUtil.removeSourceUrlParams(this.props.mediaObject.url)) {
 				this.setActiveAnnotation(annotation);
 				const frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(annotation);
 				if(frag) {

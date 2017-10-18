@@ -42,8 +42,14 @@ class FlexImageViewer extends React.Component {
 			this.loadAnnotations();
 
 			//then listen to any changes that happen in the API
-			//TODO nu moeten alle mediaobjecten in de gaten gehouden worden -> optimaliseren
-			//AppAnnotationStore.bind(this.props.mediaObject.url, this.onChange.bind(this));
+
+			//TODO!! nu moeten alle mediaobjecten in de gaten gehouden worden -> optimaliseren
+
+			/*
+			AppAnnotationStore.bind(
+				AnnotationUtil.removeSourceUrlParams(this.props.mediaObject.url),
+				this.onChange.bind(this)
+			);*/
 		} else {
 			this.initViewer();
 		}

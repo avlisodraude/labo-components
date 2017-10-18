@@ -1,6 +1,7 @@
 import MicroEvent from 'microevent';
 import AnnotationAPI from '../api/AnnotationAPI';
 import AppDispatcher from './AppDispatcher';
+import AnnotationUtil from '../util//AnnotationUtil';
 
 //See: https://github.com/jeromeetienne/microevent.js
 
@@ -16,7 +17,7 @@ class AnnotationStore {
 
 	getMediaObjectAnnotations(mediaObjectURI, user, callback) {
 		AnnotationAPI.getFilteredAnnotations({
-			'target.source' : mediaObjectURI,
+			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
 			'user' : user
 		}, callback);
 	}

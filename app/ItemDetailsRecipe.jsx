@@ -168,7 +168,6 @@ class ItemDetailsRecipe extends React.Component {
 
 	//TODO call this after the details are loaded
 	onLoadPlayoutAccess(accessApproved, desiredState) {
-		console.debug('state approved: ' + accessApproved);
 		this.setState(desiredState);
 	}
 

@@ -62,6 +62,14 @@ const AnnotationUtil = {
 		return annotation;
 	},
 
+	//MAJOR TODO: DETERMINE WHERE TO SET THE TIDY MEDIA OBJECT URL!
+	removeSourceUrlParams(url) {
+		if(url.indexOf('?') != -1) {
+			return url.substring(0, url.indexOf('?'));
+		}
+		return url
+	},
+
 	//called from components that want to create a new annotation with a proper target
 	generateW3CEmptyAnnotation : function(user, source, mimeType, params) {
 		if(!source) {
@@ -110,7 +118,7 @@ const AnnotationUtil = {
 			id : null,
 			user : user, //TODO like the selector, generate the w3c stuff here?
 			target : {
-				source: source,
+				source: AnnotationUtil.removeSourceUrlParams(source), //TODO It should be a PID!
 				selector: selector,
 				type: targetType
 			},

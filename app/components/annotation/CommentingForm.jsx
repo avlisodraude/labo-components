@@ -95,7 +95,7 @@ class CommentingForm extends React.Component {
 									ref="comment"
 									type="text"
 									className="form-control"
-									placeholder="Add one or more tags"
+									placeholder="Add one or more comments or notes"
 								/>
 								<br/>
 								<button className="btn btn-primary" onClick={this.addComment.bind(this)}>Add</button>
