@@ -152,10 +152,9 @@ class AggregationBox extends React.Component {
 			)
 		}
 
-
 		//the contents contain the actual facets
-        const tabContents = this.props.desiredFacets.map((aggr, index) => {
-            let visualisation = null;
+		const tabContents = this.props.desiredFacets.map((aggr, index) => {
+			let visualisation = null;
             if (this.props.aggregations[aggr.field] && this.props.aggregations[aggr.field].length > 0) {
                 //generate a word cloud for regular aggregations
                 //TODO create a component for this!
@@ -166,17 +165,26 @@ class AggregationBox extends React.Component {
                         classNames.push('active');
                     }
                     return (
-                        <span
-                            key={aggr.field + '|' + aggrData.key} className={classNames.join(' ')}
-                            onClick={this.toggleSelectedFacet.bind(this, aggr.field, aggrData.key)}>
+						<span
+							key={aggr.field + '|' + aggrData.key} className={classNames.join(' ')}
+							onClick={this.toggleSelectedFacet.bind(this, aggr.field, aggrData.key)}>
 									{aggrData.key}&nbsp;({aggrData.doc_count})
 							</span>
                     )
                 }, this);
                 visualisation = (
-                    <div className={IDUtil.cssClassName('tag-cloud', this.CLASS_PREFIX)}>
+					<div className={IDUtil.cssClassName('tag-cloud', this.CLASS_PREFIX)}>
                         {terms}
-                    </div>
+					</div>
+                )
+
+            } else {
+                //if there is no data found within the desired aggregation/facet
+                visualisation = (
+					<div>
+						<br/>
+						<div className="alert alert-danger">No data found for this aggregation</div>
+					</div>
                 )
             }
 

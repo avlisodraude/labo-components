@@ -559,14 +559,16 @@ class QueryBuilder extends React.Component {
                      } else {
                          //if there is no data found within the desired aggregation/facet
                          if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
-							 this.state.aggregations[this.state.selectedDateRange.field].length === 0 ) {
+                             this.state.aggregations[this.state.selectedDateRange.field].length === 0 &&
+                             this.state.selectedDateRange.field !== 'null_option') {
+
                              visualisation = (
 								 <div>
 									 <br/>
 									 <div className="alert alert-danger">No data found for this Date Type Field</div>
 								 </div>
                              )
-                          }
+                         }
 					 }
 
                     //FIXME it will disappear when there are no results!
