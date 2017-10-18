@@ -77,6 +77,8 @@ class DateRangeSelector extends React.Component {
             const options = this.props.collectionConfig.getDateFields().map((df, index) => {
                 return (<option key={'df__' + index} value={df}>{this.props.collectionConfig.toPrettyFieldName(df)}</option>);
             });
+            options.splice(0,0, <option key={'df__default_value' } value="null_option">Select date field</option>);
+
             dateFieldSelect = (
                 <select className="form-control" value={this.props.dateRange.field}
                         onChange={this.changeDateField.bind(this)}>
