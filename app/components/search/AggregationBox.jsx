@@ -117,8 +117,6 @@ class AggregationBox extends React.Component {
                 )
 
 		    }
-            console.log('dsads', this.props.desiredFacets[index]);
-
 		});
 
 		//add a button for opening the collection selector last

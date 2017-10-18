@@ -54,13 +54,14 @@ class QueryBuilder extends React.Component {
 
 	constructor(props) {
 		super(props);
+		let initialDateRange = this.getInitialDateRange(this.props.collectionConfig);
 		this.state = {
 			searchLayers : this.getInitialSearchLayers(this.props.collectionConfig),
 			displayFacets : this.props.collectionConfig.facets ? true : false,
 			aggregations : {},
 			selectedFacets : this.props.searchParams ? this.props.searchParams.selectedFacets : {},
-			desiredFacets : this.props.collectionConfig.getFacets(),
-			selectedDateRange : this.getInitialDateRange(this.props.collectionConfig),
+			desiredFacets : this.getInitialDesiredFacets(this.props.collectionConfig, initialDateRange),
+			selectedDateRange : initialDateRange,
 			fieldCategory : this.props.searchParams ? this.props.searchParams.fieldCategory : null,
 			selectedSortParams : this.getInitialSortParams(this.props.collectionConfig),
 			currentPage : -1,
@@ -100,6 +101,19 @@ class QueryBuilder extends React.Component {
 	  			document.location.href=document.location;
 			};
 		}
+	}
+
+	getInitialDesiredFacets(config, dateRange) {
+		let df = this.props.collectionConfig.getFacets()
+		if(dateRange.field) {
+			df.push({
+				field: dateRange.field,
+				title : config.toPrettyFieldName(dateRange.field),
+				id : dateRange.field,
+				type : 'date_histogram'
+			});
+		}
+		return df;
 	}
 
 	//checks the initial sort params based on the URL params and the config (called only by the constructor)
@@ -270,10 +284,7 @@ class QueryBuilder extends React.Component {
 						field: data.field,
 						title : this.props.collectionConfig.toPrettyFieldName(data.field),
 						id : data.field,
-						operator : 'AND',
-						size : 10,
-						type : 'date_histogram',
-						display: true
+						type : 'date_histogram'
 					});
 				}
 				//do a new query based on the datefield and date range
@@ -366,12 +377,13 @@ class QueryBuilder extends React.Component {
 	}
 
 	resetDateRange() {
+		const newDateRange = {
+			field : 'null_option',
+			start : null,
+			end : null
+		}
 		this.setState({
-			selectedDateRange : {
-				field : this.props.collectionConfig.getPreferredDateField(),
-				start : null,
-				end : null
-			}
+			selectedDateRange : newDateRange
 		},
 		this.doSearch([
 			this.props.queryId,
@@ -381,7 +393,7 @@ class QueryBuilder extends React.Component {
 			this.state.fieldCategory,
 			this.state.desiredFacets,
 			this.state.selectedFacets,
-			null, //reset the date range
+			newDateRange, //reset the date range
 			this.state.selectedSortParams,
 			0,
 			this.props.pageSize,
@@ -548,7 +560,6 @@ class QueryBuilder extends React.Component {
 					 if (this.state.selectedDateRange.field !== 'null_option'  &&
 						 this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
                          this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
-
                         histo = (
 							<Histogram
 								queryId={this.props.queryId}
