@@ -94,6 +94,10 @@ class CollectionConfig {
 		return null;
 	}
 
+	requiresPlayoutAccess() {
+		return false;
+	}
+
 	getDocumentType() {
 		return this.docType;
 	}
