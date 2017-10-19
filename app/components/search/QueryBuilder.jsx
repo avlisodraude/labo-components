@@ -513,7 +513,6 @@ class QueryBuilder extends React.Component {
 				let aggregationBox = null;
 				let dateRangeSelector = null;
 				let dateRangeCrumb = null;
-                let visualisation = null;
 
                 //let countsBasedOnDateRange = null;
                 let currentSearchTerm = this.refs.searchTerm.value || null;
@@ -561,11 +560,13 @@ class QueryBuilder extends React.Component {
 						 this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
                          this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
                         histo = (
-							<Histogram
-								queryId={this.props.queryId}
-								data={this.state.aggregations[this.state.selectedDateRange.field]}
-								title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
-								searchId={this.state.searchId}/>
+                        	<div style={{"overflow-x" : 'auto'}}>
+								<Histogram
+									queryId={this.props.queryId}
+									data={this.state.aggregations[this.state.selectedDateRange.field]}
+									title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
+									searchId={this.state.searchId}/>
+							</div>
                         )
                      } else {
                          //if there is no data found within the desired aggregation/facet
@@ -573,7 +574,7 @@ class QueryBuilder extends React.Component {
                              this.state.aggregations[this.state.selectedDateRange.field].length === 0 &&
                              this.state.selectedDateRange.field !== 'null_option') {
 
-                             visualisation = (
+                             histo = (
 								 <div>
 									 <br/>
 									 <div className="alert alert-danger">No data found for this Date Type Field</div>
@@ -673,7 +674,6 @@ class QueryBuilder extends React.Component {
 							<div className="col-md-12">
 								{dateRangeSelector}
 								{histo}
-                                {visualisation}
 							</div>
 						</div>
 						<div className="separator"></div>
