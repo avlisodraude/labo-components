@@ -45,38 +45,53 @@ class DatePickerSelector extends React.Component {
         const startDate = this.getStartDate();
         const endDate = this.getEndDate();
         return (
-            <div className="col-md-7">
-                <div className="row pull-left ">
-                    <div className="col-md-6">
-                        <DatePicker
-                            selected={startDate}
-                            selectsStart
-                            startDate={startDate}
-                            minDate={this.props.minDate}
-                            maxDate={this.props.maxDate}
-                            onChange={this.startDateChanged.bind(this)}
-                            showMonthDropdown
-                            showYearDropdown
-                            dropdownMode="select"
-                            className="form-control"
-                        />
-                    </div>
-                    <div className="col-md-6">
-                        <DatePicker
-                            selected={endDate}
-                            selectsEnd
-                            startDate={startDate}
-                            minDate={this.props.minDate}
-                            maxDate={this.props.maxDate}
-                            onChange={this.endDateChanged.bind(this)}
-                            showMonthDropdown
-                            showYearDropdown
-                            dropdownMode="select"
-                            className="form-control"
-                        />
-                    </div>
+            <div className="row">
+                <div className="col-md-12">
+                    <table>
+                        <tr>
+                            <td>
+                                <DatePicker
+                                    disabled={this.props.disabled}
+                                    selected={startDate}
+                                    selectsStart={true}
+                                    minDate={this.props.minDate}
+                                    maxDate={this.props.maxDate}
+                                    onChange={this.startDateChanged.bind(this)}
+                                    showMonthDropdown={true}
+                                    showYearDropdown={true}
+                                    dropdownMode="select"
+                                    className="form-control"
+                                    placeholderText="Start date"/>
+                            </td>
+                            <td>
+                                &nbsp;
+                                <i className="fa fa-calendar" ariaHidden="true"></i>
+                                &nbsp;
+                            </td>
+                            <td>
+                                <DatePicker
+                                    disabled={this.props.disabled}
+                                    selected={endDate}
+                                    selectsEnd={true}
+                                    minDate={this.props.minDate}
+                                    maxDate={this.props.maxDate}
+                                    onChange={this.endDateChanged.bind(this)}
+                                    showMonthDropdown={true}
+                                    showYearDropdown={true}
+                                    dropdownMode="select"
+                                    className="form-control"
+                                    placeholderText="End date"/>
+                            </td>
+                            <td>
+                                &nbsp;
+                                <i className="fa fa-calendar" ariaHidden="true"></i>
+                                &nbsp;
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
+
         );
     }
 }

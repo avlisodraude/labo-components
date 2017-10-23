@@ -93,8 +93,10 @@ class DateRangeSelector extends React.Component {
 
     render() {
         let dateFieldSelect = null;
+        let fieldSelected = false;
 
         if (this.props.collectionConfig.getDateFields() && this.props.dateRange) {
+            fieldSelected = this.props.dateRange.field && this.props.dateRange.field != 'null_option';
             const options = this.props.collectionConfig.getDateFields().map((df, index) => {
                 return (<option key={'df__' + index} value={df}>{this.props.collectionConfig.toPrettyFieldName(df)}</option>);
             });
@@ -115,12 +117,15 @@ class DateRangeSelector extends React.Component {
                         <div className="col-md-5">
                             {dateFieldSelect}
                         </div>
-                        <DatePickerSelector
-                            minDate={this.getMinDate()}
-                            maxDate={this.getMaxDate()}
-                            dateRange={this.props.dateRange}
-                            onOutput={this.onComponentOutput.bind(this)}
-                        />
+                        <div className="col-md-7">
+                            <DatePickerSelector
+                                disabled={!fieldSelected}
+                                minDate={this.getMinDate()}
+                                maxDate={this.getMaxDate()}
+                                dateRange={this.props.dateRange}
+                                onOutput={this.onComponentOutput.bind(this)}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
