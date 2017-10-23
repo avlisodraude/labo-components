@@ -43,17 +43,38 @@ class Histogram extends React.Component {
 		callback();
 	}
 
+	//this also checks if the retrieved dates are outside of the user's range selection
 	getGraphData() {
+		let startMillis = null;
+		let endMillis = null;
+		if(this.props.dateRange) {
+			startMillis = this.props.dateRange.start
+			endMillis = this.props.dateRange.end
+		}
 		return this.props.data.map((aggr, index) => {
+			let inRange = true;
+			if ((startMillis != null && aggr.date_millis < startMillis) ||
+				endMillis != null && aggr.date_millis > endMillis) {
+				inRange = false;
+			}
 			return {
 				year : new Date(aggr.date_millis).getFullYear(),
-				count : aggr.doc_count
+				count : aggr.doc_count,
+				inRange : inRange
 			}
 		});
 	}
 
 	toggle(selectedBar) {
 		console.debug(selectedBar);
+	}
+
+	getBarClass(inRange) {
+		let cssClass = IDUtil.cssClassName('bar', this.CLASS_PREFIX);
+		if(!inRange) {
+			cssClass += ' out-of-range';
+		}
+		return cssClass;
 	}
 
 	repaint() {
@@ -98,7 +119,7 @@ class Histogram extends React.Component {
 		//create new bars
 		const barEnter = bar.enter()
 			.append("g")
-				.attr("class", IDUtil.cssClassName('bar', this.CLASS_PREFIX))
+				.attr("class", function(d) { return this.getBarClass(d.inRange)}.bind(this))
 				.attr("transform", function(d) { return "translate(" + x(d.year) + "," + y(d.count) + ")"; })//set the correct pos
 
 		//add a rectange and a text element to new bars

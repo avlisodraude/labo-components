@@ -44,7 +44,10 @@ class FieldCategorySelector extends React.Component {
 			fieldCategorySelector = (
 				<div className={IDUtil.cssClassName('field-category-selector')}>
 				<div className="input-group">
-					<span className="input-group-addon btn-effect" data-tip={includedFields} data-html={true}>
+					<span className="input-group-addon btn-effect"
+						data-for={'__fs__tt' + this.props.queryId}
+						data-tip={includedFields}
+						data-html={true}>
 						<i className="fa fa-info"></i>
 					</span>
 					<select className="form-control"
@@ -53,7 +56,7 @@ class FieldCategorySelector extends React.Component {
 						{options}
 					</select>
 				</div>
-				<ReactTooltip />
+				<ReactTooltip id={'__fs__tt' + this.props.queryId} />
 			</div>);
 		}
 

@@ -26,7 +26,6 @@ class DatePickerSelector extends React.Component {
     }
 
     startDateChanged(d) {
-        console.debug('start date changed', d);
         this.props.onOutput(this.constructor.name, {
             start : d,
             end: this.getEndDate()
@@ -34,7 +33,6 @@ class DatePickerSelector extends React.Component {
     }
 
     endDateChanged(d) {
-        console.debug('end date changed', d);
         this.props.onOutput(this.constructor.name, {
             start : this.getStartDate(),
             end : d

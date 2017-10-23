@@ -13,6 +13,8 @@ import AggregationBox from './AggregationBox';
 import AggregationList from './AggregationList';
 import Histogram from '../stats/Histogram';
 import CollectionConfig from '../../collection/mappings/CollectionConfig';
+
+import ReactTooltip from 'react-tooltip';
 /*
 Notes about this component:
 
@@ -402,19 +404,22 @@ class QueryBuilder extends React.Component {
 		]))
 	}
 
-    // Returns the total amount of 'aggregations' per date field selected
-    totalNumberByDateField(data) {
-        let bucketCounts = 0;
-        /*
-        if(data.aggregations && data.aggregations[data.dateField]) {
-        	bucketCounts = data.aggregations[data.dateField].map(x => x.doc_count).filter(x => x != null);
-        	if(bucketCounts.length > 0 ) {
-	        	return bucketCounts.reduce(function(accumulator, currentValue) {
-	                return accumulator + currentValue;
-	            });
-	        }
-        }*/
-        return bucketCounts;
+    totalDatesOutsideOfRange() {
+    	if(this.state.aggregations && this.state.aggregations[this.state.selectedDateRange.field]) {
+    		const startMillis = this.state.selectedDateRange.start
+    		const endMillis = this.state.selectedDateRange.end
+    		const outOfRangeBuckets = this.state.aggregations[this.state.selectedDateRange.field].filter(x => {
+    			if(startMillis != null && x.date_millis < startMillis) {
+    				return true;
+    			}
+    			if(endMillis != null && x.date_millis > endMillis) {
+    				return true;
+    			}
+    			return false;
+    		});
+    		return outOfRangeBuckets;
+    	}
+    	return null;
     }
 
     //communicates all that is required for a parent component to draw hits & statistics
@@ -432,7 +437,6 @@ class QueryBuilder extends React.Component {
                 currentPage: data.currentPage, //remembering the page we're at
                 selectedSortParams: data.params.sort, //remembering the sort settings
                 searchId: data.searchId, //so involved components know that a new search was done
-                hitsBasedOnDateField: this.totalNumberByDateField(data) || 0,
                 isSearching: false
             });
         } else {
@@ -459,7 +463,7 @@ class QueryBuilder extends React.Component {
             let resultBlock = null;
             let fieldCategorySelector = null;
             let currentCollectionTitle = this.props.collectionConfig.collectionId;
-            let histo = null;
+            let histogram = null;
 
             //collectionInfo comes from CKAN, which can be empty
             if(this.props.collectionConfig.collectionInfo) {
@@ -477,6 +481,7 @@ class QueryBuilder extends React.Component {
 			//draw the field category selector
 			fieldCategorySelector = (
 				<FieldCategorySelector
+					queryId={this.props.queryId}
 					fieldCategory={this.state.fieldCategory}
 					collectionConfig={this.props.collectionConfig}
 					onOutput={this.onComponentOutput.bind(this)}
@@ -513,6 +518,9 @@ class QueryBuilder extends React.Component {
 				let aggregationBox = null;
 				let dateRangeSelector = null;
 				let dateRangeCrumb = null;
+
+				let dateCounts = null;
+				let outOfRangeCount = 0;
 
                 //let countsBasedOnDateRange = null;
                 let currentSearchTerm = this.refs.searchTerm.value || null;
@@ -559,10 +567,11 @@ class QueryBuilder extends React.Component {
 					 if (this.state.selectedDateRange.field !== 'null_option'  &&
 						 this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
                          this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
-                        histo = (
+                        histogram = (
                         	<div style={{"overflow-x" : 'auto'}}>
 								<Histogram
 									queryId={this.props.queryId}
+									dateRange={this.state.selectedDateRange}
 									data={this.state.aggregations[this.state.selectedDateRange.field]}
 									title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
 									searchId={this.state.searchId}/>
@@ -574,7 +583,7 @@ class QueryBuilder extends React.Component {
                              this.state.aggregations[this.state.selectedDateRange.field].length === 0 &&
                              this.state.selectedDateRange.field !== 'null_option') {
 
-                             histo = (
+                             histogram = (
 								 <div>
 									 <br/>
 									 <div className="alert alert-danger">No data found for this Date Type Field</div>
@@ -585,61 +594,49 @@ class QueryBuilder extends React.Component {
 
                     //FIXME it will disappear when there are no results!
                     if (this.props.dateRangeSelector && this.state.selectedDateRange) {
-                        //let selectedDateField = null;
-                        //let info = null;
                         if(this.state.selectedDateRange.field) {
-	                        /*selectedDateField = this.props.collectionConfig.toPrettyFieldName(
-	                        	this.state.selectedDateRange.field
-	                        )
-	                        info = 'Selected date field: "' + selectedDateField + '"';
-	                        let tmp = []
-	                        if(this.state.selectedDateRange.start) {
-	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start));
-	                        }
-	                        if(this.state.selectedDateRange.end) {
-	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end));
-	                        }
-	                        if(tmp.length > 0) {
-	                        	info += '\nSelected date range: ' + tmp.join(' - ');
-	                        }
-	                        countsBasedOnDateRange = (
-	                        	<li>
-	                        		{this.state.hitsBasedOnDateField} hits based on your
-	                        		<span className="tooltip-info" title={info}>
-	                        			&nbsp;current selection
-	                        		</span>
-	                        	</li>
-	                        )*/
-	                    }
+	                        //count the number of dates
+	            			dateCounts = this.state.aggregations[this.state.selectedDateRange.field].map(
+	            				(x => x.doc_count)).reduce(function(accumulator, currentValue) {
+	                				return accumulator + currentValue;
+	            				}
+	            			);
 
-	                    if(this.state.selectedDateRange.start || this.state.selectedDateRange.end) {
-	                    	let info = '';
-	                    	let tmp = []
-	                        if(this.state.selectedDateRange.start) {
-	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start));
-	                        } else {
-	                        	tmp.push('everything before');
-	                        }
-	                        if(this.state.selectedDateRange.end) {
-	                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end));
-	                        } else {
-	                        	tmp.push('up until now');
-	                        }
-	                        if(tmp.length > 0) {
-	                        	info = tmp.join(' - ');
-	                        	info += ' (using: '+this.state.selectedDateRange.field+')';
-	                        }
-	                    	dateRangeCrumb = (
-	                    		<div className={IDUtil.cssClassName('breadcrumbs', this.CLASS_PREFIX)}>
-									<div key="date_crumb" className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)}
-										title="current date range">
-										<em>Selected date range:&nbsp;</em>
-										{info}
-										&nbsp;
-										<i className="fa fa-close" onClick={this.resetDateRange.bind(this)}></i>
+	            			if(this.state.selectedDateRange.start || this.state.selectedDateRange.end) {
+								//count the dates that are out of range
+		                    	const outOfRange = this.totalDatesOutsideOfRange();
+		                        outOfRangeCount = outOfRange.map((x => x.doc_count)).reduce(function(accumulator, currentValue) {
+		                			return accumulator + currentValue;
+		            			});
+
+		                    	let info = '';
+		                    	let tmp = []
+		                        if(this.state.selectedDateRange.start) {
+		                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start));
+		                        } else {
+		                        	tmp.push('everything before');
+		                        }
+		                        if(this.state.selectedDateRange.end) {
+		                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end));
+		                        } else {
+		                        	tmp.push('up until now');
+		                        }
+		                        if(tmp.length > 0) {
+		                        	info = tmp.join(' till ');
+		                        	info += ' (using: '+this.state.selectedDateRange.field+')';
+		                        }
+		                    	dateRangeCrumb = (
+		                    		<div className={IDUtil.cssClassName('breadcrumbs', this.CLASS_PREFIX)}>
+										<div key="date_crumb" className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)}
+											title="current date range">
+											<em>Selected date range:&nbsp;</em>
+											{info}
+											&nbsp;
+											<i className="fa fa-close" onClick={this.resetDateRange.bind(this)}></i>
+										</div>
 									</div>
-								</div>
-	                    	)
+		                    	)
+		                    }
 	                    }
 
                         dateRangeSelector = (
@@ -656,11 +653,33 @@ class QueryBuilder extends React.Component {
                 }
 
                 //populate the result stats
+	            let dateStats = null;
+	            if(dateCounts != null) {
+	            	let info = 'Please note that each record possibly can have multiple occurances of the selected date field,';
+	            	info += '<br/>making it possible that there are more dates found than the number of search results';
+	            	dateStats = (
+	            		<div>
+	            			<br/>
+	            			Total number of dates found based on the selected date field: {dateCounts}&nbsp;
+	            			<span data-for={'__qb__tt' + this.props.queryId}
+	            				data-tip={info}
+	            				data-html={true}>
+								<i className="fa fa-info-circle"></i>
+							</span>
+	            			<ul>
+		            			<li>Dates within the selected date range: {dateCounts - outOfRangeCount}</li>
+		            			<li>Dates outside of the selected date range: {outOfRangeCount}</li>
+	            			</ul>
+	            			<ReactTooltip id={'__qb__tt' + this.props.queryId}/>
+	            		</div>
+	            	)
+	            }
                 resultStats = (
                     <div>
                         <div>
-                            Total number of results based on <em>"{currentSearchTerm}"</em>
+                            Total number of results based on <em>&quot;{currentSearchTerm}&quot;</em>
                             and selected filters: <b>{this.state.totalHits}</b>
+                            {dateStats}
                         </div>
                     </div>
                 );
@@ -673,7 +692,7 @@ class QueryBuilder extends React.Component {
 						<div className="row">
 							<div className="col-md-12">
 								{dateRangeSelector}
-								{histo}
+								{histogram}
 							</div>
 						</div>
 						<div className="separator"></div>
