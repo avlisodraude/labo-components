@@ -609,7 +609,7 @@ class QueryBuilder extends React.Component {
 			                        	tmp.push('up until now');
 			                        }
 			                        if(tmp.length > 0) {
-			                        	info = tmp.join(' till ');
+			                        	info = tmp.join(tmp.length == 2 ? ' till ' : '');
 			                        	info += ' (using: '+this.state.selectedDateRange.field+')';
 			                        }
 			                    	dateRangeCrumb = (
