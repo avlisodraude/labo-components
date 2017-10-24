@@ -107,7 +107,7 @@ class QueryBuilder extends React.Component {
 
 	getInitialDesiredFacets(config, dateRange) {
 		let df = this.props.collectionConfig.getFacets()
-		if(dateRange.field) {
+		if(dateRange && dateRange.field) {
 			df.push({
 				field: dateRange.field,
 				title : config.toPrettyFieldName(dateRange.field),
@@ -148,11 +148,7 @@ class QueryBuilder extends React.Component {
 
 	//determine the initial date range based on the URL params and config (called only by the constructor)
 	getInitialDateRange() {
-		let selectedDateRange = {
-			field : this.props.collectionConfig.getPreferredDateField(),
-			start : null,
-			end : null
-		}
+		let selectedDateRange = null;
 		if(this.props.searchParams && this.props.searchParams.dateRange) {
 			selectedDateRange= this.props.searchParams.dateRange;
 		}
@@ -190,151 +186,119 @@ class QueryBuilder extends React.Component {
 		if(e) {
 			e.preventDefault();
 		}
-		//reset the date range
-		const dr = this.state.selectedDateRange;
-		if(dr) {
-			dr.start = null;
-			dr.end = null;
-		}
-		this.setState(
-			{
-				selectedFacets : {},
-				fieldCategory : null,
-				selectedDateRange : dr
-			},
-			this.doSearch([
-				this.props.queryId,
-				this.props.collectionConfig,
-				this.state.searchLayers,
-				this.refs.searchTerm.value,
-				this.state.fieldCategory,
-				this.state.desiredFacets,
-				{}, //no selected facets
-				null, //no date range selected
-				this.state.selectedSortParams,
-				0, //offset zero, start on the first page
-				this.props.pageSize,
-				this.onOutput.bind(this),
-				true
-			])
-		)
+		this.doSearch([
+			this.props.queryId,
+			this.props.collectionConfig,
+			this.state.searchLayers,
+			this.refs.searchTerm.value,
+			null, //no field category
+			this.state.desiredFacets,
+			{}, //no selected facets
+			null, //no date range selected
+			this.state.selectedSortParams,
+			0, //offset zero, start on the first page
+			this.props.pageSize,
+			this.onOutput.bind(this),
+			true
+		])
 	}
 
 	//this resets the paging
 	toggleSearchLayer(e) {
 		const searchLayers = this.state.searchLayers;
 		searchLayers[e.target.id] = !searchLayers[e.target.id];
-		this.setState(
-			{searchLayers : searchLayers},
-			this.doSearch([
-				this.props.queryId,
-				this.props.collectionConfig,
-				searchLayers,
-				this.refs.searchTerm.value,
-				this.state.fieldCategory,
-				this.state.desiredFacets,
-				this.state.selectedFacets, //no selected facets
-				this.state.selectedDateRange, //no date range selected
-				this.state.selectedSortParams,
-				0, //offset zero, start on the first page
-				this.props.pageSize,
-				this.onOutput.bind(this),
-				true
-			])
-		);
+		this.doSearch([
+			this.props.queryId,
+			this.props.collectionConfig,
+			searchLayers,
+			this.refs.searchTerm.value,
+			this.state.fieldCategory,
+			this.state.desiredFacets,
+			this.state.selectedFacets, //no selected facets
+			this.state.selectedDateRange, //no date range selected
+			this.state.selectedSortParams,
+			0, //offset zero, start on the first page
+			this.props.pageSize,
+			this.onOutput.bind(this),
+			true
+		])
 	}
 
 	/*---------------------------------- FUNCTION THAT RECEIVES DATA FROM CHILD COMPONENTS --------------------------------------*/
 
 	onComponentOutput(componentClass, data) {
 		if(componentClass == 'AggregationList' || componentClass == 'AggregationBox') {
-			//TODO update the selected facets
-			this.setState(
-				{selectedFacets : data.selectedFacets, desiredFacets : data.desiredFacets},
-				this.doSearch([
-					this.props.queryId,
-					this.props.collectionConfig,
-					this.state.searchLayers,
-					this.refs.searchTerm.value,
-					this.state.fieldCategory,
-					data.desiredFacets, //use the just obtained data for the desired facets
-					data.selectedFacets, //use the just obtained data for the selected facets
-					this.state.selectedDateRange, //no date range selected
-					this.state.selectedSortParams,
-					0, //offset zero, start on the first page
-					this.props.pageSize,
-					this.onOutput.bind(this),
-					true
-				])
-			)
+			this.doSearch([
+				this.props.queryId,
+				this.props.collectionConfig,
+				this.state.searchLayers,
+				this.refs.searchTerm.value,
+				this.state.fieldCategory,
+				data.desiredFacets, //use the just obtained data for the desired facets
+				data.selectedFacets, //use the just obtained data for the selected facets
+				this.state.selectedDateRange, //no date range selected
+				this.state.selectedSortParams,
+				0, //offset zero, start on the first page
+				this.props.pageSize,
+				this.onOutput.bind(this),
+				true
+			]);
 		} else if(componentClass == 'DateRangeSelector') {
+			//first delete the old selection from the desired facets
 			const df = this.state.desiredFacets;
-			if(this.state.selectedDateRange) {
-
-				//first check if the date field has changed for updating the desiredFacet
-				if(this.state.selectedDateRange.field != data.field) {
-					let index = 0;
-					for(let i=0;i<df.length;i++) {
-						if(df[i].type == 'date_histogram') {
-							index = i;
-							break;
-						}
-					}
-					//update the desired date aggregation (of the type date_histogram)
-					df.splice(index,1);
-					df.push({
-						field: data.field,
-						title : this.props.collectionConfig.toPrettyFieldName(data.field),
-						id : data.field,
-						type : 'date_histogram'
-					});
+			let index = -1;
+			for(let i=0;i<df.length;i++) {
+				if(df[i].type == 'date_histogram') {
+					index = i;
+					break;
 				}
-				//do a new query based on the datefield and date range
-				this.setState(
-					{
-						desiredFacets : df,
-						selectedDateRange : data
-					},
-					this.doSearch([
-						this.props.queryId,
-						this.props.collectionConfig,
-						this.state.searchLayers,
-						this.refs.searchTerm.value,
-						this.state.fieldCategory,
-						df, //make sure to use the just obtained desired facets
-						this.state.selectedFacets,
-						data, //use the just obtained data as the date range
-						this.state.selectedSortParams,
-						0, //offset zero, start on the first page
-						this.props.pageSize,
-						this.onOutput.bind(this),
-						true
-					])
-				)
-			} else {
-				console.debug('this is not supposed to happen! (no date range...)');
 			}
+			if(index != -1) {
+				df.splice(index,1);
+			}
+
+			//add the new selection
+			if(data != null) {
+				//add the desired date aggregation (of the type date_histogram)
+				df.push({
+					field: data.field,
+					title : this.props.collectionConfig.toPrettyFieldName(data.field),
+					id : data.field,
+					type : 'date_histogram'
+				});
+			}
+			//run a search based on the selected date range
+			this.doSearch([
+				this.props.queryId,
+				this.props.collectionConfig,
+				this.state.searchLayers,
+				this.refs.searchTerm.value,
+				this.state.fieldCategory,
+				df, //make sure to use the just obtained desired facets
+				this.state.selectedFacets,
+				data, //use the just obtained data as the date range
+				this.state.selectedSortParams,
+				0, //offset zero, start on the first page
+				this.props.pageSize,
+				this.onOutput.bind(this),
+				true
+			])
 		} else if(componentClass == 'FieldCategorySelector') {
-			this.setState(
-				{
-					fieldCategory : data
-				},
-				this.doSearch([
-					this.props.queryId,
-					this.props.collectionConfig,
-					this.state.searchLayers,
-					this.refs.searchTerm.value,
-					data,
-					this.state.desiredFacets,
-					this.state.selectedFacets,
-					this.state.selectedDateRange,
-					this.state.selectedSortParams,
-					0, //offset zero, start on the first page
-					this.props.pageSize,
-					this.onOutput.bind(this),
-					true
-				])
-			)
+			this.doSearch([
+				this.props.queryId,
+				this.props.collectionConfig,
+				this.state.searchLayers,
+				this.refs.searchTerm.value,
+				data,
+				this.state.desiredFacets,
+				this.state.selectedFacets,
+				this.state.selectedDateRange,
+				this.state.selectedSortParams,
+				0, //offset zero, start on the first page
+				this.props.pageSize,
+				this.onOutput.bind(this),
+				true
+			])
 		}
 	}
 
@@ -379,14 +343,6 @@ class QueryBuilder extends React.Component {
 	}
 
 	resetDateRange() {
-		const newDateRange = {
-			field : 'null_option',
-			start : null,
-			end : null
-		}
-		this.setState({
-			selectedDateRange : newDateRange
-		},
 		this.doSearch([
 			this.props.queryId,
 			this.props.collectionConfig,
@@ -395,13 +351,13 @@ class QueryBuilder extends React.Component {
 			this.state.fieldCategory,
 			this.state.desiredFacets,
 			this.state.selectedFacets,
-			newDateRange, //reset the date range
+			null, //reset the date range
 			this.state.selectedSortParams,
 			0,
 			this.props.pageSize,
 			this.onOutput.bind(this),
 			true
-		]))
+		])
 	}
 
     totalDatesOutsideOfRange() {
@@ -431,22 +387,36 @@ class QueryBuilder extends React.Component {
 
         if (data && !data.error) {
             this.setState({
-                aggregations: data.aggregations, //for drawing the AggregationBox/List
-                totalHits: data.totalHits, //shown in the stats
-                totalUniqueHits: data.totalUniqueHits, //shown in the stats
-                currentPage: data.currentPage, //remembering the page we're at
+            	searchLayers : data.searchLayers,
+            	aggregations: data.aggregations, //for drawing the AggregationBox/List/Histogram
+            	selectedFacets : data.selectedFacets,
+            	desiredFacets : data.desiredFacets,
+            	selectedDateRange : data.selectedDateRange,
+            	fieldCategory : data.fieldCategory,
                 selectedSortParams: data.params.sort, //remembering the sort settings
+                currentPage: data.currentPage, //remembering the page we're at
+                isSearching: false,
+
                 searchId: data.searchId, //so involved components know that a new search was done
-                isSearching: false
+                totalHits: data.totalHits, //shown in the stats
+                totalUniqueHits: data.totalUniqueHits //shown in the stats
+
             });
         } else {
             this.setState({
-                aggregations: null,
-                totalHits: 0,
-                totalUniqueHits: 0,
+            	//searchLayers stay the same
+            	aggregations: null,
+            	selectedFacets : {},
+            	//desiredFacets stay the same
+            	selectedDateRange : null,
+            	fieldCategory : null,
+            	//selectedSortParams stay the same
                 currentPage: -1,
-                searchId: null,
-                isSearching: false
+				isSearching: false,
+
+				searchId: null,
+                totalHits: 0,
+                totalUniqueHits: 0
             });
         }
 
@@ -463,7 +433,6 @@ class QueryBuilder extends React.Component {
             let resultBlock = null;
             let fieldCategorySelector = null;
             let currentCollectionTitle = this.props.collectionConfig.collectionId;
-            let histogram = null;
 
             //collectionInfo comes from CKAN, which can be empty
             if(this.props.collectionConfig.collectionInfo) {
@@ -514,6 +483,8 @@ class QueryBuilder extends React.Component {
 			//only draw this when there are search results
 			if(this.state.totalHits > 0) {
 				let resultStats = null;
+				let dateStats = null;
+				let histogram = null;
 				let aggrView = null; //either a box or list (TODO the list might not work properly anymore!)
 				let aggregationBox = null;
 				let dateRangeSelector = null;
@@ -564,82 +535,35 @@ class QueryBuilder extends React.Component {
 
 					// Display the histogram only if an option other than the default is selected
 					// and the length of the data is greater than 0.
-					 if (this.state.selectedDateRange.field !== 'null_option'  &&
-						 this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
-                         this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
-                        histogram = (
-                        	<div style={{"overflow-x" : 'auto'}}>
-								<Histogram
-									queryId={this.props.queryId}
-									dateRange={this.state.selectedDateRange}
-									data={this.state.aggregations[this.state.selectedDateRange.field]}
-									title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
-									searchId={this.state.searchId}/>
-							</div>
-                        )
-                     } else {
-                         //if there is no data found within the desired aggregation/facet
-                         if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
-                             this.state.aggregations[this.state.selectedDateRange.field].length === 0 &&
-                             this.state.selectedDateRange.field !== 'null_option') {
+					if(this.state.selectedDateRange) {
+						if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
+							this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
+							histogram = (
+								<div style={{"overflow-x" : 'auto'}}>
+									<Histogram
+										queryId={this.props.queryId}
+										dateRange={this.state.selectedDateRange}
+										data={this.state.aggregations[this.state.selectedDateRange.field]}
+										title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
+										searchId={this.state.searchId}/>
+								</div>
+							)
+						} else if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
+						    this.state.aggregations[this.state.selectedDateRange.field].length === 0) {
 
-                             histogram = (
+						    histogram = (
 								 <div>
 									 <br/>
 									 <div className="alert alert-danger">No data found for this Date Type Field</div>
 								 </div>
-                             )
-                         }
-					 }
+						    )
+						}
+					}
 
-                    //FIXME it will disappear when there are no results!
-                    if (this.props.dateRangeSelector && this.state.selectedDateRange) {
-                        if(this.state.selectedDateRange.field) {
-	                        //count the number of dates
-	            			dateCounts = this.state.aggregations[this.state.selectedDateRange.field].map(
-	            				(x => x.doc_count)).reduce(function(accumulator, currentValue) {
-	                				return accumulator + currentValue;
-	            				}
-	            			);
+                    if (this.props.dateRangeSelector) {
 
-	            			if(this.state.selectedDateRange.start || this.state.selectedDateRange.end) {
-								//count the dates that are out of range
-		                    	const outOfRange = this.totalDatesOutsideOfRange();
-		                        outOfRangeCount = outOfRange.map((x => x.doc_count)).reduce(function(accumulator, currentValue) {
-		                			return accumulator + currentValue;
-		            			});
-
-		                    	let info = '';
-		                    	let tmp = []
-		                        if(this.state.selectedDateRange.start) {
-		                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start));
-		                        } else {
-		                        	tmp.push('everything before');
-		                        }
-		                        if(this.state.selectedDateRange.end) {
-		                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end));
-		                        } else {
-		                        	tmp.push('up until now');
-		                        }
-		                        if(tmp.length > 0) {
-		                        	info = tmp.join(' till ');
-		                        	info += ' (using: '+this.state.selectedDateRange.field+')';
-		                        }
-		                    	dateRangeCrumb = (
-		                    		<div className={IDUtil.cssClassName('breadcrumbs', this.CLASS_PREFIX)}>
-										<div key="date_crumb" className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)}
-											title="current date range">
-											<em>Selected date range:&nbsp;</em>
-											{info}
-											&nbsp;
-											<i className="fa fa-close" onClick={this.resetDateRange.bind(this)}></i>
-										</div>
-									</div>
-		                    	)
-		                    }
-	                    }
-
-                        dateRangeSelector = (
+                    	//draw the date range selector
+                    	dateRangeSelector = (
                             <DateRangeSelector
                             	queryId={this.props.queryId} //used for the guid (is it still needed?)
                                 searchId={this.state.searchId} //for determining when the component should rerender
@@ -649,31 +573,86 @@ class QueryBuilder extends React.Component {
                                 onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
                             />
                         );
+
+                    	//if there is a selected range, draw a bread crumb and calculate some stats for the resultStats
+                        if(this.state.selectedDateRange && this.state.selectedDateRange.field) {
+
+	                        //count the number of dates
+	                        if(this.state.aggregations && this.state.selectedDateRange.field != 'null_option') {
+	                        	if(this.state.aggregations[this.state.selectedDateRange.field].length > 0) {
+			            			dateCounts = this.state.aggregations[this.state.selectedDateRange.field].map(
+			            				(x => x.doc_count)).reduce(function(accumulator, currentValue) {
+			                				return accumulator + currentValue;
+			            				}
+			            			);
+			            		}
+
+		            			if(this.state.selectedDateRange.start || this.state.selectedDateRange.end) {
+									//count the dates that are out of range
+			                    	const outOfRange = this.totalDatesOutsideOfRange();
+			                    	if(outOfRange.length > 0) {
+				                        outOfRangeCount = outOfRange.map((x => x.doc_count)).reduce(function(accumulator, currentValue) {
+				                			return accumulator + currentValue;
+				            			});
+				                    }
+
+			                    	let info = '';
+			                    	let tmp = []
+			                        if(this.state.selectedDateRange.start) {
+			                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start));
+			                        } else {
+			                        	tmp.push('everything before');
+			                        }
+			                        if(this.state.selectedDateRange.end) {
+			                        	tmp.push(TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end));
+			                        } else {
+			                        	tmp.push('up until now');
+			                        }
+			                        if(tmp.length > 0) {
+			                        	info = tmp.join(' till ');
+			                        	info += ' (using: '+this.state.selectedDateRange.field+')';
+			                        }
+			                    	dateRangeCrumb = (
+			                    		<div className={IDUtil.cssClassName('breadcrumbs', this.CLASS_PREFIX)}>
+											<div key="date_crumb" className={IDUtil.cssClassName('crumb', this.CLASS_PREFIX)}
+												title="current date range">
+												<em>Selected date range:&nbsp;</em>
+												{info}
+												&nbsp;
+												<i className="fa fa-close" onClick={this.resetDateRange.bind(this)}></i>
+											</div>
+										</div>
+			                    	)
+			                    }
+		            		}
+	                    }
+
+	                    //populate the date related stats
+			            if(dateCounts != null) {
+			            	let info = 'Please note that each record possibly can have multiple occurances of the selected date field,';
+			            	info += '<br/>making it possible that there are more dates found than the number of search results';
+			            	dateStats = (
+			            		<div>
+			            			<br/>
+			            			Total number of dates found based on the selected date field: {dateCounts}&nbsp;
+			            			<span data-for={'__qb__tt' + this.props.queryId}
+			            				data-tip={info}
+			            				data-html={true}>
+										<i className="fa fa-info-circle"></i>
+									</span>
+			            			<ul>
+				            			<li>Dates within the selected date range: {dateCounts - outOfRangeCount}</li>
+				            			<li>Dates outside of the selected date range: {outOfRangeCount}</li>
+			            			</ul>
+			            			<ReactTooltip id={'__qb__tt' + this.props.queryId}/>
+			            		</div>
+			            	)
+			            }
+
                     }
                 }
 
-                //populate the result stats
-	            let dateStats = null;
-	            if(dateCounts != null) {
-	            	let info = 'Please note that each record possibly can have multiple occurances of the selected date field,';
-	            	info += '<br/>making it possible that there are more dates found than the number of search results';
-	            	dateStats = (
-	            		<div>
-	            			<br/>
-	            			Total number of dates found based on the selected date field: {dateCounts}&nbsp;
-	            			<span data-for={'__qb__tt' + this.props.queryId}
-	            				data-tip={info}
-	            				data-html={true}>
-								<i className="fa fa-info-circle"></i>
-							</span>
-	            			<ul>
-		            			<li>Dates within the selected date range: {dateCounts - outOfRangeCount}</li>
-		            			<li>Dates outside of the selected date range: {outOfRangeCount}</li>
-	            			</ul>
-	            			<ReactTooltip id={'__qb__tt' + this.props.queryId}/>
-	            		</div>
-	            	)
-	            }
+                //draw the overall result statistics
                 resultStats = (
                     <div>
                         <div>

@@ -41,11 +41,15 @@ class DateRangeSelector extends React.Component {
     }
 
     changeDateField(e) {
-        this.onOutput({
-            field: e.target.value,
-            start: null,
-            end: null
-        })
+        let data = null;
+        if(e.target.value != 'null_option') {
+            data = {
+                field: e.target.value,
+                start: null,
+                end: null
+            }
+        }
+        this.onOutput(data);
     }
 
     //the data looks like this => {start : '' : end : '', dateField : ''}
@@ -95,15 +99,15 @@ class DateRangeSelector extends React.Component {
         let dateFieldSelect = null;
         let fieldSelected = false;
 
-        if (this.props.collectionConfig.getDateFields() && this.props.dateRange) {
-            fieldSelected = this.props.dateRange.field && this.props.dateRange.field != 'null_option';
+        if (this.props.collectionConfig.getDateFields()) {
+            const selectedOption = this.props.dateRange ? this.props.dateRange.field : 'null_option';
             const options = this.props.collectionConfig.getDateFields().map((df, index) => {
                 return (<option key={'df__' + index} value={df}>{this.props.collectionConfig.toPrettyFieldName(df)}</option>);
             });
             options.splice(0,0, <option key={'df__default_value' } value="null_option">Select date field</option>);
 
             dateFieldSelect = (
-                <select className="form-control" value={this.props.dateRange.field}
+                <select className="form-control" value={selectedOption}
                         onChange={this.changeDateField.bind(this)}>
                     {options}
                 </select>
@@ -119,7 +123,7 @@ class DateRangeSelector extends React.Component {
                         </div>
                         <div className="col-md-7">
                             <DatePickerSelector
-                                disabled={!fieldSelected}
+                                disabled={this.props.dateRange == null}
                                 minDate={this.getMinDate()}
                                 maxDate={this.getMaxDate()}
                                 dateRange={this.props.dateRange}

@@ -35,7 +35,11 @@ const SearchAPI = {
 								order : 'desc'
 							}
 						}
-
+						data.searchLayers = searchLayers;
+						data.fieldCategory = fieldCategory;
+						data.selectedDateRange = dateRange;
+						data.selectedFacets = selectedFacets;
+						data.desiredFacets = desiredFacets;
 						data.queryId = queryId; //to uniquely relate this query to interested components
 						data.searchId = IDUtil.guid(); //still a bit weird, has to go probably
 						data.collectionConfig = collectionConfig;

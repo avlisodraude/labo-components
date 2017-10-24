@@ -52,6 +52,7 @@ class DatePickerSelector extends React.Component {
                                     disabled={this.props.disabled}
                                     selected={startDate}
                                     selectsStart={true}
+                                    openToDate={this.props.minDate}
                                     minDate={this.props.minDate}
                                     maxDate={this.props.maxDate}
                                     onChange={this.startDateChanged.bind(this)}
@@ -71,6 +72,7 @@ class DatePickerSelector extends React.Component {
                                     disabled={this.props.disabled}
                                     selected={endDate}
                                     selectsEnd={true}
+                                    openToDate={this.props.maxDate}
                                     minDate={this.props.minDate}
                                     maxDate={this.props.maxDate}
                                     onChange={this.endDateChanged.bind(this)}

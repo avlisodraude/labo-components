@@ -10,19 +10,21 @@ class FieldCategorySelector extends React.Component {
 	}
 
 	changeStringField(e) {
-		this.onOutput(e.target.value);
+		this.onOutput(e.target.value == 'null_option' ? null : e.target.value);
 	}
 
 	onOutput(data) {
 		if(this.props.onOutput) {
-			const fieldCategories = this.props.collectionConfig.getMetadataFieldCategories();
-			const fc = fieldCategories.filter((c) => {
-				return c.id == data;
-			})
-			if(fc.length == 1) {
-				this.props.onOutput(this.constructor.name, fc[0]);
-			} else if (data == 'null_option') {
+			if(data == null) {
 				this.props.onOutput(this.constructor.name, null);
+			} else {
+				const fieldCategories = this.props.collectionConfig.getMetadataFieldCategories();
+				const fc = fieldCategories.filter((c) => {
+					return c.id == data;
+				})
+				if(fc.length == 1) {
+					this.props.onOutput(this.constructor.name, fc[0]);
+				}
 			}
 		}
 	}

@@ -26,11 +26,10 @@ const ElasticsearchDataUtil = {
 	//TODO make sure the different date formats can be handled!
 	searchResultsToTimeLineData : function(data) {
 		if(data && data.dateField) {
-			const df = data.dateField;
 		 	const timelineData = [];
-		 	if(data && data.results) {
-			 	if(data.aggregations && data.aggregations[df]) {
-					data.aggregations[df].forEach((a) => {
+		 	if(data && data.results && data.dateField) {
+			 	if(data.aggregations && data.aggregations[data.dateField]) {
+					data.aggregations[data.dateField].forEach((a) => {
 						const y = new Date(a.date_millis).getFullYear();
 						if (!(isNaN(y))) {
 							timelineData.push({
