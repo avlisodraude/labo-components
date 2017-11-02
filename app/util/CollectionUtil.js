@@ -26,6 +26,7 @@ import ArtTubeConfig from '../collection/mappings/ArtTubeConfig';
 import RVDContractsConfig from '../collection/mappings/RVDContractsConfig';
 import OpenBeeldenNISVConfig from '../collection/mappings/OpenBeeldenNISVConfig';
 import KBNewspaperConfig from '../collection/mappings/KBNewspaperConfig';
+import DANSOralHistoryConfig from '../collection/mappings/DANSOralHistoryConfig';
 import TimeUtil from '../util/TimeUtil';
 
 const CollectionUtil = {
@@ -46,7 +47,8 @@ const CollectionUtil = {
 		'rvd' : RVDContractsConfig,
 		'open-beelden-beeldengeluid' : OpenBeeldenNISVConfig,
 		'open-beelden-eye' : OpenBeeldenNISVConfig,
-		'kb-newspapers' : KBNewspaperConfig
+		'kb-newspapers' : KBNewspaperConfig,
+		'dans-oral-history' : DANSOralHistoryConfig
 	},
 
 	//returns the correct CollectionConfig instance based on the collectionId
