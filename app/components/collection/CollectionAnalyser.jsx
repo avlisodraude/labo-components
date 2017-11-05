@@ -82,7 +82,8 @@ class CollectionAnalyser extends React.Component {
 		const timelineData = {
 			total: {timeline: [], prettyQuery : 'Total'},
 			present: {timeline: [], prettyQuery : 'Present'},
-			missing: {timeline: [], prettyQuery : 'Missing'}
+			missing: {timeline: [], prettyQuery : 'Missing'},
+            joinedData: {timeline: [], prettyQuery: 'joinedData'}
 		};
 
 		if(data) {
@@ -102,6 +103,12 @@ class CollectionAnalyser extends React.Component {
 					count: data.timeline[item].background_count - data.timeline[item].field_count,
 					queryId: 'missing'
 				});
+                timelineData.joinedData.timeline.push({
+                    year: data.timeline[item].year,
+                    total: data.timeline[item].background_count,
+                    present: data.timeline[item].field_count,
+                    missing:data.timeline[item].background_count - data.timeline[item].field_count
+                })
 			}
 		}
 		return timelineData;

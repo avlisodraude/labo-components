@@ -1,4 +1,6 @@
 import IDUtil from '../../util/IDUtil';
+import {LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Legend, Bar} from 'recharts';
+
 /*
 See:
 	- http://rawgraphs.io/
@@ -17,157 +19,67 @@ class QueryComparisonLineChart extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.WIDTH = 1070;
-		this.HEIGHT = 365;
 		this.state = {
-			activeQueries : {}
+			activeQueries : {},
+            opacity: {
+                present: 1,
+                missing: 1,
+                total: 1
+            }
 		}
-		this.CLASS_PREFIX = 'qlc';
-	}
-
-	componentDidMount() {
-		this.repaint()
+        this.selectLine = this.selectLine.bind(this);
 	}
 
 	//only update if the search id is different
 	shouldComponentUpdate(nextProps, nextState) {
-		return nextProps.comparisonId != this.props.comparisonId;
+		return nextProps.comparisonId != this.props.comparisonId ||
+            nextState.opacity !==this.state.opacity;
 	}
 
-	componentDidUpdate() {
-		const svg = document.getElementById("qclc_" + IDUtil.hashCode(this.props.comparisonId));
-		this.refreshAndRepaint(svg, svg.firstChild, this.repaint.bind(this))
-	}
+    selectLine(event) {
+        const dataKey = event.dataKey;
+        let currentKeyValue = this.state.opacity[dataKey],
+            opacity = Object.assign({}, this.state.opacity);
 
-	refreshAndRepaint(svg, child, callback) {
-		if (child) {
-			svg.removeChild(child);
-			this.refreshAndRepaint(svg, svg.firstChild, callback);
-		} else {
-			callback();
-		}
-	}
+        if (currentKeyValue === 1) {
+            currentKeyValue = 0
+        } else {
+            currentKeyValue = 1
+        }
+        opacity[dataKey] = currentKeyValue;
 
-	getGraphData() {
-		let graphData = [];
-		if(this.props.data) {
-			for(const queryId in this.props.data) {
-				graphData = graphData.concat(this.props.data[queryId].timeline);
-			}
-		}
-		return graphData
-	}
-
-	toggle(queryId) {
-		const aqs = this.state.activeQueries;
-		if(aqs.hasOwnProperty(queryId)) {
-			aqs[queryId] = !aqs[queryId];
-		} else {
-			aqs[queryId] = false;
-		}
-		const opacity = aqs[queryId] ? 1 : 0;
-        // Hide or show the elements based on the ID
-        d3.select("#tag"+queryId.replace(/\s+/g, ''))
-            .transition().duration(100)
-            .style("opacity", opacity);
-
-		this.setState({activeQueries : aqs});
-	}
-
-	repaint() {
-		const data = this.getGraphData();
-
-		//first define the dimensions of the graph
-		const svg = d3.select('#qclc_' + IDUtil.hashCode(this.props.comparisonId));
-		const margin = {top: 10, right: 30, bottom: 30, left: 50};
-		const width = +svg.attr("width") - margin.left - margin.right;
-    	const height = +svg.attr("height") - margin.top - margin.bottom;
-
-    	const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-		//define the x scaling function
-		const x = d3.scaleLinear()
-			.domain(d3.extent(data, function(d) { return d.year; }))
-			.range([0, width]) //scale to the width of the svg
-
-		//define the y scaling function
-		const y = d3.scaleLinear()
-			.domain(d3.extent(data, function(d) { return d.count }))
-			.range([height, 0]);
-
-		const xAxis = d3.axisBottom()
-			.scale(x)
-			.tickSize(-height, 0)
-            .tickFormat(d3.format("d"));
-
-		const yAxis = d3.axisLeft()
-			.scale(y)
-			.tickSize(-width, 0)
-			.tickFormat(function(tick) {return tick; });
-
-		// Define the line
-		const lineFunc = d3.line()
-		    .x(function(d) { return x(d.year); })
-		    .y(function(d) { return y(d.count); });
-
-	    // Nest the entries by symbol
-	    const dataNest = d3.nest()
-	        .key(function(d) {return d.queryId;})
-	        .entries(data);
-
-	    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-	    // Add the X Axis
-	    g.append("g")
-	        .attr("class", "axis axis--x")
-	        .attr("transform", "translate(0," + height + ")")
-	        .transition()
-	        .call(xAxis);
-
-	    // Add the Y Axis
-	    g.append("g")
-	        .attr("class", "axis axis--y")
-	        .transition()
-	        .call(yAxis);
-
-	    // Loop through each symbol / key
-	    dataNest.forEach(function(d,i) {
-	        g.append("path")
-	            .attr("class", IDUtil.cssClassName('line', this.CLASS_PREFIX))
-	            .style("stroke", function() { // Add the colours dynamically
-	                return d.color = color(d.key); })
-	            .attr("id", 'tag'+d.key.replace(/\s+/g, '')) // assign ID
-	            .attr("d", lineFunc(d.values));
-	    }, this);
-
-	    if(this.props.data) {
-		    Object.keys(this.props.data).forEach((queryId, index) => {
-		    	const btn = document.getElementById('btn__' + queryId);
-		    	if(btn) {
-		    		btn.style.color = color(queryId);
-		    	}
-		    }, this);
-		}
-
-	}
-
+        this.setState({
+            opacity
+        });
+    }
 	//TODO better ID!! (include some unique part based on the query)
 	render() {
-		const buttons = Object.keys(this.props.data).map((queryId, index) => {
-			const classNames = ['btn', 'btn-default']
-			return (
-				<button id={'btn__' + queryId} type="button" className={classNames.join(' ')}
-					onClick={this.toggle.bind(this, queryId)}>
-					{this.props.data[queryId].prettyQuery}
-				</button>
-			)
-		}, this);
+        const presentOp = this.state.opacity.present,
+            missingOp = this.state.opacity.missing,
+            totalOp = this.state.opacity.total,
+            total = this.props.data.joinedData.timeline;
+
 		return (
 			<div className={IDUtil.cssClassName('query-line-chart')}>
-				<svg id={'qclc_' + IDUtil.hashCode(this.props.comparisonId)} width={this.WIDTH} height={this.HEIGHT}></svg>
-				<div className="btn-group" role="group" aria-label="...">
-					{buttons}
-				</div>
+				<ResponsiveContainer width="100%" height="40%">
+					<LineChart width={1200} height={200} data={total} margin={{top: 5, right: 20, bottom: 5, left: 0}}>
+						<Line name="Total" type="lineal" dataKey="total" stroke="#468dcb" strokeOpacity={totalOp}
+							  dot={{stroke: '#468dcb', strokeWidth: 1}} activeDot={{stroke: '#468dcb', strokeWidth: 2, r: 1}}
+							  onClick={this.selectLine}
+						/>
+						<Line type="lineal" dataKey="present" stroke="rgb(255, 127, 14)" strokeWidth={2} strokeOpacity={presentOp}
+							  dot={{stroke: 'rgb(255, 127, 14)'}} activeDot={{stroke: 'rgb(255, 127, 14)', strokeWidth: 1, r: 3}}
+						/>
+						<Line type="lineal" dataKey="missing" stroke="rgba(44, 160, 44, 14)" strokeOpacity={missingOp}
+							  dot={{stroke: 'rgba(44, 160, 44, 14)', strokeWidth: 1}} activeDot={{stroke: 'rgba(44, 160, 44, 14)', strokeWidth: 1, r: 1}}
+						/>
+						<CartesianGrid stroke="#cacaca"/>
+						<XAxis dataKey="year"/>
+						<YAxis/>
+						<Tooltip/>
+						<Legend verticalAlign="top" onClick={this.selectLine} height={36}/>
+					</LineChart>
+				</ResponsiveContainer>
 			</div>
 		)
 	}
