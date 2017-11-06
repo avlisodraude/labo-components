@@ -20,14 +20,12 @@ class QueryComparisonLineChart extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			activeQueries : {},
             opacity: {}
 		}
-		this.COLORS = ['#468dcb', 'rgb(255, 127, 14)', 'rgba(44, 160, 44, 14)'];
-        this.selectLine = this.selectLine.bind(this);
+		this.COLORS = ['#468dcb', 'rgb(255, 127, 14)', 'rgba(44, 160, 44, 14)', 'wheat', 'crimson', 'dodgerblue'];
 	}
 
-    selectLine(event) {
+    toggleLine(event) {
         const dataKey = event.dataKey;
         let currentKeyValue = this.state.opacity[dataKey];
         let opacity = this.state.opacity;
@@ -44,18 +42,31 @@ class QueryComparisonLineChart extends React.Component {
             opacity : opacity
         });
     }
+
+    showMeTheMoney(event, index) {
+    	console.debug(event)
+    	console.debug(index)
+    	console.debug('Dikke scheet');
+    }
+
+
+
 	//TODO better ID!! (include some unique part based on the query)
 	render() {
         const lines = Object.keys(this.props.data).map((k, index) => {
+        	//fix onClick with this? https://github.com/recharts/recharts/issues/261
         	return (
-        		<Line name={this.props.data[k].label + ' ' + index}
+        		<Line
+        			label={ <LabelAsPoint /> } //the LabelAsPoint class handles the onclick of a dot
+        			activeDot={false}
+        			name={this.props.data[k].label + ' ' + index}
         			type="lineal"
+        			onClick={this.showMeTheMoney.bind(this)}
         			dataKey={k} //is equal to the queryId
         			stroke={this.COLORS[index]}
         			strokeOpacity={this.state.opacity[k] != undefined ? this.state.opacity[k] : 1}
 					dot={{stroke: this.COLORS[index], strokeWidth: 1}}
-					activeDot={{stroke: this.COLORS[index], strokeWidth: 2, r: 1}}
-					onClick={this.selectLine}
+					//activeDot={{stroke: this.COLORS[index], strokeWidth: 2, r: 1}}
 				/>);
         });
 
@@ -94,7 +105,7 @@ class QueryComparisonLineChart extends React.Component {
 						<XAxis dataKey="year"/>
 						<YAxis/>
 						<Tooltip/>
-						<Legend verticalAlign="top" onClick={this.selectLine} height={36}/>
+						<Legend verticalAlign="top" onClick={this.toggleLine.bind(this)} height={36}/>
 					</LineChart>
 				</ResponsiveContainer>
 			</div>
@@ -104,3 +115,30 @@ class QueryComparisonLineChart extends React.Component {
 }
 
 export default QueryComparisonLineChart;
+
+
+export class LabelAsPoint extends React.Component {
+	constructor(props) {
+		//console.debug(props);
+		super(props);
+	}
+
+    onClick() {
+    	console.debug('clicked this ole son of a gun', this.props);
+    	//TODO do something with the props
+    }
+
+    render() {
+    	console.debug('strange', this.props)
+        const { x, y } = this.props;
+        return (
+            <circle
+                className="dot"
+                onClick={this.onClick.bind(this)}
+                cx={x}
+                cy={y}
+                r={8}
+                fill="transparent"/>
+        );
+    }
+}

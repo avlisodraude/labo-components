@@ -13,6 +13,8 @@ See:
 	- http://recharts.org/#/en-US Recharts is the React-D3 component used to render graphs.
 */
 
+
+//TODO add a bar for the dates that are out of range
 class Histogram extends React.Component {
 
 	constructor(props) {
@@ -50,16 +52,18 @@ class Histogram extends React.Component {
     render() {
         const data = this.getGraphData();
         return (
-			<ResponsiveContainer width="100%" height="40%">
-				<BarChart width={830} height={250} data={data} barCategoryGap="1%">
-					<CartesianGrid strokeDasharray="1 6"/>
-					<XAxis dataKey="year"/>
-					<YAxis/>
-					<Tooltip cursor={{ fill: '#F5F5F5' }}/>
-					<Legend/>
-					<Bar dataKey="count" fill="#3173ad"/>
-				</BarChart>
-			</ResponsiveContainer>
+        	<div className={IDUtil.cssClassName('histogram')}>
+				<ResponsiveContainer width="100%" height="40%">
+					<BarChart width={830} height={250} data={data} barCategoryGap="1%">
+						<CartesianGrid strokeDasharray="1 6"/>
+						<XAxis dataKey="year"/>
+						<YAxis/>
+						<Tooltip cursor={{ fill: '#F5F5F5' }}/>
+						<Legend/>
+						<Bar dataKey="count" fill="#3173ad"/>
+					</BarChart>
+				</ResponsiveContainer>
+			</div>
         )
     }
 }

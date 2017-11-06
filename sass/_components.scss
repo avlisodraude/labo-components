@@ -285,28 +285,7 @@
 /* ==================== Statistics package ============================================ */
 
 .bg__histogram { /* Histogram.jsx */
-	.bg__hg__bar {
-		cursor: pointer;
-		rect {
-			fill: $fill-color;
-			&:hover {
-				fill: $fill-color;
-			}
-		}
-		text {
-			fill: $dark-text;
-			font: 10px sans-serif;
-			&:hover {
-				font-size:150%;
-				z-index:199;
-			}
-		}
-	}
-	.out-of-range.bg__hg__bar {
-		rect {
-			fill: red;
-		}
-	}
+	margin:20px 0px 0px 0px;
 }
 
 .bg__query-line-chart { /* QueryComparisonLineChart.jsx */

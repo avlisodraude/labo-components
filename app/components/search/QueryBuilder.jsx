@@ -539,14 +539,12 @@ class QueryBuilder extends React.Component {
 						if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
 							this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
 							histogram = (
-								<div style={{"overflow-x" : 'auto'}}>
-									<Histogram
-										queryId={this.props.queryId}
-										dateRange={this.state.selectedDateRange}
-										data={this.state.aggregations[this.state.selectedDateRange.field]}
-										title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
-										searchId={this.state.searchId}/>
-								</div>
+								<Histogram
+									queryId={this.props.queryId}
+									dateRange={this.state.selectedDateRange}
+									data={this.state.aggregations[this.state.selectedDateRange.field]}
+									title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
+									searchId={this.state.searchId}/>
 							)
 						} else if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
 						    this.state.aggregations[this.state.selectedDateRange.field].length === 0) {
@@ -674,7 +672,6 @@ class QueryBuilder extends React.Component {
 								{histogram}
 							</div>
 						</div>
-						<div className="separator"></div>
 						<div className="separator"></div>
 						<div>
 							<div className="col-md-12">
