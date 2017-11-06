@@ -1,4 +1,6 @@
 import IDUtil from '../../util/IDUtil';
+import {LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Legend, Bar} from 'recharts';
+
 /*
 See:
 	- http://rawgraphs.io/
@@ -17,157 +19,84 @@ class QueryComparisonLineChart extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.WIDTH = 1070;
-		this.HEIGHT = 365;
 		this.state = {
-			activeQueries : {}
+			activeQueries : {},
+            opacity: {}
 		}
-		this.CLASS_PREFIX = 'qlc';
+		this.COLORS = ['#468dcb', 'rgb(255, 127, 14)', 'rgba(44, 160, 44, 14)'];
+        this.selectLine = this.selectLine.bind(this);
 	}
 
-	componentDidMount() {
-		this.repaint()
-	}
+    selectLine(event) {
+        const dataKey = event.dataKey;
+        let currentKeyValue = this.state.opacity[dataKey];
+        let opacity = this.state.opacity;
 
-	//only update if the search id is different
-	shouldComponentUpdate(nextProps, nextState) {
-		return nextProps.comparisonId != this.props.comparisonId;
-	}
-
-	componentDidUpdate() {
-		const svg = document.getElementById("qclc_" + IDUtil.hashCode(this.props.comparisonId));
-		this.refreshAndRepaint(svg, svg.firstChild, this.repaint.bind(this))
-	}
-
-	refreshAndRepaint(svg, child, callback) {
-		if (child) {
-			svg.removeChild(child);
-			this.refreshAndRepaint(svg, svg.firstChild, callback);
-		} else {
-			callback();
-		}
-	}
-
-	getGraphData() {
-		let graphData = [];
-		if(this.props.data) {
-			for(const queryId in this.props.data) {
-				graphData = graphData.concat(this.props.data[queryId].timeline);
-			}
-		}
-		return graphData
-	}
-
-	toggle(queryId) {
-		const aqs = this.state.activeQueries;
-		if(aqs.hasOwnProperty(queryId)) {
-			aqs[queryId] = !aqs[queryId];
-		} else {
-			aqs[queryId] = false;
-		}
-		const opacity = aqs[queryId] ? 1 : 0;
-        // Hide or show the elements based on the ID
-        d3.select("#tag"+queryId.replace(/\s+/g, ''))
-            .transition().duration(100)
-            .style("opacity", opacity);
-
-		this.setState({activeQueries : aqs});
-	}
-
-	repaint() {
-		const data = this.getGraphData();
-
-		//first define the dimensions of the graph
-		const svg = d3.select('#qclc_' + IDUtil.hashCode(this.props.comparisonId));
-		const margin = {top: 10, right: 30, bottom: 30, left: 50};
-		const width = +svg.attr("width") - margin.left - margin.right;
-    	const height = +svg.attr("height") - margin.top - margin.bottom;
-
-    	const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-		//define the x scaling function
-		const x = d3.scaleLinear()
-			.domain(d3.extent(data, function(d) { return d.year; }))
-			.range([0, width]) //scale to the width of the svg
-
-		//define the y scaling function
-		const y = d3.scaleLinear()
-			.domain(d3.extent(data, function(d) { return d.count }))
-			.range([height, 0]);
-
-		const xAxis = d3.axisBottom()
-			.scale(x)
-			.tickSize(-height, 0)
-            .tickFormat(d3.format("d"));
-
-		const yAxis = d3.axisLeft()
-			.scale(y)
-			.tickSize(-width, 0)
-			.tickFormat(function(tick) {return tick; });
-
-		// Define the line
-		const lineFunc = d3.line()
-		    .x(function(d) { return x(d.year); })
-		    .y(function(d) { return y(d.count); });
-
-	    // Nest the entries by symbol
-	    const dataNest = d3.nest()
-	        .key(function(d) {return d.queryId;})
-	        .entries(data);
-
-	    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-	    // Add the X Axis
-	    g.append("g")
-	        .attr("class", "axis axis--x")
-	        .attr("transform", "translate(0," + height + ")")
-	        .transition()
-	        .call(xAxis);
-
-	    // Add the Y Axis
-	    g.append("g")
-	        .attr("class", "axis axis--y")
-	        .transition()
-	        .call(yAxis);
-
-	    // Loop through each symbol / key
-	    dataNest.forEach(function(d,i) {
-	        g.append("path")
-	            .attr("class", IDUtil.cssClassName('line', this.CLASS_PREFIX))
-	            .style("stroke", function() { // Add the colours dynamically
-	                return d.color = color(d.key); })
-	            .attr("id", 'tag'+d.key.replace(/\s+/g, '')) // assign ID
-	            .attr("d", lineFunc(d.values));
-	    }, this);
-
-	    if(this.props.data) {
-		    Object.keys(this.props.data).forEach((queryId, index) => {
-		    	const btn = document.getElementById('btn__' + queryId);
-		    	if(btn) {
-		    		btn.style.color = color(queryId);
-		    	}
-		    }, this);
-		}
-
-	}
-
+        if (currentKeyValue === 1) {
+            currentKeyValue = 0;
+        } else if(currentKeyValue === 0){
+            currentKeyValue = 1;
+        } else { //if undefined
+        	currentKeyValue = 0;
+        }
+        opacity[dataKey] = currentKeyValue;
+        this.setState({
+            opacity : opacity
+        });
+    }
 	//TODO better ID!! (include some unique part based on the query)
 	render() {
-		const buttons = Object.keys(this.props.data).map((queryId, index) => {
-			const classNames = ['btn', 'btn-default']
-			return (
-				<button id={'btn__' + queryId} type="button" className={classNames.join(' ')}
-					onClick={this.toggle.bind(this, queryId)}>
-					{this.props.data[queryId].prettyQuery}
-				</button>
-			)
-		}, this);
+        const lines = Object.keys(this.props.data).map((k, index) => {
+        	return (
+        		<Line name={this.props.data[k].label + ' ' + index}
+        			type="lineal"
+        			dataKey={k} //is equal to the queryId
+        			stroke={this.COLORS[index]}
+        			strokeOpacity={this.state.opacity[k] != undefined ? this.state.opacity[k] : 1}
+					dot={{stroke: this.COLORS[index], strokeWidth: 1}}
+					activeDot={{stroke: this.COLORS[index], strokeWidth: 2, r: 1}}
+					onClick={this.selectLine}
+				/>);
+        });
+
+		//concatenate all the data for each query, because rechart likes it this way (TODO make nicer)
+        const temp = {}
+        Object.keys(this.props.data).forEach((k) => {
+        	this.props.data[k].data.forEach((d) => {
+        		if(temp[d.year]) {
+        			temp[d.year][k] = d[k];
+        		} else {
+        			let t = {}
+        			t[k] = d[k];
+        			temp[d.year] = t;
+        		}
+        	})
+
+        });
+        const timelineData = Object.keys(temp).map((k) => {
+        	let d = temp[k];
+        	d.year = k;
+        	return d;
+        });
+
+
+        //TODO fix the stupid manual multiple lines
 		return (
 			<div className={IDUtil.cssClassName('query-line-chart')}>
-				<svg id={'qclc_' + IDUtil.hashCode(this.props.comparisonId)} width={this.WIDTH} height={this.HEIGHT}></svg>
-				<div className="btn-group" role="group" aria-label="...">
-					{buttons}
-				</div>
+				<ResponsiveContainer width="100%" height="40%">
+					<LineChart width={1200} height={200} data={timelineData} margin={{top: 5, right: 20, bottom: 5, left: 0}}>
+						{lines[0]}
+						{lines[1]}
+						{lines[2]}
+						{lines[3]}
+						{lines[4]}
+						<CartesianGrid stroke="#cacaca"/>
+						<XAxis dataKey="year"/>
+						<YAxis/>
+						<Tooltip/>
+						<Legend verticalAlign="top" onClick={this.selectLine} height={36}/>
+					</LineChart>
+				</ResponsiveContainer>
 			</div>
 		)
 	}

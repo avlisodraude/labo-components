@@ -26,17 +26,17 @@ const ElasticsearchDataUtil = {
 	//TODO make sure the different date formats can be handled!
 	searchResultsToTimeLineData : function(data) {
 		if(data && data.dateField) {
-		 	const timelineData = [];
+		 	const timelineData = []
 		 	if(data && data.results && data.dateField) {
 			 	if(data.aggregations && data.aggregations[data.dateField]) {
 					data.aggregations[data.dateField].forEach((a) => {
 						const y = new Date(a.date_millis).getFullYear();
 						if (!(isNaN(y))) {
-							timelineData.push({
-								year: y,
-								count: a.doc_count,
-								queryId : data.queryId
-							});
+							let td = {
+								year: y
+							}
+							td[data.queryId] = a.doc_count//
+							timelineData.push(td);
 						}
 					});
 

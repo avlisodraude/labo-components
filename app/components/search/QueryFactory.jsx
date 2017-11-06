@@ -71,7 +71,7 @@ class QueryFactory extends React.Component {
 	onComponentOutput(componentClass, data) {
 		if(componentClass == 'CollectionSelector') {
 			const oq = this.state.openQueries;
-			const queryId = IDUtil.guid();
+			const queryId = IDUtil.guid().replace(/-/g, '');
 			oq.push(queryId)
 
 			const oqd = this.state.openQueryData;
@@ -170,7 +170,7 @@ class QueryFactory extends React.Component {
 			return (
 				<div key={queryId + '__qbw'} className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)}>
 					<h5>
-						{'Query ID ' + queryId + ' (' + queryData.collectionConfig.collectionInfo.title + ')'}
+						{'Search through: '+ queryData.collectionConfig.collectionInfo.title}
 						&nbsp;
 						<i className="fa fa-close" style={{float : 'right'}}
 							onClick={this.closeQuery.bind(this, queryId)}>
