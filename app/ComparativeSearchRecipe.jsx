@@ -61,14 +61,15 @@ class ComparativeSearchRecipe extends React.Component {
 			const csr = this.state.combinedSearchResults;
 			const lineChartData = this.state.lineChartData;
 			if(!data.deleted) {
-				const timelineData = ElasticsearchDataUtil.searchResultsToTimeLineData(data);
-				if(timelineData) {
+				const newData = ElasticsearchDataUtil.searchResultsToTimeLineData(data);
+				if(newData) {
 					//TODO add more information about the query
 					lineChartData[data.queryId] = {
-						dateField : data.dateField,
-						prettyQuery : ElasticsearchDataUtil.toPrettyQuery(data.params),
-						timeline : timelineData,
-						queryId : data.queryId
+						label : 'Query #', //+ Object.keys(lineChartData).length,
+					 	dateField : data.dateField,
+					 	prettyQuery : ElasticsearchDataUtil.toPrettyQuery(data.params),
+					 	data : newData,
+					 	queryId : data.queryId
 					}
 				}
 				csr[data.queryId] = data;
@@ -170,7 +171,7 @@ class ComparativeSearchRecipe extends React.Component {
 
 		//TODO only render when there is linechart data
 		if(this.props.recipe.ingredients.output == 'lineChart') {
-			if(Object.keys(this.state.lineChartData).length != 0) {
+			if(Object.keys(this.state.lineChartData).length > 0) {
 				lineChart = (
 					<FlexBox title="Search results plotted on a time line">
 						<QueryComparisonLineChart

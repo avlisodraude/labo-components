@@ -78,37 +78,50 @@ class CollectionAnalyser extends React.Component {
         }
     }
 
+    //TODO optimize this.
 	toTimelineData(data) {
-		const timelineData = {
-			total: {timeline: [], prettyQuery : 'Total'},
-			present: {timeline: [], prettyQuery : 'Present'},
-			missing: {timeline: [], prettyQuery : 'Missing'},
-            joinedData: {timeline: [], prettyQuery: 'joinedData'}
-		};
-
+		const timelineData = {};
 		if(data) {
+			let totalChart = [];
+			let missingChart = [];
+			let presentChart = [];
 			for (const item in data.timeline) {
-				timelineData.total.timeline.push({
-					year: data.timeline[item].year,
-					count: data.timeline[item].background_count,
-					queryId: 'total'
-				});
-				timelineData.present.timeline.push({
-					year: data.timeline[item].year,
-					count: data.timeline[item].field_count,
-					queryId: 'present'
-				});
-				timelineData.missing.timeline.push({
-					year: data.timeline[item].year,
-					count: data.timeline[item].background_count - data.timeline[item].field_count,
-					queryId: 'missing'
-				});
-                timelineData.joinedData.timeline.push({
-                    year: data.timeline[item].year,
-                    total: data.timeline[item].background_count,
-                    present: data.timeline[item].field_count,
-                    missing:data.timeline[item].background_count - data.timeline[item].field_count
-                })
+				totalChart.push({
+					year: data.timeline[item].year, //y-axis
+                    total: data.timeline[item].background_count, //different line on graph
+				})
+				presentChart.push({
+					year : data.timeline[item].year, //y-axis
+					present: data.timeline[item].field_count, //different line on graph
+				})
+				missingChart.push({
+					year : data.timeline[item].year, //y-axis
+					missing:data.timeline[item].background_count - data.timeline[item].field_count //different line on graph
+				})
+			}
+
+			timelineData['total'] = {
+				label : 'Total',
+			 	dateField : null, //what to do here?
+			 	prettyQuery : null, //what to do here?
+			 	data : totalChart,
+			 	queryId : 'total_chart'
+			}
+
+			timelineData['missing'] = {
+				label : 'Missing',
+			 	dateField : null, //what to do here?
+			 	prettyQuery : null, //what to do here?
+			 	data : missingChart,
+			 	queryId : 'missing_chart'
+			}
+
+			timelineData['present'] = {
+				label : 'Present',
+			 	dateField : null,
+			 	prettyQuery : null, //what to do here?
+			 	data : presentChart,
+			 	queryId : 'present_chart'
 			}
 		}
 		return timelineData;

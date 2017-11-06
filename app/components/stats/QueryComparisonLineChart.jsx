@@ -21,58 +21,75 @@ class QueryComparisonLineChart extends React.Component {
 		super(props);
 		this.state = {
 			activeQueries : {},
-            opacity: {
-                present: 1,
-                missing: 1,
-                total: 1
-            }
+            opacity: {}
 		}
+		this.COLORS = ['#468dcb', 'rgb(255, 127, 14)', 'rgba(44, 160, 44, 14)'];
         this.selectLine = this.selectLine.bind(this);
-	}
-
-	//only update if the search id is different
-	shouldComponentUpdate(nextProps, nextState) {
-		return nextProps.comparisonId != this.props.comparisonId ||
-            nextState.opacity !==this.state.opacity;
 	}
 
     selectLine(event) {
         const dataKey = event.dataKey;
-        let currentKeyValue = this.state.opacity[dataKey],
-            opacity = Object.assign({}, this.state.opacity);
+        let currentKeyValue = this.state.opacity[dataKey];
+        let opacity = this.state.opacity;
 
         if (currentKeyValue === 1) {
-            currentKeyValue = 0
-        } else {
-            currentKeyValue = 1
+            currentKeyValue = 0;
+        } else if(currentKeyValue === 0){
+            currentKeyValue = 1;
+        } else { //if undefined
+        	currentKeyValue = 0;
         }
         opacity[dataKey] = currentKeyValue;
-
         this.setState({
-            opacity
+            opacity : opacity
         });
     }
 	//TODO better ID!! (include some unique part based on the query)
 	render() {
-        const presentOp = this.state.opacity.present,
-            missingOp = this.state.opacity.missing,
-            totalOp = this.state.opacity.total,
-            total = this.props.data.joinedData.timeline;
+        const lines = Object.keys(this.props.data).map((k, index) => {
+        	return (
+        		<Line name={this.props.data[k].label + ' ' + index}
+        			type="lineal"
+        			dataKey={k} //is equal to the queryId
+        			stroke={this.COLORS[index]}
+        			strokeOpacity={this.state.opacity[k] != undefined ? this.state.opacity[k] : 1}
+					dot={{stroke: this.COLORS[index], strokeWidth: 1}}
+					activeDot={{stroke: this.COLORS[index], strokeWidth: 2, r: 1}}
+					onClick={this.selectLine}
+				/>);
+        });
 
+		//concatenate all the data for each query, because rechart likes it this way (TODO make nicer)
+        const temp = {}
+        Object.keys(this.props.data).forEach((k) => {
+        	this.props.data[k].data.forEach((d) => {
+        		if(temp[d.year]) {
+        			temp[d.year][k] = d[k];
+        		} else {
+        			let t = {}
+        			t[k] = d[k];
+        			temp[d.year] = t;
+        		}
+        	})
+
+        });
+        const timelineData = Object.keys(temp).map((k) => {
+        	let d = temp[k];
+        	d.year = k;
+        	return d;
+        });
+
+
+        //TODO fix the stupid manual multiple lines
 		return (
 			<div className={IDUtil.cssClassName('query-line-chart')}>
 				<ResponsiveContainer width="100%" height="40%">
-					<LineChart width={1200} height={200} data={total} margin={{top: 5, right: 20, bottom: 5, left: 0}}>
-						<Line name="Total" type="lineal" dataKey="total" stroke="#468dcb" strokeOpacity={totalOp}
-							  dot={{stroke: '#468dcb', strokeWidth: 1}} activeDot={{stroke: '#468dcb', strokeWidth: 2, r: 1}}
-							  onClick={this.selectLine}
-						/>
-						<Line type="lineal" dataKey="present" stroke="rgb(255, 127, 14)" strokeWidth={2} strokeOpacity={presentOp}
-							  dot={{stroke: 'rgb(255, 127, 14)'}} activeDot={{stroke: 'rgb(255, 127, 14)', strokeWidth: 1, r: 3}}
-						/>
-						<Line type="lineal" dataKey="missing" stroke="rgba(44, 160, 44, 14)" strokeOpacity={missingOp}
-							  dot={{stroke: 'rgba(44, 160, 44, 14)', strokeWidth: 1}} activeDot={{stroke: 'rgba(44, 160, 44, 14)', strokeWidth: 1, r: 1}}
-						/>
+					<LineChart width={1200} height={200} data={timelineData} margin={{top: 5, right: 20, bottom: 5, left: 0}}>
+						{lines[0]}
+						{lines[1]}
+						{lines[2]}
+						{lines[3]}
+						{lines[4]}
 						<CartesianGrid stroke="#cacaca"/>
 						<XAxis dataKey="year"/>
 						<YAxis/>
