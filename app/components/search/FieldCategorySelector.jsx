@@ -53,7 +53,7 @@ class FieldCategorySelector extends React.Component {
 						<i className="fa fa-info"></i>
 					</span>
 					<select className="form-control"
-						value={this.props.fieldCategory ? this.props.fieldCategory.id : null}
+						value={this.props.fieldCategory ? this.props.fieldCategory.id : 'null_option'}
 						onChange={this.changeStringField.bind(this)}>
 						{options}
 					</select>
