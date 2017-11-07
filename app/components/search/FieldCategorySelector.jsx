@@ -30,7 +30,6 @@ class FieldCategorySelector extends React.Component {
 						return selectedObjects;
                     });
 				});
-				console.log('selectedObjects', selectedObjects);
                 this.props.onOutput(this.constructor.name, selectedObjects);
 			}
 		}
