@@ -59,10 +59,9 @@ class FieldCategorySelector extends React.Component {
 		// 	).join('<br/>');
 		// }
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
-			const options = this.props.collectionConfig.getMetadataFieldCategories().map((fc) => {
-				return (<option value={fc.id}>{fc.label}</option>);
+			const optionsToSelect = this.props.collectionConfig.getMetadataFieldCategories().map((fc) => {
+				return fc.label
 			});
-			const optionsArray = this.props.collectionConfig.getMetadataFieldCategoriesTitles();
 
 			fieldCategorySelector = (
 				<div className={IDUtil.cssClassName('field-category-selector')}>
@@ -74,7 +73,7 @@ class FieldCategorySelector extends React.Component {
 						<i className="fa fa-info"></i>
 					</span>
 					<PowerSelectMultiple
-						options={optionsArray}
+						options={optionsToSelect}
 						selected={this.state.selectedFields}
 						onChange={this.handleChange}
 						placeholder="Search in: all fields"
