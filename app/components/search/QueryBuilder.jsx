@@ -183,7 +183,7 @@ class QueryBuilder extends React.Component {
 
 	//this resets the paging
 	newSearch(e) {
-		if(e) {
+		if(e && (typeof e.preventDefault !== "undefined")) {
 			e.preventDefault();
 		}
 		this.doSearch([
@@ -424,6 +424,12 @@ class QueryBuilder extends React.Component {
         	alert('The system is not allowed to search through this collection');
         }
     }
+
+    handleKeyPress(target){
+        if(target.charCode==13){
+            this.newSearch(this);
+        }
+	}
 
     render() {
         if (this.props.collectionConfig) {
@@ -705,7 +711,7 @@ class QueryBuilder extends React.Component {
 								<div className="form-group">
 									<div className="col-sm-6">
 										<div className="input-group">
-											<input type="text" className="form-control"
+											<input type="text" className="form-control" onKeyPress={this.handleKeyPress.bind(this)}
 												id="search_term" ref="searchTerm" placeholder="Search"/>
 											<span className="input-group-addon btn-effect" onClick={this.newSearch.bind(this)}>
 												{searchIcon}
