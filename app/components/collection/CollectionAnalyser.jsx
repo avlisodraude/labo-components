@@ -305,7 +305,7 @@ class CollectionAnalyser extends React.Component {
 
 					dateFieldSelect = (
 						<div className="form-group">
-							<label htmlFor="datefield_select" className="col-sm-3">Date field</label>
+							<label htmlFor="datefield_select" className="col-sm-3">Metadata field for date (X-axis)</label>
 							<div className="col-sm-9">
 								<select className="form-control" id="datefield_select" onChange={this.analyseField.bind(this)}>
 									{dateFieldOptions}
@@ -323,7 +323,7 @@ class CollectionAnalyser extends React.Component {
 
 				analysisFieldSelect = (
 					<div className="form-group">
-						<label htmlFor="analysisfield_select" className="col-sm-3">Analysis field</label>
+						<label htmlFor="analysisfield_select" className="col-sm-3">Metadata field to inspect (Y-axis)</label>
 						<div className="col-sm-9 collectionAnalyser-autosuggest">
                             <Autosuggest
                                 ref="classifications"

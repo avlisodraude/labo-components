@@ -9,16 +9,23 @@ class FieldAnalysisStats extends React.Component {
 	render() {
 		const stats = [];
 		if(this.props.data && this.props.data.doc_stats) {
+			console.log('this.props', this.props);
 			stats.push(
 				<tr>
-					<td>Document with/without date</td>
-					<td>{this.props.data.doc_stats.date_field} / {this.props.data.doc_stats.no_date_field}</td>
+					<td>Total number of records in the collection</td>
+					<td>{this.props.data.doc_stats.total}</td>
 				</tr>
 			);
+            stats.push(
+				<tr>
+					<td>Records which contain   {this.props.data.date_field}</td>
+					<td>{this.props.data.doc_stats.date_field} </td>
+				</tr>
+            );
 			stats.push(
 				<tr>
-					<td>Document with/without analysis field</td>
-					<td>{this.props.data.doc_stats.analysis_field} / {this.props.data.doc_stats.no_analysis_field}</td>
+					<td>Of which records with analysis field {this.props.data.analysis_field}</td>
+					<td>{this.props.data.doc_stats.analysis_field} </td>
 				</tr>
 			);
 			stats.push(
