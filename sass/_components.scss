@@ -151,7 +151,12 @@
 
 .bg__date-range-select {} /* DateRangeSelector.jsx */
 
-.bg__field-category-selector {} /* FieldCategorySelector.jsx */
+.bg__field-category-selector {
+	.PowerSelectMultiple__SelectedOptions {
+		margin:0px;
+	}
+
+} /* FieldCategorySelector.jsx */
 
 .bg__item-details { /* ItemDetails.jsx */
 	.bg__itd__media-player {

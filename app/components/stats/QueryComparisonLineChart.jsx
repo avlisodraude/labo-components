@@ -129,7 +129,6 @@ export class LabelAsPoint extends React.Component {
     }
 
     render() {
-    	console.debug('strange', this.props)
         const { x, y } = this.props;
         return (
             <circle

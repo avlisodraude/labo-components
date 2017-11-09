@@ -181,26 +181,24 @@ class QueryBuilder extends React.Component {
 		)
 	}
 
-	//this resets the paging
-	newSearch(e) {
-		if(e) {
-			e.preventDefault();
-		}
-		this.doSearch([
-			this.props.queryId,
-			this.props.collectionConfig,
-			this.state.searchLayers,
-			this.refs.searchTerm.value,
-			null, //no field category
-			this.state.desiredFacets,
-			{}, //no selected facets
-			null, //no date range selected
-			this.state.selectedSortParams,
-			0, //offset zero, start on the first page
-			this.props.pageSize,
-			this.onOutput.bind(this),
-			true
-		])
+	newSearch(target) {
+        if(target.charCode==13){
+            this.doSearch([
+				this.props.queryId,
+				this.props.collectionConfig,
+				this.state.searchLayers,
+				this.refs.searchTerm.value,
+				null, //no field category
+				this.state.desiredFacets,
+				{}, //no selected facets
+				null, //no date range selected
+				this.state.selectedSortParams,
+				0, //offset zero, start on the first page
+				this.props.pageSize,
+				this.onOutput.bind(this),
+				true
+			])
+        }
 	}
 
 	//this resets the paging
@@ -701,11 +699,11 @@ class QueryBuilder extends React.Component {
 					<div className="separator"></div>
 					<div className="row">
 						<div className="col-md-12">
-							<form className="form-horizontal" onSubmit={this.newSearch.bind(this)}>
+							<form className="form-horizontal">
 								<div className="form-group">
 									<div className="col-sm-6">
 										<div className="input-group">
-											<input type="text" className="form-control"
+											<input type="text" className="form-control" onKeyPress={this.newSearch.bind(this)}
 												id="search_term" ref="searchTerm" placeholder="Search"/>
 											<span className="input-group-addon btn-effect" onClick={this.newSearch.bind(this)}>
 												{searchIcon}

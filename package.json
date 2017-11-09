@@ -35,6 +35,7 @@
     "openseadragon": "^2.3.0",
     "react-autosuggest": "^9.3.2",
     "react-datepicker": "^0.53.0",
+    "react-power-select": "^1.0.0-beta.9",
     "react-tooltip": "^3.3.0",
     "react-transition-group": "^2.2.1",
     "recharts": "^1.0.0-beta.0"
