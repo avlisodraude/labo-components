@@ -10,15 +10,31 @@ class FieldCategorySelector extends React.Component {
 		super(props);
 	}
 
-	onOutput({ options }) {
+	onOutput(data) {
 		if(this.props.onOutput) {
-			if(options === null) {
+			if(data === null) {
 				this.props.onOutput(this.constructor.name, null);
 			} else {
-                this.props.onOutput(this.constructor.name, options);
+                this.props.onOutput(this.constructor.name, data);
 			}
 		}
 	}
+
+    handleChange ({ options }) {
+    	let found = false;
+    	let tmp = {}
+    	for(let i=0;i<options.length;i++) {
+    		let fc = options[i]
+    		if(tmp[fc.id]) {
+    			found = true;
+    			break;
+    		}
+    		tmp[fc.id] = true;
+    	}
+		if(!found) {
+			this.onOutput(options);
+	    }
+    }
 
     isSelected(selection, selectedFields) {
     	let selected = false;
@@ -51,7 +67,7 @@ class FieldCategorySelector extends React.Component {
           						queryId={this.props.queryId}
           						collectionConfig={this.props.collectionConfig}/>
           				}
-						onChange={this.onOutput.bind(this)}
+						onChange={this.handleChange.bind(this)}
 						placeholder="Search in: all fields"
 					/>
 				<ReactTooltip id={'__fs__tt' + this.props.queryId} />
