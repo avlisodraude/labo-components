@@ -58,6 +58,7 @@ class FieldCategorySelector extends React.Component {
 			fieldCategorySelector = (
 				<div className={IDUtil.cssClassName('field-category-selector')}>
 					<PowerSelectMultiple
+						key={'__pwsm__' + this.props.queryId}
 						options={optionsToSelect}
 						selected={selectedFields}
 						optionLabelPath="label"
