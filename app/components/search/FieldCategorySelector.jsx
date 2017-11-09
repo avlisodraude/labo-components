@@ -58,14 +58,12 @@ class FieldCategorySelector extends React.Component {
 		let fieldCategorySelector = null;
 		const includedFields = 'All metadata fields (classified as text field) are included in your search';
 		const selectedFields = this.props.fieldCategory || [];
-
+		console.debug('selected', selectedFields);
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
 			const optionsToSelect = this.props.collectionConfig.getMetadataFieldCategories().filter((fc)=> {
 				return !this.isSelected(fc, selectedFields);
-			}).map((ffc) => {
-				return {label : ffc.label, id : ffc.id}
 			});
-			//console.debug('selected fields: ', selectedFields);
+			console.debug('optionsToSelect: ', optionsToSelect);
 			fieldCategorySelector = (
 				<div className={IDUtil.cssClassName('field-category-selector')}>
 					<PowerSelectMultiple
