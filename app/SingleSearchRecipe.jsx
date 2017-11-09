@@ -188,7 +188,7 @@ class SingleSearchRecipe extends React.Component {
 					}
 				})
             });
-
+            //console.debug(currentSelectedfields)
             fieldCategory = currentSelectedfields;
 		}
 

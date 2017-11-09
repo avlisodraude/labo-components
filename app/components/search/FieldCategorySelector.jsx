@@ -8,23 +8,7 @@ class FieldCategorySelector extends React.Component {
 
 	constructor(props) {
 		super(props);
-        this.state = {
-            selectedFields: this.retrieveFieldsCategory(props.fieldCategory),
-        };
-        this.handleChange = this.handleChange.bind(this);
 	}
-
-    retrieveFieldsCategory(fields) {
-        let selectedFields = [];
-        if (fields !== null) {
-            fields.forEach(function (el) {
-                selectedFields.push(el.id);
-            });
-
-            return selectedFields;
-        }
-        return [];
-    }
 
 	onOutput(data) {
 		if(this.props.onOutput) {
@@ -32,15 +16,11 @@ class FieldCategorySelector extends React.Component {
 				this.props.onOutput(this.constructor.name, null);
 			} else {
 				const fieldCategories = this.props.collectionConfig.getMetadataFieldCategories();
-                const selectedObjects = [];
-
-				data.map(function(current) {
-                    fieldCategories.map(function (obj) {
-						if (obj.label === current) {
-                            selectedObjects.push(obj);
-						}
-						return selectedObjects;
-                    });
+				let selectedObjects = []
+				data.forEach(function(fc) {
+                    selectedObjects = selectedObjects.concat(fieldCategories.filter(function (obj) {
+                    	return obj.id === fc.id;
+                    }));
 				});
                 this.props.onOutput(this.constructor.name, selectedObjects);
 			}
@@ -48,47 +28,59 @@ class FieldCategorySelector extends React.Component {
 	}
 
     handleChange ({ options }) {
-		const optionsSelected = options;
-		this.onOutput(optionsSelected);
-        this.setState({
-            selectedFields: options
-        });
+    	let found = false;
+    	let tmp = {}
+    	for(let i=0;i<options.length;i++) {
+    		let fc = options[i]
+    		if(tmp[fc.id]) {
+    			found = true;
+    			break;
+    		}
+    		tmp[fc.id] = true;
+    	}
+		if(!found) {
+			this.onOutput(options);
+	    }
+    }
+
+    isSelected(selection, selectedFields) {
+    	let selected = false;
+    	for(let i=0;i<selectedFields.length;i++) {
+    		if(selectedFields[i].id == selection.id){
+    			selected = true;
+    			break;
+    		}
+    	}
+    	return selected;
     }
 
 	render() {
 		let fieldCategorySelector = null;
 		const includedFields = 'All metadata fields (classified as text field) are included in your search';
+		const selectedFields = this.props.fieldCategory || [];
 
-		// TODO: Assign tooltip info per selected item instead of the whole selection field now that we are dealing with multiple selections
-		// if(this.props.fieldCategory) {
-		// 	includedFields = 'The following metadata fields are included in this category:<br/><br/>';
-		// 	includedFields += this.props.fieldCategory.fields.map(
-		// 		(f) => this.props.collectionConfig.toPrettyFieldName(f)
-		// 	).join('<br/>');
-		// }
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
-			const optionsToSelect = this.props.collectionConfig.getMetadataFieldCategories().map((fc) => {
-				return fc.label
+			const optionsToSelect = this.props.collectionConfig.getMetadataFieldCategories().filter((fc)=> {
+				return !this.isSelected(fc, selectedFields);
+			}).map((ffc) => {
+				return {label : ffc.label, id : ffc.id}
 			});
-
+			//console.debug('selected fields: ', selectedFields);
 			fieldCategorySelector = (
 				<div className={IDUtil.cssClassName('field-category-selector')}>
-				<div className="input-group">
-					<span className="input-group-addon btn-effect"
-						data-for={'__fs__tt' + this.props.queryId}
-						data-tip={includedFields}
-						data-html={true}>
-						<i className="fa fa-info"></i>
-					</span>
 					<PowerSelectMultiple
 						options={optionsToSelect}
-						selected={this.state.selectedFields}
-						onChange={this.handleChange}
+						selected={selectedFields}
+						optionLabelPath="label"
+          				optionComponent={<CustomOptionComponent />}
+          				selectedOptionComponent={
+          					<CustomSelectedOptionComponent
+          						queryId={this.props.queryId}
+          						collectionConfig={this.props.collectionConfig}/>
+          				}
+						onChange={this.handleChange.bind(this)}
 						placeholder="Search in: all fields"
 					/>
-
-				</div>
-					{/* TODO: re-locate tooltip on selection multi selection list*/}
 				<ReactTooltip id={'__fs__tt' + this.props.queryId} />
 			</div>);
 		}
@@ -98,3 +90,33 @@ class FieldCategorySelector extends React.Component {
 }
 
 export default FieldCategorySelector;
+
+
+export const CustomOptionComponent = ({ option }) => (
+	<div>
+		Search in: {option.label}
+	</div>
+);
+
+export const CustomSelectedOptionComponent = ({ option, optionLabelPath, onCloseClick, select, queryId, collectionConfig }) => (
+	<li className="PowerSelectMultiple__SelectedOption">
+		<span className="PowerSelectMultiple__SelectedOption__Label"
+			data-for={'__fs__tt' + queryId}
+			data-tip={
+				'The following metadata fields are included in this category:<br/><br/>' +
+				option.fields.map((f) => collectionConfig.toPrettyFieldName(f)).join('<br/>')
+			}
+			data-html={true}>
+			{option[optionLabelPath]}
+		</span>
+		<span
+			className="PowerSelectMultiple__SelectedOption__Close"
+			onClick={event => {
+				event.stopPropagation();
+				onCloseClick({ option, select });
+			}}
+		>
+		×
+		</span>
+	</li>
+);
