@@ -15,14 +15,7 @@ class FieldCategorySelector extends React.Component {
 			if(data === null) {
 				this.props.onOutput(this.constructor.name, null);
 			} else {
-				const fieldCategories = this.props.collectionConfig.getMetadataFieldCategories();
-				let selectedObjects = []
-				data.forEach(function(fc) {
-                    selectedObjects = selectedObjects.concat(fieldCategories.filter(function (obj) {
-                    	return obj.id === fc.id;
-                    }));
-				});
-                this.props.onOutput(this.constructor.name, selectedObjects);
+                this.props.onOutput(this.constructor.name, data);
 			}
 		}
 	}
