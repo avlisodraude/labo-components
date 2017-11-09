@@ -9,10 +9,22 @@ class FieldCategorySelector extends React.Component {
 	constructor(props) {
 		super(props);
         this.state = {
-            selectedFields: [],
+            selectedFields: this.retrieveFieldsCategory(props.fieldCategory),
         };
-        this.handleChange = this.handleChange.bind(this)
+        this.handleChange = this.handleChange.bind(this);
 	}
+
+    retrieveFieldsCategory(fields) {
+        let selectedFields = [];
+        if (fields !== null) {
+            fields.forEach(function (el) {
+                selectedFields.push(el.id);
+            });
+
+            return selectedFields;
+        }
+        return [];
+    }
 
 	onOutput(data) {
 		if(this.props.onOutput) {
@@ -37,7 +49,6 @@ class FieldCategorySelector extends React.Component {
 
     handleChange ({ options }) {
 		const optionsSelected = options;
-
 		this.onOutput(optionsSelected);
         this.setState({
             selectedFields: options
@@ -50,10 +61,7 @@ class FieldCategorySelector extends React.Component {
 
 		// TODO: Assign tooltip info per selected item instead of the whole selection field now that we are dealing with multiple selections
 		// if(this.props.fieldCategory) {
-        //
 		// 	includedFields = 'The following metadata fields are included in this category:<br/><br/>';
-        //
-        //
 		// 	includedFields += this.props.fieldCategory.fields.map(
 		// 		(f) => this.props.collectionConfig.toPrettyFieldName(f)
 		// 	).join('<br/>');

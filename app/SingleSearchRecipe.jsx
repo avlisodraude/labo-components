@@ -101,9 +101,12 @@ class SingleSearchRecipe extends React.Component {
 			params['st'] = searchTerm;
 		}
 
-
-		if(fieldCategory && fieldCategory.id) {
-			params['fc'] = fieldCategory.id;
+		if(fieldCategory) {
+            params['fc'] ='';
+            fieldCategory.map(function(item){
+                params['fc'] += item.id + '|';
+			});
+            params['fc'] = params['fc'].slice(0, -1);
 		}
 
 		if(dateRange) {
@@ -166,15 +169,27 @@ class SingleSearchRecipe extends React.Component {
 		const s = this.props.params.s;
 
 		//populate the field category
-		let fieldCategory = null;
+		let fieldCategory = [];
+
 		if(fc) {
+            // split field selected parameters.
+            let selectedFields = [];
+            fc.split('|').forEach(function(field){
+                selectedFields.push(field);
+            });
+
 			const tmp = this.state.collectionConfig.getMetadataFieldCategories();
-			if(tmp) {
-				fieldCategory = tmp.filter((f) => {
-					return f.id == fc;
+			let currentSelectedfields= [];
+
+            selectedFields.map(selField => {
+				tmp.map(fieldsArray => {
+					if( fieldsArray.id == selField){
+                        currentSelectedfields.push(fieldsArray)
+					}
 				})
-				fieldCategory = fieldCategory.length == 1 ? fieldCategory[0] : null;
-			}
+            });
+
+            fieldCategory = currentSelectedfields;
 		}
 
 		//populate the facets
