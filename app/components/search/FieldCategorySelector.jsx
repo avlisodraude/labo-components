@@ -10,31 +10,15 @@ class FieldCategorySelector extends React.Component {
 		super(props);
 	}
 
-	onOutput(data) {
+	onOutput({ options }) {
 		if(this.props.onOutput) {
-			if(data === null) {
+			if(options === null) {
 				this.props.onOutput(this.constructor.name, null);
 			} else {
-                this.props.onOutput(this.constructor.name, data);
+                this.props.onOutput(this.constructor.name, options);
 			}
 		}
 	}
-
-    handleChange ({ options }) {
-    	let found = false;
-    	let tmp = {}
-    	for(let i=0;i<options.length;i++) {
-    		let fc = options[i]
-    		if(tmp[fc.id]) {
-    			found = true;
-    			break;
-    		}
-    		tmp[fc.id] = true;
-    	}
-		if(!found) {
-			this.onOutput(options);
-	    }
-    }
 
     isSelected(selection, selectedFields) {
     	let selected = false;
@@ -51,12 +35,10 @@ class FieldCategorySelector extends React.Component {
 		let fieldCategorySelector = null;
 		const includedFields = 'All metadata fields (classified as text field) are included in your search';
 		const selectedFields = this.props.fieldCategory || [];
-		console.debug('selected', selectedFields);
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
 			const optionsToSelect = this.props.collectionConfig.getMetadataFieldCategories().filter((fc)=> {
 				return !this.isSelected(fc, selectedFields);
 			});
-			console.debug('optionsToSelect: ', optionsToSelect);
 			fieldCategorySelector = (
 				<div className={IDUtil.cssClassName('field-category-selector')}>
 					<PowerSelectMultiple
@@ -69,7 +51,7 @@ class FieldCategorySelector extends React.Component {
           						queryId={this.props.queryId}
           						collectionConfig={this.props.collectionConfig}/>
           				}
-						onChange={this.handleChange.bind(this)}
+						onChange={this.onOutput.bind(this)}
 						placeholder="Search in: all fields"
 					/>
 				<ReactTooltip id={'__fs__tt' + this.props.queryId} />

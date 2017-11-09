@@ -183,7 +183,6 @@ class QueryBuilder extends React.Component {
 
 	//this resets the paging
 	newSearch(e) {
-		console.debug('wellllll?');
 		if(e) {
 			e.preventDefault();
 		}
