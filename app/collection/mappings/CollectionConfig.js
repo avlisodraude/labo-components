@@ -297,6 +297,11 @@ class CollectionConfig {
 		return esFieldName;
 	}
 
+	//used to prevent graphs to blow up in case the minimum date is really low (because of incorrect data)
+	getMinimunYear() {
+		return -1;
+	}
+
 }
 
 export default CollectionConfig;

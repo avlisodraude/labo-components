@@ -258,7 +258,9 @@ class CollectionsRecipe extends React.Component {
 			);
 
 			if(this.state.fieldAnalysisStats) {
-				fieldAnalysisStats = (<FieldAnalysisStats data={this.state.fieldAnalysisStats}/>);
+				fieldAnalysisStats = (
+					<FieldAnalysisStats data={this.state.fieldAnalysisStats} collectionConfig={collectionConfig}/>
+				);
 			}
 
 			if(this.state.fieldAnalysisTimeline) {

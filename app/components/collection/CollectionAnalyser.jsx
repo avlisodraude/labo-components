@@ -56,6 +56,7 @@ class CollectionAnalyser extends React.Component {
                     dateSelect.options[dateSelect.selectedIndex].value,
                     analysisField,
                     [], //facets?
+                    this.props.collectionConfig.getMinimunYear(),
                     (data) => {
                         const timelineData = this.toTimelineData(data);
                         callback(data, timelineData);
@@ -140,20 +141,10 @@ class CollectionAnalyser extends React.Component {
     };
 
     getAnalysisFieldsListNames(docTypeStats) {
-        const availableSuggestions = [];
-
-        for (const fieldType in docTypeStats) {
-            if (docTypeStats.hasOwnProperty(fieldType)) {
-                for (const fieldName in docTypeStats[fieldType]) {
-                	//each field can have multiple fieldTypes so make sure it's not already added
-                	if(availableSuggestions.indexOf(docTypeStats[fieldType][fieldName]) == -1) {
-                    	availableSuggestions.push(docTypeStats[fieldType][fieldName])
-                    }
-                }
-            }
-        }
-
-        return availableSuggestions;
+    	if(docTypeStats['keyword']) {
+    		return docTypeStats['keyword'];
+    	}
+    	return null;
     }
 
     getSuggestions(value, callback) {
@@ -223,12 +214,10 @@ class CollectionAnalyser extends React.Component {
 
 				dateFieldSelect = (
 					<div className="form-group">
-						<label htmlFor="datefield_select" className="col-sm-3">Metadata field for date (X-axis)</label>
-						<div className="col-sm-9">
-							<select className="form-control" id="datefield_select" onChange={this.analyseField.bind(this)}>
-								{dateFieldOptions}
-							</select>
-						</div>
+						<label htmlFor="datefield_select">Metadata field for date (X-axis)</label>
+						<select className="form-control" id="datefield_select" onChange={this.analyseField.bind(this)}>
+							{dateFieldOptions}
+						</select>
 					</div>
 				);
 			}
@@ -241,33 +230,30 @@ class CollectionAnalyser extends React.Component {
 
 			analysisFieldSelect = (
 				<div className="form-group">
-					<label htmlFor="analysisfield_select" className="col-sm-3">Metadata field to inspect (Y-axis)</label>
-					<div className="col-sm-9 collectionAnalyser-autosuggest">
-                        <Autosuggest
-                            ref="classifications"
-                            suggestions={sortedAndBeautified}
-                            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
-                            onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
-                            onSuggestionSelected={this.onSuggestionSelected.bind(this)}
-                            getSuggestionValue={this.getSuggestionValue.bind(this)}
-                            renderSuggestion={this.renderSuggestion.bind(this)}
-							shouldRenderSuggestions={this.shouldRenderSuggestions.bind(this)}
-                            inputProps={{
-					            placeholder: 'Search a field',
-					            value: this.state.value,
-					            onChange: this.onChange.bind(this)
-					        }}
-                        />
-
-					</div>
+					<label htmlFor="analysisfield_select">Metadata field to inspect (Y-axis)</label>
+                    <Autosuggest
+                        ref="classifications"
+                        suggestions={sortedAndBeautified}
+                        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
+                        onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
+                        onSuggestionSelected={this.onSuggestionSelected.bind(this)}
+                        getSuggestionValue={this.getSuggestionValue.bind(this)}
+                        renderSuggestion={this.renderSuggestion.bind(this)}
+						shouldRenderSuggestions={this.shouldRenderSuggestions.bind(this)}
+                        inputProps={{
+				            placeholder: 'Search a field',
+				            value: this.state.value,
+				            onChange: this.onChange.bind(this)
+				        }}
+                    />
 				</div>
 			);
 
 			analysisBlock = (
-				<div className="form-horizontal">
+				<form>
 					{dateFieldSelect}
 					{analysisFieldSelect}
-				</div>
+				</form>
 			)
 
 		} else { //if there are no stats available

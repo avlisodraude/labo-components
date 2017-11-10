@@ -111,14 +111,15 @@ const CollectionAPI = {
 		xhr.send();
 	},
 
-	analyseField: function(collectionId, docType, dateField, analysisField, facets, callback) {
+	analyseField: function(collectionId, docType, dateField, analysisField, facets, minYear, callback) {
 		const url = _config.SEARCH_API_BASE + '/collections/analyse_field';
 		const query = {
 			'collectionId': collectionId,
 			'docType': docType,
 			'dateField': dateField,
 			'analysisField': analysisField,
-			'facets': facets
+			'facets': facets,
+			'minYear' : minYear
 		}
 		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
