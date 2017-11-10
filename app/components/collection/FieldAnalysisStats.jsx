@@ -9,7 +9,6 @@ class FieldAnalysisStats extends React.Component {
 	render() {
 		const stats = [];
 		if(this.props.data && this.props.data.doc_stats) {
-			console.log('this.props', this.props);
 			stats.push(
 				<tr>
 					<td>Total number of records in the collection</td>

@@ -259,7 +259,10 @@
 
 /* ==================== Collection package ============================================ */
 
-.bg__collection-analyser {} /* CollectionAnalyser.jsx */
+.bg__collection-analyser {
+
+
+} /* CollectionAnalyser.jsx */
 
 .bg__collection-selector { /* CollectionSelector.jsx */
 	.bg__cls__collection {
@@ -284,7 +287,11 @@
 
 .bg__collection-stats {} /* CollectionStats.jsx */
 
-.bg__field-analysis-stats {} /* FieldAnalysisStats */
+.bg__field-analysis-stats {
+	table {
+		font-size:85%;
+	}
+} /* FieldAnalysisStats */
 
 
 /* ==================== Statistics package ============================================ */

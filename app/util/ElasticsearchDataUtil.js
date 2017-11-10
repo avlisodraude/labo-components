@@ -110,10 +110,7 @@ const ElasticsearchDataUtil = {
 					field: genres[0],
 					title : 'Genre',
 					id : 'genre',
-					operator : 'AND',
-					size : 10,
-					type : 'string',
-					display: true
+					type : 'string'
 				});
 			}
 			if(subjects.length > 0) {
@@ -121,10 +118,7 @@ const ElasticsearchDataUtil = {
 					field: subjects[0],
 					title : 'Subject',
 					id : 'subject',
-					operator : 'AND',
-					size : 10,
-					type : 'string',
-					display: true
+					type : 'string'
 				});
 			}
 			if(locations.length > 0) {
@@ -132,10 +126,7 @@ const ElasticsearchDataUtil = {
 					field: locations[0],
 					title : 'Location',
 					id : 'location',
-					operator : 'AND',
-					size : 10,
-					type : 'string',
-					display: true
+					type : 'string'
 				});
 			}
 			if(contributors.length > 0) {
@@ -143,27 +134,14 @@ const ElasticsearchDataUtil = {
 					field: contributors[0],
 					title : 'Contributor',
 					id : 'contributor',
-					operator : 'AND',
-					size : 10,
-					type : 'string',
-					display: true
+					type : 'string'
 				});
 			}
 		}
 		return facets.length > 0 ? facets : null;
 	},
 
-    /**
-     * This method accepts an array and returns the beautified sorted version
-     *
-     * @param : arrayToSort (array to be sorted)
-     *
-     * @Use: ElasticsearchDataUtil.sortAndBeautifyArray(analysisFieldOptions);
-     * Note: Don't forget to import this library in the class that will make use of this method as
-     * import ElasticsearchDataUtil from 'path-to-file/ElasticsearchDataUtil';
-	 * TODO: Extend this method to make it more flexible, ie, let the user determine the returned
-	 * output array with key value names.
-     */
+    //This method accepts an array and returns the beautified sorted version
     sortAndBeautifyArray(arrayToSort, collectionConfig) {
         let temp = arrayToSort.map(function(el, i) {
             return { value: el.toLowerCase(), beautifiedValue: collectionConfig.toPrettyFieldName(el) };
