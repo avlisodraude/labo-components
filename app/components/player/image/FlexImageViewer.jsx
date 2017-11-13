@@ -115,7 +115,11 @@ class FlexImageViewer extends React.Component {
 		return this.props.mediaObjects.map(mo => {
 			const index = mo.url.indexOf('.tif');
 			let moClone = JSON.parse(JSON.stringify(mo));
-			moClone.infoUrl = mo.url.substring(0, index + 4) + '/info.json'
+			if(index == -1) {
+				moClone.infoUrl = mo.url;
+			} else {
+				moClone.infoUrl = mo.url.substring(0, index + 4) + '/info.json';
+        	}
         	return moClone;
 		})
 	}

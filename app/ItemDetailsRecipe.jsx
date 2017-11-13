@@ -344,6 +344,8 @@ class ItemDetailsRecipe extends React.Component {
 	//images all go into one image viewer (as a playlist)
 	getImageTabContents() {
 		let isActive = false;
+		let cors = true;
+		let content = null;
 		const images = this.state.itemData.playableContent.filter(content => {
 			return content.mimeType.indexOf('image') != -1;
 		});
@@ -353,17 +355,28 @@ class ItemDetailsRecipe extends React.Component {
 				if(!isActive) {
 					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
 				}
+				if(mediaObject.hasOwnProperty('cors') && mediaObject.cors === false) {
+					cors = false;
+				}
 			})
-			const content = (
-				<FlexImageViewer
-					user={this.state.user} //current user
-					mediaObjects={images}//TODO make this plural for playlist support
-					annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
-					annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-					editAnnotation={this.editAnnotation.bind(this)} //each annotation support should call this function
-					setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
-				/>
-			)
+			if(cors === false) {
+				//for now simply draw a bunch of images on the screen (no annotation support!)
+				content = images.map((i) => {
+					return (<img src={i.url}/>);
+				})
+			} else {
+				//use openseadragon with annotation support (TODO has to be fixed again)
+				content = (
+					<FlexImageViewer
+						user={this.state.user} //current user
+						mediaObjects={images}//TODO make this plural for playlist support
+						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
+						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
+						editAnnotation={this.editAnnotation.bind(this)} //each annotation support should call this function
+						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
+					/>
+				)
+			}
 			return {type : 'image', content : content, active : isActive}
 		}
 	}

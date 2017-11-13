@@ -26,7 +26,7 @@ class MetadataTable extends React.Component {
 				return (
 					<tr className={IDUtil.cssClassName('special-props', this.CLASS_PREFIX)} key={'props__' + index}>
 						<td><label>{key}:</label></td>
-						<td>{this.props.data.specialProperties[key]}</td>
+						<td dangerouslySetInnerHTML={{__html : this.props.data.specialProperties[key]}}></td>
 					</tr>
 				);
 			});
