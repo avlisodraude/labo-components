@@ -383,7 +383,7 @@ class ItemDetailsRecipe extends React.Component {
 				if(mediaObject.mimeType == 'application/javascript') {
 					return (
 						<div style={{margin : '10px'}}>
-							Deze media kan i.v.m. beperkingen m.b.t. auteursrecht niet binnen de media suite worden afgespeeld
+							Deze media kan i.v.m. beperkingen m.b.t. auteursrecht of het type content niet binnen de media suite worden afgespeeld
 							<br/>
 							<a href={mediaObject.url} target="_external_js">Bekijk de media extern</a>
 						</div>

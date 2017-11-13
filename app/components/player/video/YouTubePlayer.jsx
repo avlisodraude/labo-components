@@ -66,8 +66,17 @@ class YouTubePlayer extends React.Component {
 	}
 
 	getVideoId() {
-		if(!this.props.mediaObject) return null;
-		return this.props.mediaObject.url.substring(this.props.mediaObject.url.indexOf('v=') + 2);
+		if(this.props.mediaObject) {
+			if(this.props.mediaObject.url.indexOf('youtu.be') != -1) {
+				let tmp = this.props.mediaObject.url.split('/');
+				return tmp[tmp.length -1];
+			} else if(this.props.mediaObject.url.indexOf('v=') != -1){
+				return this.props.mediaObject.url.substring(
+					this.props.mediaObject.url.indexOf('v=') + 2
+				);
+			}
+		}
+		return null;
 
 	}
 
