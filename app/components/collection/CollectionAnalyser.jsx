@@ -131,7 +131,7 @@ class CollectionAnalyser extends React.Component {
     }
 
     getSuggestionValue(suggestion) {
-        return suggestion.beautifiedValue;
+        return suggestion.value;
     }
 
     //TODO the rendering should be adapted for different vocabularies
@@ -181,7 +181,9 @@ class CollectionAnalyser extends React.Component {
 				dateFieldSelect = (
 					<div className="form-group">
 						<label htmlFor="datefield_select">Metadata field for date (X-axis)</label>
-						<select className="form-control" id="datefield_select" onChange={this.analyseField.bind(this, null)}>
+						<select className="form-control" id="datefield_select" onChange={
+							this.analyseField.bind(this, this.state.value)
+						}>
 							{dateFieldOptions}
 						</select>
 					</div>
