@@ -95,15 +95,29 @@ class DateRangeSelector extends React.Component {
         return null
     }
 
-    render() {
+    // Helper function to sort selection list options based on an array of objects with
+    // sorting based on props.children values.
+    sortDateFieldOptions(a,b) {
+        if(a.props.children < b.props.children) {
+          return -1;
+        }
+        if(a.props.children > b.props.children) {
+          return 1;
+        }
+        return 0;
+    }
+
+  render() {
         let dateFieldSelect = null;
         let fieldSelected = false;
 
         if (this.props.collectionConfig.getDateFields()) {
             const selectedOption = this.props.dateRange ? this.props.dateRange.field : 'null_option';
-            const options = this.props.collectionConfig.getDateFields().map((df, index) => {
+            let options = this.props.collectionConfig.getDateFields().map((df, index) => {
                 return (<option key={'df__' + index} value={df}>{this.props.collectionConfig.toPrettyFieldName(df)}</option>);
             });
+
+            options = options.sort(this.sortDateFieldOptions);
             options.splice(0,0, <option key={'df__default_value' } value="null_option">Select date field</option>);
 
             dateFieldSelect = (
