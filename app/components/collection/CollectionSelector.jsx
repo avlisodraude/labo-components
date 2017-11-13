@@ -1,7 +1,7 @@
 import CollectionAPI from '../../api/CollectionAPI';
 import CollectionUtil from '../../util/CollectionUtil';
 import IDUtil from '../../util/IDUtil';
-
+import { PowerSelect } from 'react-power-select';
 /*
 
 TODO:
@@ -33,7 +33,7 @@ class CollectionSelector extends React.Component {
 	//only works if a collection has been properly indexed!
 	selectCollection(collectionId, event) {
 		if(!collectionId) {
-			collectionId = event.target.value;
+			collectionId = event.option.index;
 		}
 		if(collectionId) {
 			this.setState(
@@ -81,29 +81,27 @@ class CollectionSelector extends React.Component {
 
 			//the collection selection part
 			if(this.props.showSelect) {
-				const collectionOptions = this.state.collectionList.map((collection) => {
-					return (
-						<option key={collection.index + '__option'} value={collection.index}>
-							{collection.title}
-						</option>
-					)
-				});
-				collectionOptions.splice(0, 0, <option key="null__option" value="">-- Select a collection --</option>);
+        const collectionOptionsArray = this.state.collectionList.map((collection) => {
+          return {
+            "key": collection.creator_user_id,
+            "title": collection.title,
+						"index": collection.index
+          }
+        });
 
-				collectionSelect = (
+        collectionSelect = (
 					<form className="form-horizontal">
-						<div className="form-group">
-							<label className="col-sm-2">Collection</label>
-							<div className="col-sm-10">
-								<select className="form-control"
-									value={this.state.activeCollection}
-									onChange={this.selectCollection.bind(this, null)}>
-									{collectionOptions}
-								</select>
-							</div>
+						<label className="col-sm-2">Collection</label>
+						<div className="col-sm-10">
+							<PowerSelect
+								options={collectionOptionsArray}
+								onChange={this.selectCollection.bind(this, null)}
+								optionLabelPath="title"
+								placeholder="-- Select a collection -- "
+							/>
 						</div>
 					</form>
-				);
+        );
 			}
 
 			if(this.props.showBrowser) {
