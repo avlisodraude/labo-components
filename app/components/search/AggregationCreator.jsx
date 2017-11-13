@@ -26,10 +26,7 @@ class AggregationCreator extends React.Component {
 			field: selectedField,
 			title : label,
 			id : selectedField,
-			operator : 'AND',
-			size : 10,
-			type : 'string',
-			display: true
+			type : 'string'
 		}
 
 		if(this.props.onOutput) {

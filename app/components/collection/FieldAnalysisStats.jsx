@@ -49,14 +49,14 @@ class FieldAnalysisStats extends React.Component {
 			);
 			stats.push(
 				<tr>
-					<td>&nbsp;&nbsp;records that contain the analysis field&nbsp;
+					<td>&nbsp;&nbsp;records that do <strong>not</strong> contain the analysis field&nbsp;
 						<span data-for={'__ci_tooltip'}
 							data-tip={tip2}
 							data-html={true}>
 							<i className="fa fa-info-circle"></i>
 						</span>
 					</td>
-					<td>{this.props.data.doc_stats.analysis_field}</td>
+					<td>{this.props.data.doc_stats.no_analysis_field}</td>
 				</tr>
 			);
 			stats.push(

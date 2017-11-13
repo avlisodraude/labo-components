@@ -22,6 +22,9 @@ import NISVProgramGuideConfig from '../collection/mappings/NISVProgramGuideConfi
 import TwitterConfig from '../collection/mappings/TwitterConfig';
 import MotUConfig from '../collection/mappings/MotUConfig';
 import EYEConfig from '../collection/mappings/EYEConfig';
+import EYEDesmetConfig from '../collection/mappings/EYEDesmetConfig';
+import EYEDesmetAfficheConfig from '../collection/mappings/EYEDesmetAfficheConfig';
+import EYEDesmetFilmConfig from '../collection/mappings/EYEDesmetFilmConfig';
 import ArtTubeConfig from '../collection/mappings/ArtTubeConfig';
 import RVDContractsConfig from '../collection/mappings/RVDContractsConfig';
 import OpenBeeldenNISVConfig from '../collection/mappings/OpenBeeldenNISVConfig';
@@ -39,7 +42,10 @@ const CollectionUtil = {
 		'nisv_programguides': NISVProgramGuidePageConfig,
 		'nisv-program-guides': NISVProgramGuideConfig,
 		'nisv-tv-guides': NISVProgramGuideConfig,
-		'eye-collection-desmet' : EYEConfig,
+		'eye-desmet-affiches' : EYEDesmetAfficheConfig,
+		'eye-desmet-films' : EYEDesmetFilmConfig,
+		'eye-desmet' : EYEDesmetConfig,
+		'eye-collection-desmet' : EYEConfig, //old obsolete config, remove later on
 		'twitter' : TwitterConfig,
 		'nisv' : NISVConfig,
 		'motu' : MotUConfig,
