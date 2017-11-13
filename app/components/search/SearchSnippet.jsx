@@ -23,9 +23,11 @@ class SearchSnippet extends React.Component {
 						i-6 >= 0 ? i-6 : 0,
 						i + this.MAX_WORDS < tmp.length ? i + this.MAX_WORDS : tmp.length
 					)
-					words.splice(0, 0, '(...)');
-					if(i != tmp.length -1) {
-						words.splice(words.length, 0, '(...)');
+					if(tmp.length > this.MAX_WORDS) {
+						words.splice(0, 0, '(...)');
+						if(i != tmp.length -1) {
+							words.splice(words.length, 0, '(...)');
+						}
 					}
 					words = words.join(' ');
 					found = true;

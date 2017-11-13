@@ -556,8 +556,7 @@ class QueryBuilder extends React.Component {
 						}
 					}
 
-                    if (this.props.dateRangeSelector) {
-
+                    if (this.props.dateRangeSelector && this.props.collectionConfig.getDateFields() != null) {
                     	//draw the date range selector
                     	dateRangeSelector = (
                             <DateRangeSelector
