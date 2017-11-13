@@ -8,23 +8,14 @@ class CollectionAnalyser extends React.Component {
 
 	constructor(props) {
 		super(props);
-
-		let selectedAnalysisFieldOption = false;
-
 		this.state = {
             value : '', //the label of the selected classification (autocomplete)
             suggestions : [], //current list of suggestions shown
 		}
-        this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
 	}
 
-	getDocumentTypeStats() {
-		const stats = this.props.collectionConfig.collectionStats;
-		return stats ? stats.collection_statistics.document_types[0] : null;
-	}
-
-	analyseField() {
-		this.loadAnalysis((data, timelineData) => {
+	analyseField(analysisField) {
+		this.loadAnalysis(analysisField, (data, timelineData) => {
 			this.onOutput({
 				fieldAnalysisStats : data,
 				fieldAnalysisTimeline : timelineData
@@ -32,40 +23,22 @@ class CollectionAnalyser extends React.Component {
 		});
 	}
 
-    loadAnalysis(callback) {
-        const analysisSelect = document.getElementsByClassName("react-autosuggest__container");
-
-        if (analysisSelect) {
-            const analysisField =
-				this.selectedAnalysisFieldOption
-					? this.selectedAnalysisFieldOption
-					: 'null__option';
-
-            const dateSelect = document.getElementById("datefield_select");
-
-            if (dateSelect) {
-                let docType = null;
-                const docTypeStats = this.getDocumentTypeStats();
-                if(docTypeStats) {
-                	docType = docTypeStats.doc_type
-                }
-
-                CollectionAPI.analyseField(
-                    this.props.collectionConfig.collectionId,
-                    docType,
-                    dateSelect.options[dateSelect.selectedIndex].value,
-                    analysisField,
-                    [], //facets?
-                    this.props.collectionConfig.getMinimunYear(),
-                    (data) => {
-                        const timelineData = this.toTimelineData(data);
-                        callback(data, timelineData);
-                    }
-                );
-            }
-        } else {
-            console.debug('No analysis select field available yet!');
-        }
+    loadAnalysis(analysisField, callback) {
+    	const dateSelect = document.getElementById("datefield_select");
+    	if(dateSelect) {
+	        CollectionAPI.analyseField(
+	            this.props.collectionConfig.collectionId,
+	            this.props.collectionConfig.getDocumentType(),
+	            dateSelect.options[dateSelect.selectedIndex].value,
+	            analysisField ? analysisField : 'null__option',
+	            [], //facets are not yet supported
+	            this.props.collectionConfig.getMinimunYear(),
+	            (data) => {
+	                const timelineData = this.toTimelineData(data);
+	                callback(data, timelineData);
+	            }
+	        );
+	    }
     }
 
     //TODO optimize this.
@@ -140,28 +113,21 @@ class CollectionAnalyser extends React.Component {
         });
     };
 
-    getAnalysisFieldsListNames(docTypeStats) {
-    	if(docTypeStats['keyword']) {
-    		return docTypeStats['keyword'];
-    	}
-    	return null;
-    }
-
     getSuggestions(value, callback) {
-        const docTypeStats = this.getDocumentTypeStats();
-        const analysisFieldSelectionList =  this.getAnalysisFieldsListNames(docTypeStats.fields) || [];
-        const inputValue = value.trim().toLowerCase();
-        const inputLength = inputValue.length;
+    	const keywordFields = this.props.collectionConfig.getKeywordFields();
+        if(keywordFields) {
+	        const inputValue = value.trim().toLowerCase();
+	        const inputLength = inputValue.length;
 
-        return inputLength <  0 ? [] : analysisFieldSelectionList.filter(analysisFieldName =>
-            analysisFieldName.toLowerCase().includes(inputValue)
-        );
+	        return inputLength <  0 ? [] : keywordFields.filter(analysisFieldName =>
+	            analysisFieldName.toLowerCase().includes(inputValue)
+	        );
+	    }
+	    return []
     }
 
     onSuggestionSelected(event, {suggestion, suggestionValue, suggestionIndex, sectionIndex}) {
-		this.selectedAnalysisFieldOption = suggestion.value;
-        //TODO: this fc runs the show after conf
-        this.analyseField();
+        this.analyseField(suggestion.value);
     }
 
     getSuggestionValue(suggestion) {
@@ -189,18 +155,18 @@ class CollectionAnalyser extends React.Component {
     /* ------------------- end of specific react-autosuggest functions ------------------- */
 
 	render() {
-		const docTypeStats = this.getDocumentTypeStats();
 		let analysisBlock = null;
 
 		//only draw the rest when a collection is selected (either using the selector or via the props)
-		if(this.props.collectionConfig && this.props.collectionConfig.collectionStats && docTypeStats) {
+		if(this.props.collectionConfig) {
+			let dateFields = this.props.collectionConfig.getDateFields();
 
 			let dateFieldSelect = null;
 			let analysisFieldSelect = null;
 
-			if(docTypeStats.fields.date) { //only if there are date fields available
+			if(dateFields) { //only if there are date fields available
 				const sortedDateFields = ElasticsearchDataUtil.sortAndBeautifyArray(
-					docTypeStats.fields.date,
+					dateFields,
 					this.props.collectionConfig
 				);
 
@@ -215,7 +181,7 @@ class CollectionAnalyser extends React.Component {
 				dateFieldSelect = (
 					<div className="form-group">
 						<label htmlFor="datefield_select">Metadata field for date (X-axis)</label>
-						<select className="form-control" id="datefield_select" onChange={this.analyseField.bind(this)}>
+						<select className="form-control" id="datefield_select" onChange={this.analyseField.bind(this, null)}>
 							{dateFieldOptions}
 						</select>
 					</div>

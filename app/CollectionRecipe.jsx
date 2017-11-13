@@ -250,8 +250,7 @@ class CollectionsRecipe extends React.Component {
 			//the collection analyser outputs the field analysis & timeline stats in onComponentOutput
 			collectionAnalyser = (
 				<CollectionAnalyser
-					key={collectionConfig.collectionId}
-					params={this.props.recipe.ingredients.collectionAnalyser}
+					key={'__ca__' + collectionConfig.collectionId}
 					collectionConfig={collectionConfig}
 					onOutput={this.onComponentOutput.bind(this)}
 				/>

@@ -45,9 +45,9 @@ class AggregationCreator extends React.Component {
 	}
 
 	getFieldList() {
-		let fields = this.props.collectionConfig.getNonAnalyzedFields();
+		let fields = this.props.collectionConfig.getKeywordFields();
 		if(!fields) {
-			fields = this.props.collectionConfig.getStringFields();
+			fields = this.props.collectionConfig.getNonAnalyzedFields();
 		}
 		return fields;
 	}
