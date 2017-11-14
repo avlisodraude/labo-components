@@ -159,6 +159,37 @@ class CollectionConfig {
 		return this.keywordFields;
 	}
 
+	//used by the collection analyzer (field analysis pull down)
+	getNonDateFields() {
+		let tmp = []
+
+		if(this.stringFields) {
+			tmp = tmp.concat(this.stringFields);
+		}
+		if(this.textFields) {
+			tmp = tmp.concat(this.textFields);
+		}
+
+		if(this.longFields) {
+			tmp = tmp.concat(this.longFields);
+		}
+		if(this.doubleFields) {
+			tmp = tmp.concat(this.doubleFields);
+		}
+
+		if(this.keywordFields) {
+			tmp = tmp.concat(this.keywordFields);
+		}
+		if(this.nonAnalyzedFields) {
+			tmp = tmp.concat(this.nonAnalyzedFields);
+		}
+		//remove duplicates
+		tmp.filter((elem, pos, arr) => {
+			return arr.indexOf(elem) == pos;
+		})
+		return tmp.length > 0 ? tmp : null;
+	}
+
 	//simply return the first date field by default (this function is used by QueryBuilder)
 	getPreferredDateField() {
 		const dfs = this.getDateFields();

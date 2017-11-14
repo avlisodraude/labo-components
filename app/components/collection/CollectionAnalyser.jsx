@@ -114,12 +114,12 @@ class CollectionAnalyser extends React.Component {
     };
 
     getSuggestions(value, callback) {
-    	const keywordFields = this.props.collectionConfig.getKeywordFields();
-        if(keywordFields) {
+    	const allFields = this.props.collectionConfig.getNonDateFields();
+        if(allFields) {
 	        const inputValue = value.trim().toLowerCase();
 	        const inputLength = inputValue.length;
 
-	        return inputLength <  0 ? [] : keywordFields.filter(analysisFieldName =>
+	        return inputLength <  0 ? [] : allFields.filter(analysisFieldName =>
 	            analysisFieldName.toLowerCase().includes(inputValue)
 	        );
 	    }
@@ -151,6 +151,11 @@ class CollectionAnalyser extends React.Component {
 	// complete list of options without having to start typing.
     shouldRenderSuggestions() {
         return true;
+    }
+
+    submitForm(e) {
+    	e.preventDefault();
+    	return false;
     }
     /* ------------------- end of specific react-autosuggest functions ------------------- */
 
@@ -218,7 +223,7 @@ class CollectionAnalyser extends React.Component {
 			);
 
 			analysisBlock = (
-				<form>
+				<form onSubmit={this.submitForm.bind(this)}>
 					{dateFieldSelect}
 					{analysisFieldSelect}
 				</form>
