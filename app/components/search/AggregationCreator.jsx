@@ -46,7 +46,17 @@ class AggregationCreator extends React.Component {
 		if(!fields) {
 			fields = this.props.collectionConfig.getNonAnalyzedFields();
 		}
-		return fields ? fields.sort() : null;
+		if(fields) {
+			return fields.map((f) => {
+				return {
+					value : f,
+					label : this.props.collectionConfig.toPrettyFieldName(f)
+				}
+			}).sort((a,b) => {
+				return a.label > b.label ? 1 : a.label < b.label ? -1 : 0;
+			})
+		}
+		return null;
 	}
 
 	selectField(e) {
@@ -62,11 +72,12 @@ class AggregationCreator extends React.Component {
 		if(fieldList) {
 			stringOptions = fieldList.map((sf, index) => {
 				return (
-					<option key={'sf__' + index} value={sf}>{this.props.collectionConfig.toPrettyFieldName(sf)}</option>
+					<option key={'sf__' + index} value={sf.value}>{sf.label}</option>
 				)
 			});
 
 			if(stringOptions.length > 0) {
+
 				stringSelect = (
 					<div className="form-group">
 						<label className="col-sm-3">Fields to create facets</label>

@@ -148,13 +148,7 @@ const ElasticsearchDataUtil = {
         });
         // sorting the mapped array containing the reduced values
         return temp.sort(function (a, b) {
-            if (a.beautifiedValue > b.beautifiedValue) {
-                return 1;
-            }
-            if (a.beautifiedValue < b.beautifiedValue) {
-                return -1;
-            }
-            return 0;
+            return a.beautifiedValue > b.beautifiedValue ? 1 : a.beautifiedValue < b.beautifiedValue ? -1 : 0;
         });
 	}
 };
