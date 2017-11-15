@@ -33,8 +33,9 @@ class SearchHit extends React.Component {
 
 		if(title === 'Quick view'){
       this.setState({showModal: true, previewMode: true});
-		}
-		this.setState({showModal: true});
+		} else {
+      this.setState({showModal: true});
+    }
 	}
 
 	safeModalId(resourceId) {
