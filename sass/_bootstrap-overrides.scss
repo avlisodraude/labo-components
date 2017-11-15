@@ -29,3 +29,8 @@ $icon-font-path: "../node_modules/bootstrap-sass/assets/fonts/bootstrap/" !defau
     from { -moz-transform: rotate(0deg);}
     to { -moz-transform: rotate(360deg);}
 }
+
+/* custom class to modify cursor on hover event */
+.custom-pointer {
+    cursor: pointer;
+}

@@ -102,7 +102,7 @@ class SearchSnippet extends React.Component {
 					{poster}
 				</div>
 				<div className="media-body">
-					<h4 className="media-heading" title={this.props.data.id}>
+					<h4 className="media-heading custom-pointer" title={this.props.data.id}>
 						{this.props.data.title ? this.props.data.title + ' ' : ''}
 						{this.props.data.date ? '(' + this.props.data.date + ')' : ''}
 						&nbsp;{mediaTypes}&nbsp;{fragmentIcon}
