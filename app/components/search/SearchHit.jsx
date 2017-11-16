@@ -9,7 +9,8 @@ class SearchHit extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showModal : false
+			showModal : false,
+			previewMode : false
 		};
 		this.CLASS_PREFIX = 'sh';
 	}
@@ -27,8 +28,14 @@ class SearchHit extends React.Component {
 	}
 
 	quickView(e) {
+		const title = e.currentTarget.getAttribute("title");
 		e.stopPropagation();
-		this.setState({showModal: true});
+
+		if(title === 'Quick view'){
+      this.setState({showModal: true, previewMode: true});
+		} else {
+      this.setState({showModal: true});
+    }
 	}
 
 	safeModalId(resourceId) {
@@ -41,7 +48,7 @@ class SearchHit extends React.Component {
 		const snippet = this.props.collectionConfig.getResultSnippetData(result);
 		const modalID = this.safeModalId(result.resourceId);
 		let modal = null;
-		if(this.state.showModal) {
+		if(this.state.showModal && this.state.previewMode) {
 			modal = (
 				<FlexModal
 					elementId={modalID}
@@ -50,7 +57,7 @@ class SearchHit extends React.Component {
 					owner={this}
 					size="large"
 					title={result.title}>
-					<ItemDetails data={result}/>
+					<ItemDetails data={result} previewMode={this.state.previewMode}/>
 				</FlexModal>
 			)
 		}
@@ -62,9 +69,8 @@ class SearchHit extends React.Component {
 			<div id={result.resourceId} className={classNames.join(' ')}>
 				<div onClick={this.gotoItemDetails.bind(this, result)}>
 					<div className={IDUtil.cssClassName('quickview', this.CLASS_PREFIX)}>
-						<button className="btn btn-default"
+						<button className="btn btn-default fa fa-eye"
 							onClick={this.quickView.bind(this)} title="Quick view">
-							<i className="fa fa-eye"></i>
 						</button>
 					</div>
 					<SearchSnippet data={snippet} searchTerm={this.props.searchTerm}/>

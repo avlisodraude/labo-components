@@ -1,4 +1,5 @@
 import MetadataTable from './MetadataTable';
+import MetadataTablePreview from './MetadataTablePreview';
 import IDUtil from '../../util/IDUtil';
 
 class ItemDetails extends React.Component {
@@ -62,6 +63,14 @@ class ItemDetails extends React.Component {
 				</div>
 			);
 
+		}
+		if(this.props.previewMode) {
+      return (
+				<div className={IDUtil.cssClassName('item-details')}>
+					<h4>Metadata</h4>
+					<MetadataTablePreview data={this.props.data}/>
+				</div>
+      )
 		}
 		return (
 			<div className={IDUtil.cssClassName('item-details')}>
