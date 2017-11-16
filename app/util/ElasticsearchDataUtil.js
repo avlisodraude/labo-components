@@ -139,18 +139,8 @@ const ElasticsearchDataUtil = {
 			}
 		}
 		return facets.length > 0 ? facets : null;
-	},
-
-    //This method accepts an array and returns the beautified sorted version
-    sortAndBeautifyArray(arrayToSort, collectionConfig) {
-        let temp = arrayToSort.map(function(el, i) {
-            return { value: el.toLowerCase(), beautifiedValue: collectionConfig.toPrettyFieldName(el) };
-        });
-        // sorting the mapped array containing the reduced values
-        return temp.sort(function (a, b) {
-            return a.beautifiedValue > b.beautifiedValue ? 1 : a.beautifiedValue < b.beautifiedValue ? -1 : 0;
-        });
 	}
+
 };
 
 export default ElasticsearchDataUtil;

@@ -100,6 +100,19 @@ class CollectionAnalyser extends React.Component {
 
     /* ------------------- functions specifically needed for react-autosuggest ------------------- */
 
+    sortAndBeautifyArray(arrayToSort) {
+        let temp = arrayToSort.map(function(el) {
+            return {
+            	value: el,
+            	beautifiedValue: this.props.collectionConfig.toPrettyFieldName(el)
+			};
+        }, this);
+        // sorting the mapped array containing the reduced values
+        return temp.sort(function (a, b) {
+            return a.beautifiedValue > b.beautifiedValue ? 1 : a.beautifiedValue < b.beautifiedValue ? -1 : 0;
+        });
+	}
+
     onChange(event, { newValue }) {
         this.setState({
             chosenValue: newValue,
@@ -116,12 +129,11 @@ class CollectionAnalyser extends React.Component {
     getSuggestions(value, callback) {
     	const allFields = this.props.collectionConfig.getNonDateFields();
         if(allFields) {
-	        const inputValue = value.trim().toLowerCase();
-	        const inputLength = inputValue.length;
-
-	        return inputLength <  0 ? [] : allFields.filter(analysisFieldName =>
-	            analysisFieldName.toLowerCase().includes(inputValue)
+	        const inputValue = value.trim();
+	        const filteredFields = inputValue.length == 0 ? allFields : allFields.filter(analysisFieldName =>
+	        	analysisFieldName.includes(inputValue)
 	        );
+	        return this.sortAndBeautifyArray(filteredFields)
 	    }
 	    return []
     }
@@ -131,7 +143,7 @@ class CollectionAnalyser extends React.Component {
     }
 
     getSuggestionValue(suggestion) {
-        return suggestion.value;
+        return suggestion.beautifiedValue;
     }
 
     //TODO the rendering should be adapted for different vocabularies
@@ -170,11 +182,7 @@ class CollectionAnalyser extends React.Component {
 			let analysisFieldSelect = null;
 
 			if(dateFields) { //only if there are date fields available
-				const sortedDateFields = ElasticsearchDataUtil.sortAndBeautifyArray(
-					dateFields,
-					this.props.collectionConfig
-				);
-
+				const sortedDateFields = this.sortAndBeautifyArray(dateFields);
 				let dateFieldOptions = sortedDateFields.map((dateField) => {
 					return (
 						<option key={dateField.value} value={dateField.value}>{dateField.beautifiedValue}</option>
@@ -195,18 +203,12 @@ class CollectionAnalyser extends React.Component {
 				);
 			}
 
-			//sort suggestions with original and beautified values.
-			const sortedAndBeautified = ElasticsearchDataUtil.sortAndBeautifyArray(
-				this.state.suggestions,
-				this.props.collectionConfig
-			);
-
 			analysisFieldSelect = (
 				<div className="form-group">
 					<label htmlFor="analysisfield_select">Metadata field to inspect (Y-axis)</label>
                     <Autosuggest
                         ref="classifications"
-                        suggestions={sortedAndBeautified}
+                        suggestions={this.state.suggestions}
                         onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
                         onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
                         onSuggestionSelected={this.onSuggestionSelected.bind(this)}

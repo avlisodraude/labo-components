@@ -176,10 +176,6 @@ class CollectionConfig {
 		if(this.doubleFields) {
 			tmp = tmp.concat(this.doubleFields);
 		}
-
-		if(this.keywordFields) {
-			tmp = tmp.concat(this.keywordFields);
-		}
 		if(this.nonAnalyzedFields) {
 			tmp = tmp.concat(this.nonAnalyzedFields);
 		}
@@ -187,6 +183,14 @@ class CollectionConfig {
 		tmp.filter((elem, pos, arr) => {
 			return arr.indexOf(elem) == pos;
 		})
+
+		if(this.keywordFields) {
+			this.keywordFields.forEach((k) => {
+				if(tmp.indexOf(k.replace('.keyword', '')) == -1) {
+					tmp.push(k);
+				}
+			})
+		}
 		return tmp.length > 0 ? tmp : null;
 	}
 
