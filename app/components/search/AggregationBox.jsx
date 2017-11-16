@@ -87,6 +87,7 @@ class AggregationBox extends React.Component {
 	render() {
 		let boxContents = null;
 		let aggregationCreatorModal = null;
+		const nonDateAggregations = this.props.desiredFacets.filter(aggr => aggr.type !== 'date_histogram');
 
 		//collection modal
 		if(this.state.showModal) {
@@ -104,19 +105,16 @@ class AggregationBox extends React.Component {
 		}
 
 		//draw a tab for each found aggregation (TODO make this actually the desired facets, so it's possible to show empty results)
-		const tabs = this.props.desiredFacets.map((aggr, index) => {
-		    if (this.props.desiredFacets[index].type !== "date_histogram") {
-                return (
-                    <li key={index + '__tab'} className={index == 0 ? 'active' : ''}>
-                        <a data-toggle="tab" href={'#__aggr_' + IDUtil.hashCode(this.props.queryId + '-' + index)}>
-                            {aggr.title}
-                            &nbsp;
-                            <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, aggr.field)}></span>
-                        </a>
-                    </li>
-                )
-
-		    }
+		const tabs = nonDateAggregations.map((aggr, index) => {
+            return (
+                <li key={index + '__tab'} className={index == 0 ? 'active' : ''}>
+                    <a data-toggle="tab" href={'#__aggr_' + IDUtil.hashCode(this.props.queryId + '-' + index)}>
+                        {aggr.title}
+                        &nbsp;
+                        <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, aggr.field)}></span>
+                    </a>
+                </li>
+            )
 		});
 
 		//add a button for opening the collection selector last
@@ -151,7 +149,7 @@ class AggregationBox extends React.Component {
 		}
 
 		//the contents contain the actual facets
-		const tabContents = this.props.desiredFacets.map((aggr, index) => {
+		const tabContents = nonDateAggregations.map((aggr, index) => {
 			let visualisation = null;
             if (this.props.aggregations[aggr.field] && this.props.aggregations[aggr.field].length > 0) {
                 //generate a word cloud for regular aggregations
