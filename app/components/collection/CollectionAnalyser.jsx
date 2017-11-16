@@ -143,7 +143,7 @@ class CollectionAnalyser extends React.Component {
     }
 
     getSuggestionValue(suggestion) {
-        return suggestion.beautifiedValue;
+        return suggestion.value;
     }
 
     //TODO the rendering should be adapted for different vocabularies
