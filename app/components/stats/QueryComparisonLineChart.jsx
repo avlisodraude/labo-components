@@ -59,7 +59,7 @@ class QueryComparisonLineChart extends React.Component {
         		<Line
         			label={ <LabelAsPoint /> } //the LabelAsPoint class handles the onclick of a dot
         			activeDot={false}
-        			name={this.props.data[k].label + ' ' + index}
+        			name={this.props.data[k].label}
         			type="lineal"
         			onClick={this.showMeTheMoney.bind(this)}
         			dataKey={k} //is equal to the queryId
