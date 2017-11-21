@@ -23,7 +23,6 @@ class QueryFactory extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			user : this.props.user,
 			openQueries : [], //TODO this should listen to something like: loadedQueries
 			openQueryData : {}
 		}

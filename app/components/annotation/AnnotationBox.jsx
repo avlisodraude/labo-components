@@ -49,7 +49,7 @@ class AnnotationBox extends React.Component {
 		});
 		values.forEach((a) => {
 			a.annotationType = mode;
-			a.user = this.props.user;
+			a.user = this.props.user.id;
 			ad.push(a);
 		}, this)
 		this.setState({annotationData : ad});

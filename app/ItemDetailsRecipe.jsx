@@ -45,7 +45,6 @@ class ItemDetailsRecipe extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			user : this.props.user || 'JaapTest',
 			showModal : false, //triggered by the media players whenever an annotation needs to be edited
 			itemData : null, //populated from componentDidMount
 			activeMediaTab : 0, //which tab, i.e. media player, is visible/active
@@ -109,7 +108,7 @@ class ItemDetailsRecipe extends React.Component {
 			const mediaObject = itemDetailData.playableContent[index];
 			if(mediaObject) {
 				const annotation = AnnotationUtil.generateW3CEmptyAnnotation(
-					this.state.user,
+					this.props.user,
 					mediaObject.url,
 					mediaObject.mimeType
 				);
@@ -297,7 +296,7 @@ class ItemDetailsRecipe extends React.Component {
 				}
 				return (
 					<FlexPlayer
-						user={this.state.user} //current user
+						user={this.props.user} //current user
 						mediaObject={mediaObject} //TODO make this plural for playlist support
 						active={this.state.activeMediaTab == index}
 						enableFragmentMode={false} //add this to config
@@ -326,7 +325,7 @@ class ItemDetailsRecipe extends React.Component {
 				}
 				return (
 					<FlexPlayer
-						user={this.state.user} //current user
+						user={this.props.user} //current user
 						mediaObject={mediaObject} //TODO make this plural for playlist support
 						active={this.state.activeMediaTab == index}
 						enableFragmentMode={false} //add this to config
@@ -368,7 +367,7 @@ class ItemDetailsRecipe extends React.Component {
 				//use openseadragon with annotation support (TODO has to be fixed again)
 				content = (
 					<FlexImageViewer
-						user={this.state.user} //current user
+						user={this.props.user} //current user
 						mediaObjects={images}//TODO make this plural for playlist support
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
@@ -440,7 +439,7 @@ class ItemDetailsRecipe extends React.Component {
 								this.state.activeAnnotation)
 							}>
 							<AnnotationBox
-								user={this.state.user} //current user
+								user={this.props.user} //current user
 								annotation={this.state.activeAnnotation}
 								activeSubAnnotation={this.state.activeSubAnnotation}
 								annotationModes={this.props.recipe.ingredients.annotationModes}/>
@@ -449,7 +448,7 @@ class ItemDetailsRecipe extends React.Component {
 				}
 				annotationList = (
 					<AnnotationList
-						user={this.state.user} //current user
+						user={this.props.user} //current user
 						activeAnnotation={this.state.activeAnnotation} //the active annotation
 						annotationTarget={this.state.annotationTarget} //the current annotation target (later this can be also an annotation)
 					/>

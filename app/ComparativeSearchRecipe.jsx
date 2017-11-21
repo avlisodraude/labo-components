@@ -27,7 +27,6 @@ Notes about this component:
 class ComparativeSearchRecipe extends React.Component {
 	constructor(props) {
 		super(props);
-		const user = this.props.user || 'JaapTest';
 		let collections = null;
 		if(this.props.params.cids) {
 			collections = this.props.params.cids.split(',');
@@ -35,7 +34,7 @@ class ComparativeSearchRecipe extends React.Component {
 			collections = this.props.recipe.ingredients.collections;
 		}
 		this.state = {
-			user : user,
+			user : this.props.user || {id : 'testuser', name : 'Test user', attributes : []},
 			lineChartData: {},
 			collections : collections,
 			pageSize : 10,

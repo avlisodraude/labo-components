@@ -4,6 +4,7 @@ import CollectionRecipe from './CollectionRecipe';
 import SingleSearchRecipe from './SingleSearchRecipe';
 import ComparativeSearchRecipe from './ComparativeSearchRecipe';
 import ItemDetailsRecipe from './ItemDetailsRecipe';
+import UserSpaceRecipe from './UserSpaceRecipe';
 import ExampleRecipe from './ExampleRecipe';
 import '../sass/labo-components.scss';
 //CSS must be included in the entry point to allow Webpack
@@ -31,6 +32,11 @@ export function cookRecipe (recipe, params, user, elementId) {
 	} else if(recipe.type === 'collection-analysis') {
 		render(
 			<CollectionRecipe recipe={recipe} params={params} user={user}/>,
+			document.getElementById(elementId)
+		);
+	} else if(recipe.type === 'user-space') {
+		render(
+			<UserSpaceRecipe recipe={recipe} params={params} user={user}/>,
 			document.getElementById(elementId)
 		);
 	} else if(recipe.type === 'example') {

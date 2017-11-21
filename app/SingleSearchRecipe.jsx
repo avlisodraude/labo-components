@@ -15,7 +15,6 @@ import SearchAPI from './api/SearchAPI';
 class SingleSearchRecipe extends React.Component {
 	constructor(props) {
 		super(props);
-		const user = this.props.user || 'JaapTest';
 		let collectionId = null;
 		if(this.props.params.cids) {
 			collectionId = this.props.params.cids.split(',')[0];
@@ -23,7 +22,6 @@ class SingleSearchRecipe extends React.Component {
 			collectionId = this.props.recipe.ingredients.collection;
 		}
 		this.state = {
-			user : user,
 			collectionId : collectionId,
 			pageSize : 20,
 			collectionConfig : null

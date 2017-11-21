@@ -50,7 +50,6 @@ class FlexPlayer extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			user : this.props.user || 'JaapTest',
 			playerAPI : null,
 			curPosition : 0,
 			duration : 0,
@@ -100,7 +99,7 @@ class FlexPlayer extends React.Component {
 			activeAnnotation : annotation
 		}, AppAnnotationStore.getMediaObjectAnnotations(
 			this.props.mediaObject.url,
-			this.state.user,
+			this.props.user,
 			this.onLoadAnnotations.bind(this))
 		);
 	}

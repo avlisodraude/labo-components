@@ -25,7 +25,6 @@ class FlexImageViewer extends React.Component {
 		this.viewer = null;
 		this.annotationIdCount = 0;//TODO do this differently later on
 		this.state = {
-			user : this.props.user || 'JaapTest',
 			annotations : [],
 			viewerLoaded : false
 		}
@@ -77,7 +76,7 @@ class FlexImageViewer extends React.Component {
 		/*
 		AppAnnotationStore.getMediaObjectAnnotations(
 			this.props.mediaObject.url,
-			this.state.user,
+			this.props.user,
 			this.onLoadAnnotations.bind(this)
 		);*/
 	}

@@ -116,7 +116,7 @@ const AnnotationUtil = {
 		}
 		return {
 			id : null,
-			user : user, //TODO like the selector, generate the w3c stuff here?
+			user : user.id, //TODO like the selector, generate the w3c stuff here?
 			target : {
 				source: AnnotationUtil.removeSourceUrlParams(source), //TODO It should be a PID!
 				selector: selector,

@@ -18,7 +18,7 @@ class AnnotationStore {
 	getMediaObjectAnnotations(mediaObjectURI, user, callback) {
 		AnnotationAPI.getFilteredAnnotations({
 			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
-			'user' : user
+			'user' : user.id
 		}, callback);
 	}
 

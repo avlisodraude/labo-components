@@ -10,11 +10,12 @@ import CollectionStats from './components/collection/CollectionStats';
 import FieldAnalysisStats from './components/collection/FieldAnalysisStats';
 import QueryComparisonLineChart from './components/stats/QueryComparisonLineChart';
 
-class CollectionsRecipe extends React.Component {
+class CollectionRecipe extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
+			user : this.props.user || {id : 'testuser', name : 'Test user', attributes : []},
 			selectedCollections : {},
 			activeCollection : null,
 			collectionStats : null, //output from the collectionSelector
@@ -311,4 +312,4 @@ class CollectionsRecipe extends React.Component {
 
 }
 
-export default CollectionsRecipe;
+export default CollectionRecipe;

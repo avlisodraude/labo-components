@@ -18,7 +18,7 @@ const BookmarkUtil = {
 	},
 
 	//the target of a bookmark is a project of a certain user, which should be dereferencable in the user space
-	generateAnnotation : function(user, project, bookmarkType, data) {
+	generateAnnotation : function(userId, project, bookmarkType, data) {
 		project = project ? project : 'default'; //revert to the default project if the project is not provided
 		return {
 			//the data attribute is the only thing that is not w3c compliant and is interpreted on the server
@@ -28,7 +28,7 @@ const BookmarkUtil = {
 				data : data
 			},
 			target: {
-				source: 'http://' + user + '.clariah.nl/' + project
+				source: 'http://' + userId + '.clariah.nl/' + project
 			}
 		}
 	}
