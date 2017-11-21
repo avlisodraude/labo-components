@@ -8,6 +8,7 @@ const UserSpaceAPI = {
 			url += '/' + project.id;
 			method = 'PUT';
 		}
+		url += '?cid=' + _clientId + '&at=' + _chickenStock;
 	    const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -29,7 +30,8 @@ const UserSpaceAPI = {
 	},
 
 	delete : function(userId, projectId, callback) {
-		const url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects/' + projectId;
+		let url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects/' + projectId;
+		url += '?cid=' + _clientId + '&at=' + _chickenStock;
 		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -51,7 +53,8 @@ const UserSpaceAPI = {
 	},
 
 	list : function(userId, callback) {
-		const url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects';
+		let url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects';
+		url += '?cid=' + _clientId + '&at=' + _chickenStock;
 		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
