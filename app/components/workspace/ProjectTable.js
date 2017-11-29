@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { SortTable } from '../';
+import SortTable from './SortTable';
+import IDUtil from '../../util/IDUtil';
+
 
 class ProjectTable extends Component {
   constructor(props){
@@ -38,7 +40,7 @@ class ProjectTable extends Component {
    */
   setProjects(projects){
     this.setState({
-      projects,      
+      projects: projects || [],      
       loading: false,
     });
   }
@@ -146,8 +148,7 @@ class ProjectTable extends Component {
     let currentUserId = currentUser.id;
 
     return (
-      <div className="ProjectTable">
-
+      <div className={IDUtil.cssClassName('ws-project-table')}>
         <div className="filters">
           <div className="left">
             <h3>Filters</h3>

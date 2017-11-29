@@ -15,6 +15,22 @@ h1,h2,h3,h4,h5{
  line-height: 1.1em;
 }
 
+h1{
+  font-size: 25px;  
+}
+
+h2{
+  font-size: 20px;
+}
+
+h3{
+  font-size: 15px;
+}
+
+h4{
+  font-size: 13px;
+}
+
 p{
   line-height: 1.5em;
 }
@@ -120,7 +136,7 @@ p{
   font-size: 0.96em;
   font-family: $fontHeading;
   font-weight: 500;  
-  margin-bottom: 10px;
+  margin-bottom: 10px;  
 }
 
 input[type=text], textarea{

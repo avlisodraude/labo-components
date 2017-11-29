@@ -1,9 +1,9 @@
-.ProjectTable{
+.bg__ws-project-table{
 
   .filters{
     background-color: $clGrey;
-
     padding: 0px 10px;
+
     &:after{
       clear:both;
       content: "";
@@ -25,6 +25,7 @@
       padding-bottom: 7px;
       border-right: 1px solid $clDarkGrey;
       position: relative;
+      margin: 10px 0;
 
       &:after{
         content:"";
@@ -37,7 +38,11 @@
       }
     }
 
-    input, select{
+    label{
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+    input, input[type=checkbox], select{
       vertical-align: middle;
       margin-left: 20px;
     }

@@ -1,0 +1,20 @@
+// Todo: Move. This styling actually belongs to the clariah/wp5_mediasuite repository
+.bg__project-edit, .bg__project-create{
+
+  .page-header{
+    margin-bottom: 40px;
+  }
+  
+  input[type=text], textarea{
+    display:block;    
+  }
+
+  .actions{
+    margin-top: 20px;
+    margin-left: 120px;
+  }
+
+  input[type=checkbox]{
+    margin-right: 10px;
+  }
+}

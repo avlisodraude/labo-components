@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import IDUtil from '../../util/IDUtil';
 
 class SortTable extends Component {
   constructor(props){
@@ -94,31 +95,34 @@ class SortTable extends Component {
 
   render() {
     return (
-      <div className="SortTable">
+      <div className={IDUtil.cssClassName('ws-sort-table')}>
 
-        { this.state.items.length ?
-          <table>
-            <thead>
-              <tr>
-                <th><input type="checkbox" checked={this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
-                {this.props.head.map((head, index)=>(this.getHeader(index, head.field, head.content, head.sortable)))}
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" checked={this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
+              {this.props.head.map((head, index)=>(this.getHeader(index, head.field, head.content, head.sortable)))}
+            </tr>
+          </thead>
+          <tbody className={this.props.loading ? 'loading': ''}>
+
+            {this.props.items.map((item, index)=>(
+              <tr key={index}>
+                <td><input type="checkbox" checked={this.state.selection.includes(item)} onChange={this.selectItem.bind(this, item)} /></td>                    
+                { this.props.row(item).map((td, index)=>(<td key={index} {...td.props}>{td.content}</td>)) }
               </tr>
-            </thead>
-            <tbody className={this.props.loading ? 'loading': ''}>
-
-              {this.props.items.map((item, index)=>(
-                <tr key={index}>
-                  <td><input type="checkbox" checked={this.state.selection.includes(item)} onChange={this.selectItem.bind(this, item)} /></td>                    
-                  { this.props.row(item).map((td, index)=>(<td key={index} {...td.props}>{td.content}</td>)) }
-                </tr>
-                ))}           
-            </tbody>
-          </table>
-          :
-          this.state.loading ?
+              ))}           
+          </tbody>
+        </table>
+        { 
+          this.state.items.length == 0 ?
+          (
+            this.state.loading ?
             <h3 className="error">Loading...</h3>
             :
             <h3 className="error">No results</h3>
+          )
+          :''
         }
         <p>Todo: Pagination</p>
         <p>Todo: With selected: [ Actions \/ ]</p>
