@@ -1,11 +1,21 @@
 //required imports for the functions
 import {render} from 'react-dom';
+
+// tools
 import CollectionRecipe from './CollectionRecipe';
 import SingleSearchRecipe from './SingleSearchRecipe';
 import ComparativeSearchRecipe from './ComparativeSearchRecipe';
 import ItemDetailsRecipe from './ItemDetailsRecipe';
+
+// workspace
+import WSProjectsRecipe from './WSProjectsRecipe';
+import WSProjectBookmarksRecipe from './WSProjectBookmarksRecipe';
+import WSProjectSessionsRecipe from './WSProjectSessionsRecipe';
+
+//other
 import UserSpaceRecipe from './UserSpaceRecipe';
 import ExampleRecipe from './ExampleRecipe';
+
 import '../sass/labo-components.scss';
 //CSS must be included in the entry point to allow Webpack
 // to detect and run CSS .
@@ -32,9 +42,14 @@ export function cookRecipe (recipe, params, user, elementId) {
 		break;
 	  
 		// workspace
-		case 'workspace-user-projects':
-			//component = <UserSpaceRecipe recipe={recipe} params={params} user={user}/>;
-			component = <h2>Todo: workspace-user-projects component</h2>;
+		case 'ws-projects':
+			component = <WSProjectsRecipe recipe={recipe} params={params} user={user}/>;
+		break;		
+		case 'ws-project-bookmarks':
+			component = <WSProjectBookmarksRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+		case 'ws-project-sessions':
+			component = <WSProjectSessionsRecipe recipe={recipe} params={params} user={user}/>;
 		break;
 
 		// other
@@ -45,6 +60,7 @@ export function cookRecipe (recipe, params, user, elementId) {
 			component = <ExampleRecipe recipe={recipe} params={params} user={user}/>;
 		break;
 		default:
+			console.log(recipe);
 			console.error('Please provide a valid recipe');
 			return
 		}
