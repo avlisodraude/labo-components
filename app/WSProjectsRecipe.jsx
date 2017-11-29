@@ -1,4 +1,4 @@
-import UserSpaceAPI from './api/UserSpaceAPI';
+import ProjectAPI from './api/ProjectAPI';
 import IDUtil from './util/IDUtil';
 
 class WSProjectsRecipe extends React.Component {

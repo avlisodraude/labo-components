@@ -1,4 +1,4 @@
-import UserSpaceAPI from './api/UserSpaceAPI';
+import ProjectAPI from './api/ProjectAPI';
 import IDUtil from './util/IDUtil';
 
 class UserSpaceRecipe extends React.Component {
@@ -11,7 +11,7 @@ class UserSpaceRecipe extends React.Component {
 	}
 
 	componentDidMount() {
-		UserSpaceAPI.list(this.props.user.id, {}, this.onLoadProjectList.bind(this))
+		ProjectAPI.list(this.props.user.id, {}, this.onLoadProjectList.bind(this))
 	}
 
 	onLoadProjectList(projects) {
