@@ -1,23 +1,30 @@
-import CollectionAPI from '../api/CollectionAPI';
+/*
 
+The CollectionUtil object/namespace groups a bunch of functions related to:
+1. collection stats obtained from the CollectionAPI in getCollectionStats()
+2. collection configurations/mappings listed in /ui_components_src/search/mappings
+
+This basically contains the logic for determining what collection (date & string) fields to use in the FacetSearchComponent.
+In general what needs to be considered is:
+1. Does the collection have a (human defined) mapping?
+2. Does the collection have automatically generated statistics (mostly related to what type of fields are available for search)
+3. Based on these two things, how do I automatically select a desirable configuration for the FacetSearchComponent (or others later on)
+
+*/
+
+import CollectionAPI from '../api/CollectionAPI';
 import CollectionConfig from '../collection/mappings/CollectionConfig';
-import NISVCatalogueConfig from '../collection/mappings/NISVCatalogueConfig';
+import CollectionMapping from '../collection/mappings/CollectionMapping';
 
 import TimeUtil from '../util/TimeUtil';
 
 const CollectionUtil = {
 
-	COLLECTION_MAPPING : {
-		'nisv-catalogue-aggr': NISVCatalogueConfig,
-		'nisv-catalogue-radio': NISVCatalogueConfig,
-		'nisv-catalogue-tv': NISVCatalogueConfig,
-	},
-
 	//returns the correct CollectionConfig instance based on the collectionId
 	getCollectionClass(collectionId, lookupMapping = true) {
 		let configClass = null;
 		if(lookupMapping) {
-			configClass = CollectionUtil.COLLECTION_MAPPING[collectionId];
+			configClass = CollectionMapping[collectionId];
 		}
 		if(configClass == null || !lookupMapping) {
 			configClass = CollectionConfig;
