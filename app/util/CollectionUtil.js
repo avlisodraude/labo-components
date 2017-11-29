@@ -2,8 +2,6 @@ import CollectionAPI from '../api/CollectionAPI';
 
 import CollectionConfig from '../collection/mappings/CollectionConfig';
 import NISVCatalogueConfig from '../collection/mappings/NISVCatalogueConfig';
-import OpenBeeldenNISVConfig from '../collection/mappings/OpenBeeldenNISVConfig';
-import DANSOralHistoryConfig from '../collection/mappings/DANSOralHistoryConfig';
 
 import TimeUtil from '../util/TimeUtil';
 
@@ -13,9 +11,6 @@ const CollectionUtil = {
 		'nisv-catalogue-aggr': NISVCatalogueConfig,
 		'nisv-catalogue-radio': NISVCatalogueConfig,
 		'nisv-catalogue-tv': NISVCatalogueConfig,
-		'open-beelden-beeldengeluid' : OpenBeeldenNISVConfig,
-		'open-beelden-eye' : OpenBeeldenNISVConfig,
-		'dans-oral-history' : DANSOralHistoryConfig
 	},
 
 	//returns the correct CollectionConfig instance based on the collectionId
