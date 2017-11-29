@@ -11,7 +11,7 @@ class UserSpaceRecipe extends React.Component {
 	}
 
 	componentDidMount() {
-		UserSpaceAPI.list(this.props.user.id, this.onLoadProjectList.bind(this))
+		UserSpaceAPI.list(this.props.user.id, {}, this.onLoadProjectList.bind(this))
 	}
 
 	onLoadProjectList(projects) {
