@@ -1,60 +1,16 @@
-/*
-
-The CollectionUtil object/namespace groups a bunch of functions related to:
-1. collection stats obtained from the CollectionAPI in getCollectionStats()
-2. collection configurations/mappings listed in /ui_components_src/search/mappings
-
-This basically contains the logic for determining what collection (date & string) fields to use in the FacetSearchComponent.
-In general what needs to be considered is:
-1. Does the collection have a (human defined) mapping?
-2. Does the collection have automatically generated statistics (mostly related to what type of fields are available for search)
-3. Based on these two things, how do I automatically select a desirable configuration for the FacetSearchComponent (or others later on)
-
-*/
-
 import CollectionAPI from '../api/CollectionAPI';
 
 import CollectionConfig from '../collection/mappings/CollectionConfig';
-import NISVConfig from '../collection/mappings/NISVConfig';
 import NISVCatalogueConfig from '../collection/mappings/NISVCatalogueConfig';
-import NISVProgramGuidePageConfig from '../collection/mappings/NISVProgramGuidePageConfig';
-import NISVProgramGuideConfig from '../collection/mappings/NISVProgramGuideConfig';
-import TwitterConfig from '../collection/mappings/TwitterConfig';
-import MotUConfig from '../collection/mappings/MotUConfig';
-import EYEConfig from '../collection/mappings/EYEConfig';
-import EYEDesmetConfig from '../collection/mappings/EYEDesmetConfig';
-import EYEDesmetAfficheConfig from '../collection/mappings/EYEDesmetAfficheConfig';
-import EYEDesmetFilmConfig from '../collection/mappings/EYEDesmetFilmConfig';
-import ArtTubeConfig from '../collection/mappings/ArtTubeConfig';
-import RVDContractsConfig from '../collection/mappings/RVDContractsConfig';
-import OpenBeeldenNISVConfig from '../collection/mappings/OpenBeeldenNISVConfig';
-import KBNewspaperConfig from '../collection/mappings/KBNewspaperConfig';
-import DANSOralHistoryConfig from '../collection/mappings/DANSOralHistoryConfig';
+
 import TimeUtil from '../util/TimeUtil';
 
 const CollectionUtil = {
 
 	COLLECTION_MAPPING : {
 		'nisv-catalogue-aggr': NISVCatalogueConfig,
-		'nisv-catalogue-aggr-es5': NISVCatalogueConfig,
 		'nisv-catalogue-radio': NISVCatalogueConfig,
 		'nisv-catalogue-tv': NISVCatalogueConfig,
-		'nisv_programguides': NISVProgramGuidePageConfig,
-		'nisv-program-guides': NISVProgramGuideConfig,
-		'nisv-tv-guides': NISVProgramGuideConfig,
-		'eye-desmet-affiches' : EYEDesmetAfficheConfig,
-		'eye-desmet-films' : EYEDesmetFilmConfig,
-		'eye-desmet' : EYEDesmetConfig,
-		'eye-collection-desmet' : EYEConfig, //old obsolete config, remove later on
-		'twitter' : TwitterConfig,
-		'nisv' : NISVConfig,
-		'motu' : MotUConfig,
-		'arttube' : ArtTubeConfig,
-		'rvd' : RVDContractsConfig,
-		'open-beelden-beeldengeluid' : OpenBeeldenNISVConfig,
-		'open-beelden-eye' : OpenBeeldenNISVConfig,
-		'kb-newspapers' : KBNewspaperConfig,
-		'dans-oral-history' : DANSOralHistoryConfig
 	},
 
 	//returns the correct CollectionConfig instance based on the collectionId
