@@ -15,7 +15,7 @@ class ProjectTable extends Component {
       filter:{
         keywords: '',
         currentUser: false,
-      }      
+      }
     }
   }
 
@@ -33,16 +33,32 @@ class ProjectTable extends Component {
   }
 
 
- 
+
   /**
    * Set new list of projects to state
    * @param {array} projects List of projects
    */
   setProjects(projects){
     this.setState({
-      projects: projects || [],      
+      projects: this.toDummyData(projects || []),
       loading: false,
     });
+  }
+
+  toDummyData(projects){
+    return projects.map((p) => {
+      p.getBookmarkCount = function(){return 0;}
+      p.getAccess = function(){return false;}
+      p.getCollaboratorCount = function(){return 0;}
+      p.canDelete = function(){return true;}
+      p.canExport = function(){return true;}
+      p.canOpen = function(){return true;}
+      p.owner = {
+        id : this.props.user.id,
+        name : this.props.user.name
+      }
+      return p
+    })
   }
 
 
@@ -94,7 +110,7 @@ class ProjectTable extends Component {
    */
   deleteProject(project){
     if (window.confirm('Are you sure you want to delete project ' + project.name)){
-      this.props.api.delete(project.id, (status)=>{
+      this.props.api.delete(this.props.user.id, project.id, (status)=>{
         if (status && status.success){
 
           // just retrieve the latest data
@@ -184,7 +200,7 @@ class ProjectTable extends Component {
 
         <SortTable
             items={projects}
-            head={[                
+            head={[
                 {field: 'name', content: 'Name', sortable: true},
                 {field: 'bookmarks', content: <i className="bookmark-icon"/>, sortable: true},
                 {field: 'owner', content: 'Owner', sortable: true},

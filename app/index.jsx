@@ -40,11 +40,11 @@ export function cookRecipe (recipe, params, user, elementId) {
 	 	case 'collection-analysis':
 			component = <CollectionRecipe recipe={recipe} params={params} user={user}/>;
 		break;
-	  
+
 		// workspace
 		case 'ws-projects':
 			component = <WSProjectsRecipe recipe={recipe} params={params} user={user}/>;
-		break;		
+		break;
 		case 'ws-project-bookmarks':
 			component = <WSProjectBookmarksRecipe recipe={recipe} params={params} user={user}/>;
 		break;
@@ -115,13 +115,3 @@ export {default as HTML5AudioPlayer} from './components/player/audio/HTML5AudioP
 
 //image viewer
 export {default as FlexImageViewer} from './components/player/image/FlexImageViewer';
-
-//utils
-export {default as CollectionUtil} from './util/CollectionUtil';
-export {default as TimeUtil} from './util/TimeUtil';
-export {default as ElasticsearchDataUtil} from './util/ElasticsearchDataUtil';
-
-//collection mappings (should they be here?)
-export {default as CollectionConfig} from './collection/mappings/CollectionConfig';
-export {default as NISVCatalogueConfig} from './collection/mappings/NISVCatalogueConfig';
-// export {default as NISVProgramGuideConfig} from './collection/mappings/NISVProgramGuideConfig';

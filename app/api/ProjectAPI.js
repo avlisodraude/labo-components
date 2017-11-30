@@ -8,7 +8,8 @@ const ProjectAPI = {
 			url += '/' + project.id;
 			method = 'PUT';
 		}
-		url += '?cid=' + _clientId + '&at=' + _chickenStock;
+		project.clientId = _clientId;
+		project.token = _chickenStock;
 	    const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -47,7 +48,7 @@ const ProjectAPI = {
 				}
 			}
 		}
-		xhr.open("GET", url);
+		xhr.open("DELETE", url);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send();
 	},
@@ -55,7 +56,7 @@ const ProjectAPI = {
 	list : function(userId, filter, callback) {
 
 		// todo: add filters to request
-		 
+		console.debug(_config.USER_SPACE_API_BASE);
 		let url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects';
 		url += '?cid=' + _clientId + '&at=' + _chickenStock;
 
