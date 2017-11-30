@@ -1,4 +1,4 @@
-const UserSpaceAPI = {
+const ProjectAPI = {
 
 
 	save : function (userId, project, callback) {
@@ -52,9 +52,13 @@ const UserSpaceAPI = {
 		xhr.send();
 	},
 
-	list : function(userId, callback) {
+	list : function(userId, filter, callback) {
+
+		// todo: add filters to request
+		 
 		let url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects';
 		url += '?cid=' + _clientId + '&at=' + _chickenStock;
+
 		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -77,4 +81,4 @@ const UserSpaceAPI = {
 
 }
 
-export default UserSpaceAPI;
+export default ProjectAPI;

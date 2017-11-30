@@ -1,0 +1,13 @@
+@import './style/_variables.scss';
+@import './style/_colors.scss';
+@import './style/_fonts.scss';
+@import './style/_images.scss';
+@import './style/_reset.scss';
+@import './style/_layout.scss';
+@import './style/_mixins.scss';
+
+@import './pages/projects/overview.scss';
+@import './pages/projects/createEdit.scss';
+
+@import './components/ProjectTable.scss';
+@import './components/SortTable.scss';

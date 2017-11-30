@@ -1,11 +1,21 @@
 //required imports for the functions
 import {render} from 'react-dom';
+
+// tools
 import CollectionRecipe from './CollectionRecipe';
 import SingleSearchRecipe from './SingleSearchRecipe';
 import ComparativeSearchRecipe from './ComparativeSearchRecipe';
 import ItemDetailsRecipe from './ItemDetailsRecipe';
+
+// workspace
+import WSProjectsRecipe from './WSProjectsRecipe';
+import WSProjectBookmarksRecipe from './WSProjectBookmarksRecipe';
+import WSProjectSessionsRecipe from './WSProjectSessionsRecipe';
+
+//other
 import UserSpaceRecipe from './UserSpaceRecipe';
 import ExampleRecipe from './ExampleRecipe';
+
 import '../sass/labo-components.scss';
 //CSS must be included in the entry point to allow Webpack
 // to detect and run CSS .
@@ -14,39 +24,51 @@ import '../sass/labo-components.scss';
 //TODO the user variable is now filled with the INSTANCE_NAME from settings.py
 //	Instead the user object (with id, name & attributes) will be passed and should be properly handled
 export function cookRecipe (recipe, params, user, elementId) {
-	if(recipe.type === 'item-details') {
-		render(
-			<ItemDetailsRecipe recipe={recipe} params={params} user={user}/>,
-			document.getElementById(elementId)
-		);
-	} else if(recipe.type === 'single-search') {
-		render(
-			<SingleSearchRecipe recipe={recipe} params={params} user={user}/>,
-			document.getElementById(elementId)
-		);
-	} else if(recipe.type === 'comparative-search') {
-		render(
-			<ComparativeSearchRecipe recipe={recipe} params={params} user={user}/>,
-			document.getElementById(elementId)
-		);
-	} else if(recipe.type === 'collection-analysis') {
-		render(
-			<CollectionRecipe recipe={recipe} params={params} user={user}/>,
-			document.getElementById(elementId)
-		);
-	} else if(recipe.type === 'user-space') {
-		render(
-			<UserSpaceRecipe recipe={recipe} params={params} user={user}/>,
-			document.getElementById(elementId)
-		);
-	} else if(recipe.type === 'example') {
-		render(
-			<ExampleRecipe recipe={recipe} params={params} user={user}/>,
-			document.getElementById(elementId)
-		);
-	} else {
-		console.error('Please provide a valid recipe');
-	}
+	let component = null;
+
+	switch(recipe.type){
+		// tools
+		case 'item-details':
+			component = <ItemDetailsRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+		case 'single-search':
+			component = <SingleSearchRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+		case 'comparative-search':
+			component = <ComparativeSearchRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+	 	case 'collection-analysis':
+			component = <CollectionRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+	  
+		// workspace
+		case 'ws-projects':
+			component = <WSProjectsRecipe recipe={recipe} params={params} user={user}/>;
+		break;		
+		case 'ws-project-bookmarks':
+			component = <WSProjectBookmarksRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+		case 'ws-project-sessions':
+			component = <WSProjectSessionsRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+
+		// other
+		case 'user-space':
+			component = <UserSpaceRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+		case 'example':
+			component = <ExampleRecipe recipe={recipe} params={params} user={user}/>;
+		break;
+		default:
+			console.log(recipe);
+			console.error('Please provide a valid recipe');
+			return
+		}
+
+		// render the component
+		if (component){
+			render(component, document.getElementById(elementId));
+		}
 }
 
 //apis
@@ -102,4 +124,4 @@ export {default as ElasticsearchDataUtil} from './util/ElasticsearchDataUtil';
 //collection mappings (should they be here?)
 export {default as CollectionConfig} from './collection/mappings/CollectionConfig';
 export {default as NISVCatalogueConfig} from './collection/mappings/NISVCatalogueConfig';
-export {default as NISVProgramGuideConfig} from './collection/mappings/NISVProgramGuideConfig';
+// export {default as NISVProgramGuideConfig} from './collection/mappings/NISVProgramGuideConfig';
