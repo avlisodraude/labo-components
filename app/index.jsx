@@ -8,9 +8,7 @@ import ComparativeSearchRecipe from './ComparativeSearchRecipe';
 import ItemDetailsRecipe from './ItemDetailsRecipe';
 
 // workspace
-import WSProjectsRecipe from './WSProjectsRecipe';
-import WSProjectBookmarksRecipe from './WSProjectBookmarksRecipe';
-import WSProjectSessionsRecipe from './WSProjectSessionsRecipe';
+import WorkspaceProjectsRecipe from './WorkspaceProjectsRecipe';
 
 //other
 import UserSpaceRecipe from './UserSpaceRecipe';
@@ -42,16 +40,10 @@ export function cookRecipe (recipe, params, user, elementId) {
 		break;
 
 		// workspace
-		case 'ws-projects':
-			component = <WSProjectsRecipe recipe={recipe} params={params} user={user}/>;
+		case 'workspace-projects':
+			component = <WorkspaceProjectsRecipe recipe={recipe} params={params} user={user}/>;
 		break;
-		case 'ws-project-bookmarks':
-			component = <WSProjectBookmarksRecipe recipe={recipe} params={params} user={user}/>;
-		break;
-		case 'ws-project-sessions':
-			component = <WSProjectSessionsRecipe recipe={recipe} params={params} user={user}/>;
-		break;
-
+		
 		// other
 		case 'user-space':
 			component = <UserSpaceRecipe recipe={recipe} params={params} user={user}/>;

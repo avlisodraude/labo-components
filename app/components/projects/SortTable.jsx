@@ -95,7 +95,7 @@ class SortTable extends Component {
 
   render() {
     return (
-      <div className={IDUtil.cssClassName('ws-sort-table')}>
+      <div className={IDUtil.cssClassName('sort-table')}>
 
         <table>
           <thead>
