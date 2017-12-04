@@ -1,14 +1,25 @@
 import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
+import ProjectWrapper from './ProjectWrapper';
+
 
 class ProjectBookmarks extends React.Component {
 
   render(){
     return (
-      <h3>ProjectBookmarks</h3>
+       <div className={IDUtil.cssClassName('project-annotations')}>
+        <p>Todo: Bookmarks & Annotations</p>
+      </div>
     )
   }
-
 }
 
-export default ProjectBookmarks;
+class WrappedProjectBookmarks extends React.Component{
+  render(){
+    return(
+      <ProjectWrapper {...this.props} renderComponent={ProjectBookmarks} />
+    )
+  }
+}
+
+export default WrappedProjectBookmarks;

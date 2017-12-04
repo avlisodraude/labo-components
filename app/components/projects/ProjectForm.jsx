@@ -20,10 +20,23 @@ class ProjectForm extends React.Component {
     return false;
   }
 
- save(project, callback){
-    ProjectAPI.save(this.props.user.id, project, (project) => {
-      if (project){
-        this.props.projectDidSave(project);
+  /**
+   * Save the project using the Project API
+   * @param  {object}   project  Project data
+   * @param  {Function} callback Called when save is succesful
+   */
+  save(project, callback){
+    ProjectAPI.save(this.props.user.id, project, (msg) => {
+      if (msg && msg.success){
+        let projectId = project.id;
+
+        if (!projectId){
+          // get project id from message in case this is a new project
+          // todo: ask api guys to return the id as a seperate field
+          projectId = msg.success.substring(msg.success.lastIndexOf(" ")+1);
+        }
+
+        this.props.projectDidSave(projectId);
       } else{
         alert('An error occured while saving this project');
       }      
@@ -34,6 +47,7 @@ class ProjectForm extends React.Component {
     return (
       <form className={IDUtil.cssClassName('project-form')} onSubmit={this.handleSubmit.bind(this)}>
         <div>
+        
           <label className="label">Name</label>
           <input type="text" 
                  name="name" 
@@ -54,7 +68,7 @@ class ProjectForm extends React.Component {
                  ref={(elem) => this.isPrivate=elem}
                   />
 
-           <label for="project-private">This is a private project that is only visible to you and your collaborators</label>
+           <label htmlFor="project-private">This is a private project that is only visible to you and your collaborators</label>
         </div>
 
         <div className="actions">

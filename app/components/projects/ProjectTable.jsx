@@ -41,7 +41,7 @@ class ProjectTable extends Component {
    */
   setProjects(projects){
     this.setState({
-      projects: this.toDummyData(projects || []),
+      projects: this.toDummyData(projects || []).reverse(),
       loading: false,
     });
   }
