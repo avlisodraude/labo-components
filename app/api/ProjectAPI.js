@@ -2,14 +2,12 @@ const ProjectAPI = {
 
 
 	save : function (userId, project, callback) {
-		let url = _config.USER_SPACE_API_BASE + '/' + userId + "/projects";
+		let url = _config.PROJECT_API_BASE + '/' + userId + "/projects";
 		let method = 'POST'
 		if (project.id) {
 			url += '/' + project.id;
 			method = 'PUT';
 		}
-		project.clientId = _clientId;
-		project.token = _chickenStock;
 	    const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -31,8 +29,7 @@ const ProjectAPI = {
 	},
 
 	delete : function(userId, projectId, callback) {
-		let url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects/' + projectId;
-		url += '?cid=' + _clientId + '&at=' + _chickenStock;
+		const url = _config.PROJECT_API_BASE + '/' + userId + '/projects/' + projectId;
 		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -54,12 +51,8 @@ const ProjectAPI = {
 	},
 
 	list : function(userId, filter, callback) {
-
 		// todo: add filters to request
-		console.debug(_config.USER_SPACE_API_BASE);
-		let url = _config.USER_SPACE_API_BASE + '/' + userId + '/projects';
-		url += '?cid=' + _clientId + '&at=' + _chickenStock;
-
+		const url = _config.PROJECT_API_BASE + '/' + userId + '/projects';
 		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
