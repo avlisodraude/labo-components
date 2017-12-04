@@ -16,7 +16,7 @@ class ProjectCreate extends React.Component {
         <ProjectForm
           submitButton="create"
           cancelLink="/workspace/projects"          
-          project={{name:'',description:'',isPrivate:false}}
+          project={{name:'', description:'', isPrivate: false}}
           projectDidSave={(project) => {
             // navigate to new project page
             this.props.history.push('/workspace/projects/' + project.id)

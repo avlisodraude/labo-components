@@ -15,7 +15,6 @@ class ProjectForm extends React.Component {
     project.name = this.name.value;
     project.description = this.description.value;
     project.isPrivate = this.isPrivate.checked;
-
     this.save(project);
 
     return false;
@@ -49,13 +48,13 @@ class ProjectForm extends React.Component {
                     />
 
           <input type="checkbox" 
-                 name="public" 
+                 name="private" 
                  defaultChecked={!this.props.project.isPrivate} 
-                 id="project-public"
+                 id="project-private"
                  ref={(elem) => this.isPrivate=elem}
                   />
 
-           <label for="project-public">This is a public project that is visible for other users</label>
+           <label for="project-private">This is a private project that is only visible to you and your collaborators</label>
         </div>
 
         <div className="actions">
