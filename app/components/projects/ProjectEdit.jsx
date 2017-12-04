@@ -27,7 +27,8 @@ class ProjectEdit extends React.Component {
     }
 
     // load project data, and set state
-    ProjectAPI.get(projectId, (project) => {
+    ProjectAPI.get(this.props.user.id, projectId, (project) => {
+      console.log(project);
       this.setState({
         loading: false,
         project
@@ -50,7 +51,7 @@ class ProjectEdit extends React.Component {
             <ProjectForm
               submitButton="save"
               cancelLink={"/workspace/projects"+this.state.project.id}
-              project={this.state.props.project}
+              project={this.state.project}
               projectDidSave={(project) => {
                 // navigate to new project page
                 this.props.history.push('/workspace/projects/' + project.id)
