@@ -49,7 +49,7 @@ class ProjectForm extends React.Component {
 
           <input type="checkbox" 
                  name="private" 
-                 defaultChecked={!this.props.project.isPrivate} 
+                 defaultChecked={this.props.project.isPrivate} 
                  id="project-private"
                  ref={(elem) => this.isPrivate=elem}
                   />
