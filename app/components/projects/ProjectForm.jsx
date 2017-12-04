@@ -16,9 +16,19 @@ class ProjectForm extends React.Component {
     project.description = this.description.value;
     project.isPrivate = this.isPrivate.checked;
 
-    this.props.onSave(project);
+    this.save(project);
 
     return false;
+  }
+
+ save(project, callback){
+    ProjectAPI.save(this.props.user.id, project, (project) => {
+      if (project){
+        this.props.projectDidSave(project);
+      } else{
+        alert('An error occured while saving this project');
+      }      
+    });    
   }
 
   render(){
@@ -62,15 +72,18 @@ ProjectForm.PropTypes = {
   'submitButton': PropTypes.string.isRequired,
 
   'cancelLink': PropTypes.string.isRequired,
-  'successLink': PropTypes.string.isRequired,
-
+  
   'project': PropTypes.shape({
       'name': PropTypes.string.isRequired,
       'description': PropTypes.string.isRequired,
       'private': PropTypes.bool.isRequired,
   }).isRequired,
 
-  onSave: PropTypes.func.isRequired,
+  projectDidSave: PropTypes.func.isRequired,
+  
+  user: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  })
 }
 
 export default ProjectForm;

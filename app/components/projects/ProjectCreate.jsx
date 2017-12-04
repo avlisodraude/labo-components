@@ -1,24 +1,9 @@
 import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
+import PropTypes from 'prop-types';
 
 class ProjectCreate extends React.Component {
-
-  save(project, callback){
-    // todo:save project to api
-    // get id 
-    console.log(project);
-    ProjectAPI.save(this.props.user.id, project, (project) => {
-      if (project){
-        // navigate to new project page
-        this.props.history.push('/workspace/projects/' + project.id)
-      } else{
-        alert('An error occured while saving this project');
-      }
-      
-    });
-    
-  }
 
   render(){
     return (
@@ -31,13 +16,16 @@ class ProjectCreate extends React.Component {
         <ProjectForm
           submitButton="create"
           cancelLink="/workspace/projects"          
-          project={{name:'', description:'', isPrivate:false}}
-          onSave={this.save.bind(this)}
+          project={{name:'',description:'',isPrivate:false}}
+          projectDidSave={(project) => {
+            // navigate to new project page
+            this.props.history.push('/workspace/projects/' + project.id)
+          }}
+          user={this.props.user}
          />
       </div>
     )
   }
-
 }
 
 export default ProjectCreate;
