@@ -49,7 +49,7 @@ class ProjectTable extends Component {
   toDummyData(projects){
     return projects.map((p) => {
       p.getBookmarkCount = function(){return 0;}
-      p.getAccess = function(){return false;}
+      p.getAccess = function(){return 'Admin'}
       p.getCollaboratorCount = function(){return 0;}
       p.canDelete = function(){return true;}
       p.canExport = function(){return true;}
