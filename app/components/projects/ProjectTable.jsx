@@ -7,9 +7,10 @@ import SortTable from './SortTable';
 import { Link } from 'react-router-dom';
 
 class ProjectTable extends Component {
+
   constructor(props){
     super(props);
-    console.log(props);
+
     this.state={
       projects: [],
       loading: true,
@@ -19,7 +20,6 @@ class ProjectTable extends Component {
       }
     }
   }
-
 
   /**
    * Call filter callback
@@ -33,8 +33,6 @@ class ProjectTable extends Component {
     this.props.api.list(this.props.user.id, this.state.filter, this.setProjects.bind(this));
   }
 
-
-
   /**
    * Set new list of projects to state
    * @param {array} projects List of projects
@@ -46,12 +44,10 @@ class ProjectTable extends Component {
     });
   }
 
-
   /**
    * Decorate projects data with helper functions
    * (currently placeholders) 
    */
-
   toDummyData(projects){
     return projects.map((p) => {
       p.getBookmarkCount = function(){return 0;}
@@ -67,7 +63,6 @@ class ProjectTable extends Component {
       return p
     })
   }
-
 
   /**
    * Keywords filter changes
@@ -99,6 +94,7 @@ class ProjectTable extends Component {
   componentDidMount(){
     this.loadData();
   }
+
   /**
    * Listen for update, request new data if filter has been changed
    */
@@ -108,8 +104,6 @@ class ProjectTable extends Component {
       this.loadData();
     }
   }
-
-
 
   /**
    * Delete project if confirmed
@@ -131,39 +125,38 @@ class ProjectTable extends Component {
    * Export project
    * @param {object} project Project to export
    */
-  exportProject(project){
-    console.log('sdf');
+  exportData(data){    
     let exportWindow = window.open("", "Export", "width=800,height=800");
     exportWindow.document.write("<pre>"+JSON.stringify(project, null, 4)+"</pre>");
   }
 
 
-   /**
-   * Sort projects based on sort
-   */
-   sortProjects(projects, sort){
-     let sorted = projects;
-     switch(sort.field){
-      case 'name':
-        sorted.sort((a,b) => (a.name > b.name));
-      break;
-      case 'bookmarks':
-        sorted.sort((a,b) => (a.bookmarks.length - b.bookmarks.length));
-      break;
-      case 'owner':
-        sorted.sort((a,b) => (a.owner.name > b.owner.name));
-      break;
-      case 'access':
-        sorted.sort((a,b) => (a.getAccess(this.props.user.id) > b.getAccess(this.props.user.id)));
-      break;
-      default:
-        // no sorting,just return
-        return sorted;
-     }
-
-     return sort.order === 'desc' ? sorted.reverse() : sorted;
-
+  /**
+  * Sort projects based on sort
+  */
+  sortProjects(projects, sort){
+   let sorted = projects;
+   switch(sort.field){
+    case 'name':
+      sorted.sort((a,b) => (a.name > b.name));
+    break;
+    case 'bookmarks':
+      sorted.sort((a,b) => (a.bookmarks.length - b.bookmarks.length));
+    break;
+    case 'owner':
+      sorted.sort((a,b) => (a.owner.name > b.owner.name));
+    break;
+    case 'access':
+      sorted.sort((a,b) => (a.getAccess(this.props.user.id) > b.getAccess(this.props.user.id)));
+    break;
+    default:
+      // no sorting,just return
+      return sorted;
    }
+
+   return sort.order === 'desc' ? sorted.reverse() : sorted;
+
+  }
 
 
 
@@ -190,21 +183,6 @@ class ProjectTable extends Component {
                    />
             <label htmlFor="current-user">Show only my projects</label>
           </div>
-
-          { /*<div className="right">
-            <h3>Order</h3>
-            <select>
-              <option>Newest first</option>
-              <option>Oldest first</option>
-              <option>Name A-Z</option>
-              <option>Name Z-A</option>
-              <option>Bookmarks</option>
-              <option>Owner</option>
-              <option>Access</option>
-            </select>
-          </div> */ }
-
-
         </div>
 
         <SortTable
@@ -224,7 +202,7 @@ class ProjectTable extends Component {
                 { content: <span>{project.owner.name} {project.getCollaboratorCount() ? <span className="collaborators">{project.getCollaboratorCount()} Collaborator{project.getCollaboratorCount() !== 1 ? 's' : ''}</span> : ''}</span> },
                 { props: { className: "access"}, content: project.getAccess(currentUserId) },
                 { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
-                { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={this.exportProject.bind(this,project)}>Export</a> : ''},
+                { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={this.exportData.bind(this,project)}>Export</a> : ''},
                 { content: project.canOpen(currentUserId) ? <Link to={"/workspace/projects/" + project.id} className="btn">Open</Link> : ''}
               ])}           
 
