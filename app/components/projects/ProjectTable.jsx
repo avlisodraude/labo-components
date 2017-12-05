@@ -50,12 +50,14 @@ class ProjectTable extends Component {
    */
   toDummyData(projects){
     return projects.map((p) => {
-      p.getBookmarkCount = function(){return 0;}
+      p.getBookmarkCount = function(){ return this.bookmarks.length;}
       p.getAccess = function(){return 'Admin'}
-      p.getCollaboratorCount = function(){return 0;}
+      p.getCollaboratorCount = function(){return this.collaborators.length;}
       p.canDelete = function(){return true;}
       p.canExport = function(){return true;}
       p.canOpen = function(){return true;}
+      p.bookmarks = [];
+      p.collaborators = [];
       p.owner = {
         id : this.props.user.id,
         name : this.props.user.name
@@ -122,12 +124,40 @@ class ProjectTable extends Component {
   }
 
   /**
+   * Delete *multiple* projects if confirmed
+   * @param {object} project Project to delete
+   */
+  deleteProjects(projects){
+    if (window.confirm('Are you sure you want to delete ' + projects.length + ' projects?')){
+      var calls = projects.length;
+
+      // after each return calls is decreased
+      // when calls is 0, data is reloaded
+      // this is async safe      
+      projects.forEach((project, index)=>{
+        this.props.api.delete(this.props.user.id, project.id, (status) => {          
+            calls--;
+            if (calls == 0){
+              // after the last delete just retrieve the latest data
+              this.loadData();  
+            }            
+          }          
+        );  
+      });      
+    }
+  }
+
+  /**
    * Export project
    * @param {object} project Project to export
    */
   exportData(data){    
-    let exportWindow = window.open("", "Export", "width=800,height=800");
-    exportWindow.document.write("<pre>"+JSON.stringify(project, null, 4)+"</pre>");
+    // unique window name
+    let windowName = 'name_'+(new Date()).getTime();
+
+    // open window and write export contents as json
+    let exportWindow = window.open("", windowName, "width=800,height=800");
+    exportWindow.document.write("<pre>"+JSON.stringify(data, null, 4)+"</pre>");
   }
 
 
@@ -157,8 +187,6 @@ class ProjectTable extends Component {
    return sort.order === 'desc' ? sorted.reverse() : sorted;
 
   }
-
-
 
   render() {
     let projects = this.state.projects;
@@ -208,6 +236,10 @@ class ProjectTable extends Component {
 
             sort={this.sortProjects.bind(this)}
             loading={this.state.loading}
+            bulkActions={[
+              {title: 'Delete', onApply: this.deleteProjects.bind(this) },
+              {title: 'Export', onApply: this.exportData.bind(this) }
+              ]}
            />
       </div>
     );

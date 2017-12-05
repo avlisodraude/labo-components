@@ -10,6 +10,7 @@ class SortTable extends Component {
 
     this.state={
       currentPage: this.props.currentPage,
+      bulkAction: null,
       items: props.items,
       selection: [],
       sort:{
@@ -95,14 +96,38 @@ class SortTable extends Component {
     });
   }
 
-
-   /**
+  /**
   * Select an item
-  * @param  {object} item Item
-  * @param  {SyntheticEvent} e    Event
+  * @param  {int} currentPage
   */
   setPage(currentPage){
     this.setState({currentPage});
+  }
+
+  /**
+  * Set bulk action
+  * @param  {SyntheticEvent} e    Event
+  */
+  setBulkAction(e){
+    this.setState({bulkAction: this.bulkActionSelect.value });
+  }
+
+
+  /**
+  * Apply bulk action
+  * @param  {SyntheticEvent} e    Event
+  */
+  applyCurrentBulkAction(e){
+    this.state.bulkAction;
+    this.props.bulkActions.every((action)=>{
+      if (action.title == this.state.bulkAction){        
+        action.onApply(this.state.selection);
+        // stop
+        return false;
+      }
+      // continue
+      return true;
+    }); 
   }
 
   render() {
@@ -117,7 +142,7 @@ class SortTable extends Component {
         <table>
           <thead>
             <tr>
-              <th><input type="checkbox" checked={this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
+              <th><input type="checkbox" title="Select all" checked={this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
               {this.props.head.map((head, index) => (this.getHeader(index, head.field, head.content, head.sortable)))}
             </tr>
           </thead>
@@ -148,7 +173,23 @@ class SortTable extends Component {
                     onClick={this.setPage.bind(this)} 
                     />
 
-        <p>Todo: With selected: [ Actions \/ ]</p>
+        {this.props.bulkActions ? 
+        
+          <div className="bulk-actions">
+            <span>With {this.state.selection.length} selected:</span>
+
+            <select value={this.state.bulkAction} 
+                    onChange={this.setBulkAction.bind(this)}
+                    ref={(c)=>{this.bulkActionSelect = c;}}                    
+                    >
+              <option key="empty" value=""></option>
+              {this.props.bulkActions.map((action, index)=>(<option key={index} value={action.title}>{action.title}</option>))}
+            </select>
+
+            {this.state.bulkAction && this.state.selection.length ? <div onClick={this.applyCurrentBulkAction.bind(this)} className="btn primary">Apply</div> : null }
+          </div>
+
+        : null }
       </div>
     );
   }
@@ -161,6 +202,7 @@ SortTable.propTypes = {
   sort: PropTypes.func.isRequired,
   perPage: PropTypes.number,
   currentPage: PropTypes.number,
+  bulkActions: PropTypes.array
 }
 
 SortTable.defaultProps = {
