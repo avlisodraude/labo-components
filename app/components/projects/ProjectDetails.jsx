@@ -33,7 +33,13 @@ class ProjectDetails extends React.Component {
         </ul>
 
         <h2>Collaborators</h2>
-        <p>This features has not yet been implemented</p>
+
+        <Link to={"/workspace/projects/"+encodeURIComponent(project.id)+"/edit"} className="btn plus">
+          Add Collaborator
+        </Link>
+        
+        <p>This feature has not yet been implemented</p>
+
       </div>
     )
   }

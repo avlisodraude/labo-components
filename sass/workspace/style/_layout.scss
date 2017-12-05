@@ -99,6 +99,11 @@ p{
   
   }
 
+  &.plus{
+    background-image: $iconPlusGreyUrl;   
+    background-size: 12px; 
+  }
+
   &.white{
     background-color: $clWhite;
     &:hover{
