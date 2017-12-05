@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
 import Pagination from '../helpers/Pagination'
 
-class SortTable extends Component {
+class SortTable extends React.PureComponent {
   constructor(props){
     super(props);
 

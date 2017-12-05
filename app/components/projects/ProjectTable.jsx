@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import SortTable from './SortTable';
 import { Link } from 'react-router-dom';
 
-class ProjectTable extends Component {
+class ProjectTable extends React.PureComponent {
 
   constructor(props){
     super(props);
@@ -19,6 +18,8 @@ class ProjectTable extends Component {
         currentUser: false,
       }
     }
+
+    this.requestDataTimeout = -1;
   }
 
   /**
@@ -38,10 +39,43 @@ class ProjectTable extends Component {
    * @param {array} projects List of projects
    */
   setProjects(projects){
+    // decorate the projects
+    // also reverse to get the newest on top
+    this.toDummyData(projects || []).reverse();
+
+    // we filter the results now on client side
+    projects = this.filterProjects(projects);
+
     this.setState({
-      projects: this.toDummyData(projects || []).reverse(),
+      projects: projects,
       loading: false,
     });
+  }
+
+  /**
+   * Filter projects client side
+   * This can later be performed on the server/api side
+   */
+  filterProjects(projects){
+    let userId = this.props.user.id;
+    let result = projects.filter((project)=>(project.getAccess(userId)));
+    let filter = this.state.filter;
+
+    // filter on keywords
+    if (filter.keywords){
+      let keywords = filter.keywords.split(" ");
+      keywords.forEach((k)=>{
+        k = k.toLowerCase();
+        result = result.filter((project)=>(project.name.toLowerCase().includes(k) || project.description.toLowerCase().includes(k)))
+      });
+    }
+
+    // filter on current user
+    if (filter.currentUser){
+      result = result.filter((project)=>(project.owner.id === userId))
+    }
+
+    return result;
   }
 
   /**
@@ -72,7 +106,7 @@ class ProjectTable extends Component {
    */
   keywordsChange(e){
     this.setState({
-      filter: Object.assign({}, this.state.filter, {
+        filter: Object.assign({}, this.state.filter, {
         keywords: e.target.value
       })
     });
@@ -84,7 +118,7 @@ class ProjectTable extends Component {
    */
   currentUserChange(e){
     this.setState({
-      filter: Object.assign({}, this.state.filter, {
+        filter: Object.assign({}, this.state.filter, {
         currentUser: e.target.checked
       })
     });
@@ -103,7 +137,10 @@ class ProjectTable extends Component {
   componentDidUpdate(){
     if (this.lastFilter !== this.state.filter){
       this.lastFilter = this.state.filter;
-      this.loadData();
+
+      // throttle data requests
+      clearTimeout(this.requestDataTimeout);
+      this.requestDataTimeout = setTimeout(this.loadData.bind(this), 500);
     }
   }
 
@@ -148,8 +185,8 @@ class ProjectTable extends Component {
   }
 
   /**
-   * Export project
-   * @param {object} project Project to export
+   * Export data
+   * @param {object} data Data to export
    */
   exportData(data){    
     // unique window name

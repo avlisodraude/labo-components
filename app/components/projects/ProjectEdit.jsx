@@ -3,7 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 
-class ProjectEdit extends React.Component {
+class ProjectEdit extends React.PureComponent {
 
 
   constructor(props){
@@ -56,6 +56,7 @@ class ProjectEdit extends React.Component {
                 this.props.history.push('/workspace/projects/' + encodeURIComponent(projectId) + "/details")
               }}
               user={this.props.user}
+              api={this.props.api}
             />
           :
           <h3 className="error">Project could not be found</h3>

@@ -4,7 +4,7 @@ import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-class ProjectWrapper extends React.Component {
+class ProjectWrapper extends React.PureComponent {
 
   constructor(props){
     super(props);
@@ -54,8 +54,8 @@ class ProjectWrapper extends React.Component {
                 </div>
 
                 <div className="submenu">
-                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/bookmarks"}>Bookmarks & Annotations<span className="count">{project.bookmarks ? project.bookmarks.count : 0}</span></NavLink>
-                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/sessions"}>Tool Sessions<span className="count">{project.sessions ? project.sessions.count : 0}</span></NavLink>
+                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/bookmarks"}>Bookmarks & Annotations<span className="count">{project.bookmarks ? project.bookmarks.length : 0}</span></NavLink>
+                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/sessions"}>Tool Sessions<span className="count">{project.sessions ? project.sessions.length : 0}</span></NavLink>
                   <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/details"}>Details</NavLink>
                 </div>
               </div>

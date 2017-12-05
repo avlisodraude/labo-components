@@ -3,7 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectWrapper from './ProjectWrapper';
 import { Link } from 'react-router-dom';
 
-class ProjectDetails extends React.Component {
+class ProjectDetails extends React.PureComponent {
 
   render(){
     let project = this.props.project;
@@ -45,7 +45,7 @@ class ProjectDetails extends React.Component {
   }
 }
 
-class WrappedProjectDetails extends React.Component{
+class WrappedProjectDetails extends React.PureComponent{
   render(){
     return(
       <ProjectWrapper {...this.props} renderComponent={ProjectDetails} />

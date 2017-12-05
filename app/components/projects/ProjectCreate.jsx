@@ -1,9 +1,8 @@
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 
-class ProjectCreate extends React.Component {
+class ProjectCreate extends React.PureComponent {
 
   render(){
     return (
@@ -22,6 +21,7 @@ class ProjectCreate extends React.Component {
             this.props.history.push('/workspace/projects/' + encodeURIComponent(projectId))
           }}
           user={this.props.user}
+          api={this.props.api}
          />
       </div>
     )
