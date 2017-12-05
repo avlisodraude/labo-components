@@ -10,11 +10,6 @@ class AnnotationStore {
 
 	/* --------------- FOR FETCHING DATA ------------------- */
 
-	//DEPREACATED, SHOULD BE REPLACED!
-	getAll(callback) {
-		AnnotationAPI.getAnnotations(callback);
-	}
-
 	getMediaObjectAnnotations(mediaObjectURI, user, callback) {
 		AnnotationAPI.getFilteredAnnotations({
 			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
