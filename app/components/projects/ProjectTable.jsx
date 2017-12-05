@@ -132,7 +132,9 @@ class ProjectTable extends Component {
    * @param {object} project Project to export
    */
   exportProject(project){
-    window.open("data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(project, null, 4)));
+    console.log('sdf');
+    let exportWindow = window.open("", "Export", "width=800,height=800");
+    exportWindow.document.write("<pre>"+JSON.stringify(project, null, 4)+"</pre>");
   }
 
 
