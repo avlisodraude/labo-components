@@ -1,16 +1,25 @@
 import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
+import ProjectWrapper from './ProjectWrapper';
 
 class ProjectSessions extends React.Component {
 
   render(){
     return (
       <div className={IDUtil.cssClassName('project-sessions')}>
-        <h3 >ProjectSessions</h3>
+        <p>Todo: Tool Sessions</p>
       </div>
     )
   }
-
 }
 
-export default ProjectSessions;
+
+class WrappedProjectSessions extends React.Component{
+  render(){
+    return(
+      <ProjectWrapper {...this.props} renderComponent={ProjectSessions} />
+    )
+  }
+}
+
+export default WrappedProjectSessions;

@@ -10,7 +10,6 @@ class ProjectsOverview extends React.Component {
 
   constructor(props){
     super(props);
-    console.log('ProjectsOverview', props);
   }
 
 render(){    
@@ -22,7 +21,7 @@ render(){
                 Create User Project
              </Link>
             <h2>User Projects</h2>
-            <p>Store and share Bookmarks & Annotations and Tool Sessions!</p>
+            <p>Store and share Bookmarks & Annotations and Tool Sessions</p>
           </div>
 
           <ProjectTable api={ProjectAPI} user={this.props.user} />
