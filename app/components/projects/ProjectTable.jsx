@@ -46,6 +46,12 @@ class ProjectTable extends Component {
     });
   }
 
+
+  /**
+   * Decorate projects data with helper functions
+   * (currently placeholders) 
+   */
+
   toDummyData(projects){
     return projects.map((p) => {
       p.getBookmarkCount = function(){return 0;}
