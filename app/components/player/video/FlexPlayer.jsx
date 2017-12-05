@@ -78,11 +78,14 @@ class FlexPlayer extends React.Component {
 			),
 			this.onChange.bind(this)
 		);
+
+		AppAnnotationStore.bind('change-project', this.loadAnnotations.bind(this, null));
 	}
 
 	onChange(eventType, data, annotation, index) {
 		if(eventType == 'change-target') {
 			this.initKeyBindings(); //whenever this media object becomes the target, make sure these key bindings take over
+			this.loadAnnotations(null);
 		} else if(eventType == 'update') {
 			this.loadAnnotations(annotation);//after adding or saving an annotation
 		} else if(eventType == 'delete') {
@@ -95,13 +98,18 @@ class FlexPlayer extends React.Component {
 	}
 
 	loadAnnotations(annotation) {
-		this.setState({
-			activeAnnotation : annotation
-		}, AppAnnotationStore.getMediaObjectAnnotations(
-			this.props.mediaObject.url,
-			this.props.user,
-			this.onLoadAnnotations.bind(this))
-		);
+		this.setState(
+			{activeAnnotation : annotation},
+			() => {
+				console.debug('flexplayer reloading annotations', this.props.project)
+				AppAnnotationStore.getMediaObjectAnnotations(
+					this.props.mediaObject.url,
+					this.props.user,
+					this.props.project,
+					this.onLoadAnnotations.bind(this)
+				)
+			}
+		)
 	}
 
 	onLoadAnnotations(data) {
@@ -444,7 +452,8 @@ class FlexPlayer extends React.Component {
 			annotation = AnnotationUtil.generateW3CEmptyAnnotation(
 				this.props.user,
 				this.props.mediaObject.url,
-				this.props.mediaObject.mimeType
+				this.props.mediaObject.mimeType,
+				this.props.project
 			);
 		}
 		AnnotationActions.edit(annotation);
@@ -480,7 +489,8 @@ class FlexPlayer extends React.Component {
 				this.props.user,
 				this.props.mediaObject,
 				this.state.start,
-				this.state.end
+				this.state.end,
+				this.props.project
 			)
 		);
 	}

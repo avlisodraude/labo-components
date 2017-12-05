@@ -23,6 +23,8 @@ import AnnotationStore from './flux/AnnotationStore';
 
 import CollectionUtil from './util/CollectionUtil';
 
+import ProjectSelector from './components/projects/ProjectSelector';
+
 /*
 	1. The ItemDetailsRecipe takes care of tying the components together according to the recipe
 	2. Each media player (and any other annotation target) in the recipe takes care of loading its own annotations
@@ -46,6 +48,8 @@ class ItemDetailsRecipe extends React.Component {
 		super(props);
 		this.state = {
 			showModal : false, //triggered by the media players whenever an annotation needs to be edited
+			showProjectModal : false, //triggered by a button at the top of this recipe
+			activeProject : null,
 			itemData : null, //populated from componentDidMount
 			activeMediaTab : 0, //which tab, i.e. media player, is visible/active
 
@@ -110,7 +114,8 @@ class ItemDetailsRecipe extends React.Component {
 				const annotation = AnnotationUtil.generateW3CEmptyAnnotation(
 					this.props.user,
 					mediaObject.url,
-					mediaObject.mimeType
+					mediaObject.mimeType,
+					this.state.activeProject
 				);
 				return annotation.target;
 			}
@@ -187,9 +192,11 @@ class ItemDetailsRecipe extends React.Component {
 	//TODO currently this is only called via the ugly componentDidUpdate() function
 	setActiveAnnotationTarget(annotationTarget) {
 		this.setState(
-			{annotationTarget : annotationTarget}
+			{annotationTarget : annotationTarget},
+			() => {
+				AnnotationActions.changeTarget(annotationTarget)
+			}
 		);
-		AnnotationActions.changeTarget(annotationTarget)
 	}
 
 	//overall there can be only one active annotation
@@ -297,6 +304,7 @@ class ItemDetailsRecipe extends React.Component {
 				return (
 					<FlexPlayer
 						user={this.props.user} //current user
+						project={this.state.activeProject} //selected via the ProjectSelector
 						mediaObject={mediaObject} //TODO make this plural for playlist support
 						active={this.state.activeMediaTab == index}
 						enableFragmentMode={false} //add this to config
@@ -326,6 +334,7 @@ class ItemDetailsRecipe extends React.Component {
 				return (
 					<FlexPlayer
 						user={this.props.user} //current user
+						project={this.state.activeProject} //selected via the ProjectSelector
 						mediaObject={mediaObject} //TODO make this plural for playlist support
 						active={this.state.activeMediaTab == index}
 						enableFragmentMode={false} //add this to config
@@ -368,6 +377,7 @@ class ItemDetailsRecipe extends React.Component {
 				content = (
 					<FlexImageViewer
 						user={this.props.user} //current user
+						project={this.state.activeProject} //selected via the ProjectSelector
 						mediaObjects={images}//TODO make this plural for playlist support
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
@@ -411,6 +421,29 @@ class ItemDetailsRecipe extends React.Component {
 		return null;
 	}
 
+	onComponentOutput(componentClass, data) {
+		if(componentClass == 'ProjectSelector') {
+			this.setState(
+				{activeProject : data},
+				() => {
+					this.onProjectChanged.call(this, data)
+				}
+			);
+		}
+	}
+
+	onProjectChanged(project) {
+		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true);
+		AnnotationActions.changeProject(project);
+	}
+
+	triggerProjectSelector() {
+		let showProjectModal = this.state.showProjectModal;
+		this.setState({
+			showProjectModal : !showProjectModal
+		});
+	}
+
 	render() {
 		if(!this.state.itemData) {
 			return (<h4>Loading item</h4>);
@@ -419,11 +452,9 @@ class ItemDetailsRecipe extends React.Component {
 		} else {
 			let annotationBox = null;
 			let annotationList = null;
-			const uniqueMetadata = null;
-			const poster = null;
-			const source = null;
 			let metadataPanel = null;
 			let mediaPanel = null;
+			let projectModal = null;
 
 
 			//on the top level we only check if there is any form of annotationSupport
@@ -440,6 +471,7 @@ class ItemDetailsRecipe extends React.Component {
 							}>
 							<AnnotationBox
 								user={this.props.user} //current user
+								project={this.state.activeProject} //selected via ProjectSelector
 								annotation={this.state.activeAnnotation}
 								activeSubAnnotation={this.state.activeSubAnnotation}
 								annotationModes={this.props.recipe.ingredients.annotationModes}/>
@@ -449,10 +481,25 @@ class ItemDetailsRecipe extends React.Component {
 				annotationList = (
 					<AnnotationList
 						user={this.props.user} //current user
+						project={this.state.activeProject} //selected via ProjectSelector
 						activeAnnotation={this.state.activeAnnotation} //the active annotation
 						annotationTarget={this.state.annotationTarget} //the current annotation target (later this can be also an annotation)
 					/>
 				);
+			}
+
+			//project modal
+			if(this.state.showProjectModal) {
+				projectModal = (
+					<FlexModal
+						elementId="project__modal"
+						stateVariable="showProjectModal"
+						owner={this}
+						size="large"
+						title="Select a project">
+							<ProjectSelector onOutput={this.onComponentOutput.bind(this)} user={this.props.user}/>
+					</FlexModal>
+				)
 			}
 
 			//render the complete metadata block, which includes unique and basic metadata
@@ -469,8 +516,12 @@ class ItemDetailsRecipe extends React.Component {
 
 			return (
 				<div className={IDUtil.cssClassName('item-details-recipe')}>
+					{projectModal}
 					<div className="row">
 						<div className="col-md-12">
+							<button className="btn btn-primary" onClick={this.triggerProjectSelector.bind(this)}>
+								Projects ({this.state.activeProject ? this.state.activeProject.name : 'none selected'})
+							</button>
 							<br/>
 							{mediaPanel}
 							<div className="row">

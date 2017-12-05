@@ -10,11 +10,15 @@ class AnnotationStore {
 
 	/* --------------- FOR FETCHING DATA ------------------- */
 
-	getMediaObjectAnnotations(mediaObjectURI, user, callback) {
-		AnnotationAPI.getFilteredAnnotations({
+	getMediaObjectAnnotations(mediaObjectURI, user, project, callback) {
+		let filter = {
 			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
-			'user' : user.id
-		}, callback);
+			'user.keyword' : user.id
+		}
+		if(project && project.id) {
+			filter['project'] = project.id //TODO after reindex, change to project!
+		}
+		AnnotationAPI.getFilteredAnnotations(filter, callback);
 	}
 
 	/* --------------- FOR TRIGGERS LISTENERS ------------------- */
@@ -24,6 +28,10 @@ class AnnotationStore {
 		if(annotationTarget) {
 			this.trigger(annotationTarget.source, 'change-target', null, null);
 		}
+	}
+
+	changeProject(project) {
+		this.trigger('change-project', project);
 	}
 
 	//TODO change the name of the event 'change' --> save-annotation
@@ -96,6 +104,9 @@ AppDispatcher.register( function( action ) {
         case 'change-target':
             AppAnnotationStore.changeTarget(action.annotationTarget);
             break;
+		case 'change-project':
+			AppAnnotationStore.changeProject(action.project);
+			break;
 
     }
 

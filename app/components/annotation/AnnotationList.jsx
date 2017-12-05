@@ -30,36 +30,31 @@ class AnnotationList extends React.Component {
 		super(props);
 		this.state = {
 			annotations : [],
-			expanded : false,
-			annotationTarget : this.props.annotationTarget
+			expanded : false
 		}
 	}
 
 	componentDidMount() {
 		//load the initial annotations
-		this.loadAnnotations(this.state.annotationTarget);
+		this.loadAnnotations();
 
-		//make sure to reload the list when the target changes
-		AppAnnotationStore.bind('change-target', this.changeTarget.bind(this));
+		//make sure to reload the list when the target or project changes
+		AppAnnotationStore.bind('change-target', this.loadAnnotations.bind(this));
+		AppAnnotationStore.bind('change-project', this.loadAnnotations.bind(this));
 
 		//also make sure to reload the list when annotations are added/removed (to/from the target)
 		AppAnnotationStore.bind('save-annotation', this.loadAnnotations.bind(this));
 		AppAnnotationStore.bind('del-annotation', this.loadAnnotations.bind(this));
 	}
 
-	changeTarget(annotationTarget) {
-		this.setState(
-			{annotationTarget : annotationTarget},
-			this.loadAnnotations.bind(this)
-		);
-	}
-
 	loadAnnotations() {
-		if(this.state.annotationTarget) {
+		console.debug('reloading annotations', this.props.project);
+		if(this.props.annotationTarget) {
 			AppAnnotationStore.getMediaObjectAnnotations(
 			   	this.props.annotationTarget.source,
 			   	this.props.user,
-			   	this.onLoadAnnotations.bind(this)
+			   	this.props.project,
+			   	this.onLoadAnnotations.bind(this),
 			);
 		}
 	}
