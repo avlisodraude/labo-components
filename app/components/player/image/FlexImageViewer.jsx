@@ -77,6 +77,7 @@ class FlexImageViewer extends React.Component {
 		AppAnnotationStore.getMediaObjectAnnotations(
 			this.props.mediaObject.url,
 			this.props.user,
+			this.props.project,
 			this.onLoadAnnotations.bind(this)
 		);*/
 	}
@@ -215,7 +216,8 @@ class FlexImageViewer extends React.Component {
 									h : rect.height
 								},
 								rotation : rect.rotation
-							}
+							},
+							this.props.project
 						)
 					);*/
 				}.bind(this), // callback
