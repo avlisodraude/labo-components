@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import SortTable from './SortTable';
+import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
-
+import SortTable from './SortTable';
+import { Link } from 'react-router-dom';
 
 class ProjectTable extends Component {
   constructor(props){
     super(props);
-
+    console.log(props);
     this.state={
       projects: [],
       loading: true,
@@ -40,7 +41,7 @@ class ProjectTable extends Component {
    */
   setProjects(projects){
     this.setState({
-      projects: this.toDummyData(projects || []),
+      projects: this.toDummyData(projects || []).reverse(),
       loading: false,
     });
   }
@@ -48,7 +49,7 @@ class ProjectTable extends Component {
   toDummyData(projects){
     return projects.map((p) => {
       p.getBookmarkCount = function(){return 0;}
-      p.getAccess = function(){return false;}
+      p.getAccess = function(){return 'Admin'}
       p.getCollaboratorCount = function(){return 0;}
       p.canDelete = function(){return true;}
       p.canExport = function(){return true;}
@@ -110,7 +111,7 @@ class ProjectTable extends Component {
    */
   deleteProject(project){
     if (window.confirm('Are you sure you want to delete project ' + project.name)){
-      this.props.api.delete(this.props.user.id, project.id, (status)=>{
+      this.props.api.delete(this.props.user.id, project.id, (status) => {
         if (status && status.success){
 
           // just retrieve the latest data
@@ -136,16 +137,16 @@ class ProjectTable extends Component {
      let sorted = projects;
      switch(sort.field){
       case 'name':
-        sorted.sort((a,b)=>(a.name > b.name));
+        sorted.sort((a,b) => (a.name > b.name));
       break;
       case 'bookmarks':
-        sorted.sort((a,b)=>(a.bookmarks.length - b.bookmarks.length));
+        sorted.sort((a,b) => (a.bookmarks.length - b.bookmarks.length));
       break;
       case 'owner':
-        sorted.sort((a,b)=>(a.owner.name > b.owner.name));
+        sorted.sort((a,b) => (a.owner.name > b.owner.name));
       break;
       case 'access':
-        sorted.sort((a,b)=>(a.getAccess(this.props.user.id) > b.getAccess(this.props.user.id)));
+        sorted.sort((a,b) => (a.getAccess(this.props.user.id) > b.getAccess(this.props.user.id)));
       break;
       default:
         // no sorting,just return
@@ -164,7 +165,7 @@ class ProjectTable extends Component {
     let currentUserId = currentUser.id;
 
     return (
-      <div className={IDUtil.cssClassName('ws-project-table')}>
+      <div className={IDUtil.cssClassName('project-table')}>
         <div className="filters">
           <div className="left">
             <h3>Filters</h3>
@@ -209,17 +210,16 @@ class ProjectTable extends Component {
                 {field: '', content: '', sortable: false},
                 {field: '', content: '', sortable: false},
               ]}
-            row={(project)=>(
-                    [
-                      { props:{className:"primary"}, content: <a href={"#projectDetails-" + project.id}>{project.name}</a> },
-                      { props:{className:"number"}, content: project.getBookmarkCount()},
-                      { content: <span>{project.owner.name} {project.getCollaboratorCount() ? <span className="collaborators">{project.getCollaboratorCount()} Collaborator{project.getCollaboratorCount() !== 1 ? 's' : ''}</span> : ''}</span> },
-                      { props: { className: "access"}, content: project.getAccess(currentUserId) },
-                      { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
-                      { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={this.exportProject.bind(this,project)}>Export</a> : ''},
-                      { content: project.canOpen(currentUserId) ? <a href={"#projectDetails-" + project.id} className="btn">Open</a> : ''}
-                    ]
-                )}
+            row={(project) =>([
+                { props:{className:"primary"}, content: <Link to={"/workspace/projects/" + project.id}>{project.name}</Link> },
+                { props:{className:"number"}, content: project.getBookmarkCount()},
+                { content: <span>{project.owner.name} {project.getCollaboratorCount() ? <span className="collaborators">{project.getCollaboratorCount()} Collaborator{project.getCollaboratorCount() !== 1 ? 's' : ''}</span> : ''}</span> },
+                { props: { className: "access"}, content: project.getAccess(currentUserId) },
+                { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
+                { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={this.exportProject.bind(this,project)}>Export</a> : ''},
+                { content: project.canOpen(currentUserId) ? <Link to={"/workspace/projects/" + project.id} className="btn">Open</Link> : ''}
+              ])}           
+
             sort={this.sortProjects.bind(this)}
             loading={this.state.loading}
            />

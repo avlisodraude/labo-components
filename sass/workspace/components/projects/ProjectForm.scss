@@ -1,0 +1,23 @@
+.bg__project-edit, .bg__project-create{
+
+  @import './infoBar.scss';
+
+  form{
+    margin-left: 40px;
+
+    input[type=text], textarea{
+      display:block;          
+      min-width: 400px;
+      max-width: 100%;
+    }
+
+    .actions{
+      margin-top: 20px;
+      margin-left: 160px;
+    }
+
+    input[type=checkbox]{
+      margin-right: 10px;
+    }
+  }
+}

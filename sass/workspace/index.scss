@@ -6,8 +6,10 @@
 @import './style/_layout.scss';
 @import './style/_mixins.scss';
 
-@import './pages/projects/overview.scss';
-@import './pages/projects/createEdit.scss';
-
-@import './components/ProjectTable.scss';
 @import './components/SortTable.scss';
+
+@import './components/projects/ProjectsOverview.scss';
+@import './components/projects/ProjectForm.scss';
+@import './components/projects/ProjectWrapper.scss';
+@import './components/projects/ProjectDetails.scss';
+@import './components/projects/ProjectTable.scss';

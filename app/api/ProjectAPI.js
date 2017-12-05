@@ -71,6 +71,28 @@ const ProjectAPI = {
 		xhr.open("GET", url);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send();
+	},
+
+	get : function(userId, projectId, callback) {
+		const url = _config.PROJECT_API_BASE + '/' + userId + '/projects/' + encodeURIComponent(projectId);
+		const xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == XMLHttpRequest.DONE) {
+				if(xhr.status == 200) {
+					const respData = JSON.parse(xhr.responseText);
+					if(respData && !respData.error) {
+						callback(respData);
+					} else {
+						callback(null);
+					}
+				} else {
+					callback(null);
+				}
+			}
+		}
+		xhr.open("GET", url);
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xhr.send();
 	}
 
 }
