@@ -64,8 +64,8 @@ class AnnotationTimeline extends React.Component {
 		if(this.props.annotations) {
 			const pos = this.props.curPosition;
 			currentAnnotation = this.props.annotations.filter((a, index)=> {
-				if(a.target.selector) {
-					if(a.target.selector.start < pos && a.target.selector.end > pos) {
+				if(a.target.selector.refinedBy) {
+					if(a.target.selector.refinedBy.start < pos && a.target.selector.refinedBy.end > pos) {
 						return true;
 					}
 				}
@@ -78,8 +78,8 @@ class AnnotationTimeline extends React.Component {
 	activateAnnotation(e) {
 		const activePos = parseFloat(this.hoverPos);
 		const currentAnnotation = this.props.annotations.filter((a, index)=> {
-			if(a.target.selector) {
-				if(a.target.selector.start < activePos && a.target.selector.end > activePos) {
+			if(a.target.selector.refinedBy) {
+				if(a.target.selector.refinedBy.start < activePos && a.target.selector.refinedBy.end > activePos) {
 					return true;
 				}
 			}
@@ -91,8 +91,8 @@ class AnnotationTimeline extends React.Component {
 
 	editAnnotation() {
 		const currentAnnotation = this.props.annotations.filter((a, index)=> {
-			if(a.target.selector) {
-				if(a.target.selector.start < this.hoverPos && a.target.selector.end > this.hoverPos) {
+			if(a.target.selector.refinedBy) {
+				if(a.target.selector.refinedBy.start < this.hoverPos && a.target.selector.refinedBy.end > this.hoverPos) {
 					return true;
 				}
 			}
@@ -135,7 +135,7 @@ class AnnotationTimeline extends React.Component {
 	        var ctx = c.getContext("2d");
 	        ctx.clearRect (0, 0, c.width, c.height);
 	        this.props.annotations.forEach((a, index) => {
-	        	if(a.target.selector) {
+	        	if(a.target.selector.refinedBy) {
 	        		const frag = AnnotationUtil.extractTemporalFragmentFromAnnotation(a);
 		        	if(frag) {
 			        	const start = c.width / 100 * (frag.start / (dur / 100));

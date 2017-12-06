@@ -39,13 +39,15 @@ const AnnotationUtil = {
 		return null;
 	},
 
-	toUpdatedAnnotation(annotation, user, mediaObject, start, end, project) {
+	toUpdatedAnnotation(resourceId, collectionId, annotation, user, mediaObject, start, end, project) {
 		if(!annotation) {
 			let params = null;
 			if(start && end) {
 				params = {start : start, end : end}
 			}
 			annotation = AnnotationUtil.generateW3CEmptyAnnotation(
+				resourceId,
+				collectionId,
 				user,
 				mediaObject.url,
 				mediaObject.mimeType,
@@ -53,9 +55,9 @@ const AnnotationUtil = {
 				project
 			);
 		} else if(start && end) {
-			if(annotation.target.selector) {
-				annotation.target.selector.start = start;
-				annotation.target.selector.end = end;
+			if(annotation.target.selector.refinedBy) {
+				annotation.target.selector.refinedBy.start = start;
+				annotation.target.selector.refinedBy.end = end;
 			} else {
 				console.debug('should not be here');
 			}
@@ -72,7 +74,9 @@ const AnnotationUtil = {
 	},
 
 	//called from components that want to create a new annotation with a proper target
-	generateW3CEmptyAnnotation : function(user, source, mimeType, params, project) {
+	generateW3CEmptyAnnotation : function(resourceId, collectionId, user, source, mimeType, params, project) {
+		console.debug('creating empty annotation');
+		console.debug(resourceId, collectionId, user, source, mimeType, params, project)
 		if(!source) {
 			return null;
 		}
@@ -115,14 +119,17 @@ const AnnotationUtil = {
 				}
 			}
 		}
+		//this is basically the OLD target
+		let target = {
+			source: AnnotationUtil.removeSourceUrlParams(source), //TODO It should be a PID!
+			selector: selector,
+			type: targetType
+		}
+
 		return {
 			id : null,
 			user : user.id, //TODO like the selector, generate the w3c stuff here?
-			target : {
-				source: AnnotationUtil.removeSourceUrlParams(source), //TODO It should be a PID!
-				selector: selector,
-				type: targetType
-			},
+			target : AnnotationUtil.generateNestedPIDTarget(collectionId, resourceId, target),
 			body : null,
 			project : project ? project.id : null //no suitable field found in W3C so far
 		}
@@ -130,60 +137,47 @@ const AnnotationUtil = {
 
 	//TODO finish this; new function for the more elaborate targeting of annotations
 	//THIS IS A FUNCTION THAT NEEDS TO BE USED IN THE LONG TERM
-	generateTarget : function(resource, targetType, params) {
-		let target = {
-			"source": resource.id,
-			"type": targetType,
-			"selector": {
-				"type": "SubresourceSelector",
-				"value": {
-					"id": "http://beeldengeluid.nl/clariah/nisv-catalogue-aggr",
-					"type": ["Collection"],
-					"subresource": {
-						"id": "131909@program",
-						"type": ["AggregatedProgram"],
-						"property": "inCollection",
-						"subresource": {
-							"id": "http://lbas2.beeldengeluid.nl:8093/viz/DEFAMILIEWERK-HRE0002E71A",
-							"type": "Video",
-							"property": "hasRepresentation",
-						}
-					}
+	//generateTarget : function(resource, targetType, params) {
+	generateNestedPIDTarget : function(collectionId, resourceId, target) {
+		let targetType = 'MediaObject';
+		let selector = {
+			type: 'NestedPIDSelector',
+			value: [
+				{
+					id: collectionId,
+					type: ['Collection'],
+					property: 'isPartOf'
 				}
-			}
+			]
 		}
-		if(targetType == 'Video') {
-			if(params && params.start && params.end && params.start != -1 && params.end != -1) {
-				target.selector.refinedBy = {
-					type: "FragmentSelector",
-					conformsTo: "http://www.w3.org/TR/media-frags/",
-					value: '#t=' + params.start + ',' + params.end,
-					start: params.start,
-					end: params.end
-    			}
-			}
-		} else if(targetType == 'Audio') {
-			if(params && params.start && params.end && params.start != -1 && params.end != -1) {
-				target.selector.refinedBy = {
-					type: "FragmentSelector",
-					conformsTo: "http://www.w3.org/TR/media-frags/",
-					value: '#t=' + params.start + ',' + params.end,
-					start: params.start,
-					end: params.end
-    			}
-			}
-		} else if(targetType == 'Image') {
-			if(params && params.rect) {
-				target.selector.refinedBy = {
-					type: "FragmentSelector",
-					conformsTo: "http://www.w3.org/TR/media-frags/",
-					value: '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h,
-					rect : params.rect
-    			}
-			}
+		if (target.selector) {
+			selector['refinedBy'] = target.selector
+			targetType = 'Segment'
 		}
-		console.debug(target);
-		return target
+
+		if (resourceId){
+			selector.value.push({
+				id: resourceId,
+				type: ['MediaObject'],
+				property: 'isPartOf'
+			})
+			//check if it's a segment or not
+			const representationTypes = ['Representation', target.type]
+			if (target.selector) {
+				representationTypes.push('Segment')
+			}
+			selector.value.push({
+				id: target.source.substring(target.source.lastIndexOf('/') + 1),
+				type: representationTypes,
+				property: 'isRepresentation'
+			})
+		}
+
+		return {
+			type : targetType,
+			source : target.source,
+			selector : selector
+		}
 	},
 
 	/*************************************************************************************
@@ -214,22 +208,23 @@ const AnnotationUtil = {
 	},
 
 	extractTemporalFragmentFromAnnotation : function(annotation) {
-		if(annotation && annotation.target && annotation.target.selector && annotation.target.selector.start) {
+		if(annotation && annotation.target && annotation.target.selector
+			&& annotation.target.selector.refinedBy && annotation.target.selector.refinedBy.start) {
 			return {
-				start : annotation.target.selector.start,
-				end : annotation.target.selector.end
+				start : annotation.target.selector.refinedBy.start,
+				end : annotation.target.selector.refinedBy.end
 			}
 		}
 		return null;
 	},
 
 	extractSpatialFragmentFromAnnotation : function(annotation) {
-		if(annotation && annotation.target && annotation.target.selector) {
+		if(annotation && annotation.target && annotation.target.selector && annotation.target.selector.refinedBy) {
 			return {
-				x: annotation.target.selector.x,
-				y: annotation.target.selector.y,
-				w: annotation.target.selector.w,
-				h: annotation.target.selector.h
+				x: annotation.target.selector.refinedBy.x,
+				y: annotation.target.selector.refinedBy.y,
+				w: annotation.target.selector.refinedBy.w,
+				h: annotation.target.selector.refinedBy.h
 			}
 		}
 		return null;
