@@ -7,6 +7,13 @@ import { Link } from 'react-router-dom';
 import ProjectWrapper from './ProjectWrapper';
 
 
+/**
+ * Todo: Project sessions are currently stored on the project object
+ * itself. Alternatively they could be stored in the annotation API
+ * @Jaap: Decide which approach fits best.
+ */
+
+
 class ProjectSessions extends React.PureComponent {
 
   constructor(props){
