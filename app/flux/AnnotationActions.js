@@ -43,7 +43,14 @@ const AnnotationActions = {
             eventName: 'change-target',
             annotationTarget: annotationTarget
         });
-	}
+	},
+
+    changeProject : function(project) {
+        AppDispatcher.dispatch({
+            eventName: 'change-project',
+            project: project
+        });
+    }
 
 }
 

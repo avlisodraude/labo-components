@@ -39,7 +39,7 @@ const AnnotationUtil = {
 		return null;
 	},
 
-	toUpdatedAnnotation(annotation, user, mediaObject, start, end) {
+	toUpdatedAnnotation(annotation, user, mediaObject, start, end, project) {
 		if(!annotation) {
 			let params = null;
 			if(start && end) {
@@ -49,7 +49,8 @@ const AnnotationUtil = {
 				user,
 				mediaObject.url,
 				mediaObject.mimeType,
-				params
+				params,
+				project
 			);
 		} else if(start && end) {
 			if(annotation.target.selector) {
@@ -71,7 +72,7 @@ const AnnotationUtil = {
 	},
 
 	//called from components that want to create a new annotation with a proper target
-	generateW3CEmptyAnnotation : function(user, source, mimeType, params) {
+	generateW3CEmptyAnnotation : function(user, source, mimeType, params, project) {
 		if(!source) {
 			return null;
 		}
@@ -122,8 +123,67 @@ const AnnotationUtil = {
 				selector: selector,
 				type: targetType
 			},
-			body : null
+			body : null,
+			project : project ? project.id : null //no suitable field found in W3C so far
 		}
+	},
+
+	//TODO finish this; new function for the more elaborate targeting of annotations
+	//THIS IS A FUNCTION THAT NEEDS TO BE USED IN THE LONG TERM
+	generateTarget : function(resource, targetType, params) {
+		let target = {
+			"source": resource.id,
+			"type": targetType,
+			"selector": {
+				"type": "SubresourceSelector",
+				"value": {
+					"id": "http://beeldengeluid.nl/clariah/nisv-catalogue-aggr",
+					"type": ["Collection"],
+					"subresource": {
+						"id": "131909@program",
+						"type": ["AggregatedProgram"],
+						"property": "inCollection",
+						"subresource": {
+							"id": "http://lbas2.beeldengeluid.nl:8093/viz/DEFAMILIEWERK-HRE0002E71A",
+							"type": "Video",
+							"property": "hasRepresentation",
+						}
+					}
+				}
+			}
+		}
+		if(targetType == 'Video') {
+			if(params && params.start && params.end && params.start != -1 && params.end != -1) {
+				target.selector.refinedBy = {
+					type: "FragmentSelector",
+					conformsTo: "http://www.w3.org/TR/media-frags/",
+					value: '#t=' + params.start + ',' + params.end,
+					start: params.start,
+					end: params.end
+    			}
+			}
+		} else if(targetType == 'Audio') {
+			if(params && params.start && params.end && params.start != -1 && params.end != -1) {
+				target.selector.refinedBy = {
+					type: "FragmentSelector",
+					conformsTo: "http://www.w3.org/TR/media-frags/",
+					value: '#t=' + params.start + ',' + params.end,
+					start: params.start,
+					end: params.end
+    			}
+			}
+		} else if(targetType == 'Image') {
+			if(params && params.rect) {
+				target.selector.refinedBy = {
+					type: "FragmentSelector",
+					conformsTo: "http://www.w3.org/TR/media-frags/",
+					value: '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h,
+					rect : params.rect
+    			}
+			}
+		}
+		console.debug(target);
+		return target
 	},
 
 	/*************************************************************************************

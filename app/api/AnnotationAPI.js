@@ -45,23 +45,6 @@ const AnnotationAPI = {
 		}
 	},
 
-	getAnnotations : function(callback) {
-		const url = _config.ANNOTATION_API_BASE + '/annotation';
-		const xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == XMLHttpRequest.DONE) {
-				if(xhr.status == 200) {
-					callback(JSON.parse(xhr.responseText));
-				} else {
-					callback(null);
-				}
-			}
-		}
-		xhr.open("GET", url);
-		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		xhr.send();
-	},
-
 	deleteAnnotation : function (annotation, callback) {
 		if(annotation.id) {
 			const url = _config.ANNOTATION_API_BASE + '/annotation/' + annotation.id;

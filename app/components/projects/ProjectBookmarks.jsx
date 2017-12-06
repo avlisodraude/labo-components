@@ -3,7 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectWrapper from './ProjectWrapper';
 
 
-class ProjectBookmarks extends React.Component {
+class ProjectBookmarks extends React.PureComponent {
 
   render(){
     return (
@@ -14,7 +14,7 @@ class ProjectBookmarks extends React.Component {
   }
 }
 
-class WrappedProjectBookmarks extends React.Component{
+class WrappedProjectBookmarks extends React.PureComponent{
   render(){
     return(
       <ProjectWrapper {...this.props} renderComponent={ProjectBookmarks} />

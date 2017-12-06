@@ -10,6 +10,7 @@ import ProjectCreate from './components/projects/ProjectCreate';
 import ProjectDetails from './components/projects/ProjectDetails';
 import ProjectEdit from './components/projects/ProjectEdit';
 
+
 import {
   Switch,
   BrowserRouter as Router,
@@ -25,9 +26,9 @@ class WorkspaceProjects extends Component {
     this.state={}
   }
 
-  getPropsRenderer(RenderComponent, props){
+  getPropsRenderer(RenderComponent, props, extraProps={}){
     return (routeProps) => (
-       <RenderComponent {...routeProps} {...props} />
+       <RenderComponent {...routeProps} {...props} {...extraProps} />
      )
   }
 
@@ -35,17 +36,17 @@ class WorkspaceProjects extends Component {
     return(
       <Router>
         <Switch>
-          <Route exact path="/workspace/projects" render={this.getPropsRenderer(ProjectsOverview, this.props)} />
-          <Route exact path="/workspace/projects/create" render={this.getPropsRenderer(ProjectCreate, this.props)} />
+          <Route exact path="/workspace/projects" render={this.getPropsRenderer(ProjectsOverview, this.props, {api: ProjectAPI} )} />
+          <Route exact path="/workspace/projects/create" render={this.getPropsRenderer(ProjectCreate, this.props, {api: ProjectAPI} )} />
 
           <Route exact path="/workspace/projects/:id" render={({ match }) => (
                   <Redirect to={`/workspace/projects/${match.params.id}/bookmarks`} />
                 )} />
 
-          <Route path="/workspace/projects/:id/bookmarks" render={this.getPropsRenderer(ProjectBookmarks, this.props)} />
-          <Route path="/workspace/projects/:id/sessions" render={this.getPropsRenderer(ProjectSessions, this.props)} />
-          <Route path="/workspace/projects/:id/details" render={this.getPropsRenderer(ProjectDetails, this.props)} />
-          <Route path="/workspace/projects/:id/edit" render={this.getPropsRenderer(ProjectEdit, this.props)} />
+          <Route path="/workspace/projects/:id/bookmarks" render={this.getPropsRenderer(ProjectBookmarks, this.props, {api: ProjectAPI})} />
+          <Route path="/workspace/projects/:id/sessions" render={this.getPropsRenderer(ProjectSessions, this.props, {api: ProjectAPI})} />
+          <Route path="/workspace/projects/:id/details" render={this.getPropsRenderer(ProjectDetails, this.props, {api: ProjectAPI})} />
+          <Route path="/workspace/projects/:id/edit" render={this.getPropsRenderer(ProjectEdit, this.props, {api: ProjectAPI})} />
         </Switch>
       </Router>
     );

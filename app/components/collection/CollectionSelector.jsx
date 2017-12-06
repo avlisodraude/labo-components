@@ -81,15 +81,15 @@ class CollectionSelector extends React.Component {
 
 			//the collection selection part
 			if(this.props.showSelect) {
-        const collectionOptionsArray = this.state.collectionList.map((collection) => {
-          return {
-            "key": collection.creator_user_id,
-            "title": collection.title,
+		        const collectionOptionsArray = this.state.collectionList.map((collection) => {
+					return {
+						"key": collection.creator_user_id,
+						"title": collection.title,
 						"index": collection.index
-          }
-        });
+					}
+		        });
 
-        collectionSelect = (
+		        collectionSelect = (
 					<form className="form-horizontal">
 						<label className="col-sm-2">Collection</label>
 						<div className="col-sm-10">
@@ -101,7 +101,7 @@ class CollectionSelector extends React.Component {
 							/>
 						</div>
 					</form>
-        );
+		        );
 			}
 
 			if(this.props.showBrowser) {

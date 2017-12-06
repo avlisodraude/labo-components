@@ -1,0 +1,41 @@
+.bg__pagination{
+  text-align: center;
+  list-style: none;
+  user-select: none;
+  padding: 0;
+  margin-top: 20px;
+  li{
+    display: inline-block;
+    min-width: 40px;
+    height: 40px;
+    line-height: 40px;
+    margin: 0 2px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-out;
+    text-align: center;
+    background-color: $clGrey;
+    border-radius: 2px;
+
+    &.active,&.active:hover{
+      background-color: $clGreyTint;
+    }
+
+    &:hover{
+      background-color: $clGreyTint;
+    }
+
+    &.prev, &.next{
+      font-size: 0;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    &.prev{
+      background-image: $arrowLeftDarkUrl;
+    }
+
+    &.next{
+      background-image: $arrowRightDarkUrl;
+    }
+  }
+}

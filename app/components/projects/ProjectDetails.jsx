@@ -3,7 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectWrapper from './ProjectWrapper';
 import { Link } from 'react-router-dom';
 
-class ProjectDetails extends React.Component {
+class ProjectDetails extends React.PureComponent {
 
   render(){
     let project = this.props.project;
@@ -33,13 +33,19 @@ class ProjectDetails extends React.Component {
         </ul>
 
         <h2>Collaborators</h2>
-        <p>This features has not yet been implemented</p>
+
+        <Link to={"/workspace/projects/"+encodeURIComponent(project.id)+"/edit"} className="btn plus">
+          Add Collaborator
+        </Link>
+        
+        <p>This feature has not yet been implemented</p>
+
       </div>
     )
   }
 }
 
-class WrappedProjectDetails extends React.Component{
+class WrappedProjectDetails extends React.PureComponent{
   render(){
     return(
       <ProjectWrapper {...this.props} renderComponent={ProjectDetails} />
