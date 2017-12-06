@@ -71,22 +71,34 @@ class ProjectSessions extends React.PureComponent {
     let result = this.props.project.sessions ? this.props.project.sessions : [];
     let filter = this.state.filter;
 
-    // filter on keywords in name or tool
-    if (filter.keywords){
-      let keywords = filter.keywords.split(" ");
-      keywords.forEach((k)=>{
-        k = k.toLowerCase();
-        result = result.filter((session)=>(session.name.toLowerCase().includes(k) || session.tool.toLowerCase().includes(k)))
-      });
-    }
+    result = this.filterSessions(result, filter);
 
     // update state
     this.setState({
       sessions: result
     });
-
-
   }
+
+    /**
+   * Filter session list by given filter
+   * @param  {array} sessions   Sessions array
+   * @param  {object} filter    Filter object
+   * @return {array}            Filtered sessions array
+   */
+  filterSessions(sessions, filter){
+    
+    // filter on keywords in name or tool
+    if (filter.keywords){
+      let keywords = filter.keywords.split(" ");
+      keywords.forEach((k)=>{
+        k = k.toLowerCase();
+        sessions = sessions.filter((session)=>(session.name.toLowerCase().includes(k) || session.tool.toLowerCase().includes(k)))
+      });
+    }
+    
+    return sessions;
+  }
+
 
   /**
    * After mounting, retrieve project data
@@ -195,7 +207,7 @@ class ProjectSessions extends React.PureComponent {
 
     return (
       <div className={IDUtil.cssClassName('project-sessions')}>
-        <div className="filters">
+        <div className="tools">
           <div className="left">
             <h3>Filters</h3>
             <input className="search"

@@ -93,6 +93,11 @@
           padding-right: 8px;
         }
 
+        &.smaller{
+          font-size: 0.8em;
+          color: $clDarkGrey;
+        }
+
         .btn{
           margin: 0;
           &.blank{
