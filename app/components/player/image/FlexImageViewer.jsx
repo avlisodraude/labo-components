@@ -205,6 +205,8 @@ class FlexImageViewer extends React.Component {
 					this.addEmptyAnnotation.call(
 						this,
 						AnnotationUtil.generateW3CEmptyAnnotation(
+							this.props.resourceId,
+							this.props.collectionId,
 							this.props.user,
 							this.props.mediaObject.url,
 							this.props.mediaObject.mimeType,
