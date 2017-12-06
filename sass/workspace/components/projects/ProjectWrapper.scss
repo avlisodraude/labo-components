@@ -3,8 +3,8 @@
   @import './infoBar.scss';
 
   .info-bar{
-    p{
-      max-width: 600px;
+    h2, p{
+      max-width: 800px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

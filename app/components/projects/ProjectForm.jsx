@@ -1,9 +1,8 @@
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-class ProjectForm extends React.Component {
+class ProjectForm extends React.PureComponent {
 
   /**
    * Handle form submit
@@ -26,7 +25,7 @@ class ProjectForm extends React.Component {
    * @param  {Function} callback Called when save is succesful
    */
   save(project, callback){
-    ProjectAPI.save(this.props.user.id, project, (msg) => {
+    this.props.api.save(this.props.user.id, project, (msg) => {
       if (msg && msg.success){
         let projectId = project.id;
 
@@ -96,7 +95,11 @@ ProjectForm.PropTypes = {
   
   user: PropTypes.shape({
     id: PropTypes.string.isRequired
-  })
+  }),
+
+  api: PropTypes.shape({
+    save: PropTypes.func.isRequired
+  }),
 }
 
 export default ProjectForm;

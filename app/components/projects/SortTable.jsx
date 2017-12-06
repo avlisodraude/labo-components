@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
+import Pagination from '../helpers/Pagination'
 
-class SortTable extends Component {
+class SortTable extends React.PureComponent {
   constructor(props){
     super(props);
 
     this.state={
+      currentPage: this.props.currentPage,
+      bulkAction: null,
       items: props.items,
       selection: [],
       sort:{
@@ -89,27 +92,66 @@ class SortTable extends Component {
           this.state.selection.includes(item) ? this.state.selection : [...this.state.selection, item]
           :
           // remove
-          this.state.selection.filter((selected)=>(selected !== item))
+          this.state.selection.filter((selected) => (selected !== item))
     });
   }
 
+  /**
+  * Select an item
+  * @param  {int} currentPage
+  */
+  setPage(currentPage){
+    this.setState({currentPage});
+  }
+
+  /**
+  * Set bulk action
+  * @param  {SyntheticEvent} e    Event
+  */
+  setBulkAction(e){
+    this.setState({bulkAction: this.bulkActionSelect.value });
+  }
+
+
+  /**
+  * Apply bulk action
+  * @param  {SyntheticEvent} e    Event
+  */
+  applyCurrentBulkAction(e){
+    this.state.bulkAction;
+    this.props.bulkActions.every((action)=>{
+      if (action.title == this.state.bulkAction){        
+        action.onApply(this.state.selection);
+        // stop
+        return false;
+      }
+      // continue
+      return true;
+    }); 
+  }
+
   render() {
+    // pagination
+    let pageCount = Math.ceil(this.state.items.length / this.props.perPage);
+    let currentPage = Math.min(this.state.currentPage, pageCount-1);
+    let currentIndex = currentPage * this.props.perPage;
+    let itemsOnPage = this.state.items.slice(currentIndex, currentIndex+this.props.perPage);
     return (
       <div className={IDUtil.cssClassName('sort-table')}>
 
         <table>
           <thead>
             <tr>
-              <th><input type="checkbox" checked={this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
-              {this.props.head.map((head, index)=>(this.getHeader(index, head.field, head.content, head.sortable)))}
+              <th><input type="checkbox" title="Select all" checked={this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
+              {this.props.head.map((head, index) => (this.getHeader(index, head.field, head.content, head.sortable)))}
             </tr>
           </thead>
           <tbody className={this.props.loading ? 'loading': ''}>
 
-            {this.props.items.map((item, index)=>(
+            {itemsOnPage.map((item, index) =>(
               <tr key={index}>
                 <td><input type="checkbox" checked={this.state.selection.includes(item)} onChange={this.selectItem.bind(this, item)} /></td>                    
-                { this.props.row(item).map((td, index)=>(<td key={index} {...td.props}>{td.content}</td>)) }
+                { this.props.row(item).map((td, index) =>(<td key={index} {...td.props}>{td.content}</td>)) }
               </tr>
               ))}           
           </tbody>
@@ -124,8 +166,30 @@ class SortTable extends Component {
           )
           :''
         }
-        <p>Todo: Pagination</p>
-        <p>Todo: With selected: [ Actions \/ ]</p>
+
+        <Pagination currentPage={currentPage} 
+                    perPage={this.props.perPage} 
+                    pageCount={pageCount} 
+                    onClick={this.setPage.bind(this)} 
+                    />
+
+        {this.props.bulkActions ? 
+        
+          <div className="bulk-actions">
+            <span>With {this.state.selection.length} selected:</span>
+
+            <select value={this.state.bulkAction} 
+                    onChange={this.setBulkAction.bind(this)}
+                    ref={(c)=>{this.bulkActionSelect = c;}}                    
+                    >
+              <option key="empty" value=""></option>
+              {this.props.bulkActions.map((action, index)=>(<option key={index} value={action.title}>{action.title}</option>))}
+            </select>
+
+            {this.state.bulkAction && this.state.selection.length ? <div onClick={this.applyCurrentBulkAction.bind(this)} className="btn primary">Apply</div> : null }
+          </div>
+
+        : null }
       </div>
     );
   }
@@ -136,6 +200,14 @@ SortTable.propTypes = {
   head: PropTypes.array.isRequired,
   row: PropTypes.func.isRequired,
   sort: PropTypes.func.isRequired,
+  perPage: PropTypes.number,
+  currentPage: PropTypes.number,
+  bulkActions: PropTypes.array
+}
+
+SortTable.defaultProps = {
+  perPage: 20,
+  currentPage: 0
 }
 
 export default SortTable;

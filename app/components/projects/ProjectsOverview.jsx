@@ -1,12 +1,11 @@
 // todo: enable when it is live
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import ProjectTable from './ProjectTable';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 
-class ProjectsOverview extends React.Component {
+class ProjectsOverview extends React.PureComponent {
 
   constructor(props){
     super(props);
@@ -24,7 +23,7 @@ render(){
             <p>Store and share Bookmarks & Annotations and Tool Sessions</p>
           </div>
 
-          <ProjectTable api={ProjectAPI} user={this.props.user} />
+          <ProjectTable api={this.props.api} user={this.props.user} />
 
       </div>
     )
