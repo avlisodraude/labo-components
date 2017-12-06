@@ -15,8 +15,13 @@ class AnnotationStore {
 			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
 			'user.keyword' : user.id
 		}
-		if(project && project.id) {
-			filter['project'] = project.id //TODO after reindex, change to project!
+		AnnotationAPI.getFilteredAnnotations(filter, callback);
+	}
+
+	getUserProjectAnnotations(user, project, callback) {
+		let filter = {
+			'user.keyword' : user.id,
+			'project' : project.id
 		}
 		AnnotationAPI.getFilteredAnnotations(filter, callback);
 	}
