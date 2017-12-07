@@ -1,4 +1,4 @@
- .filters{
+ .tools{
     background-color: $clGrey;
     padding: 0px 10px;
 
@@ -24,6 +24,7 @@
       border-right: 1px solid $clDarkGrey;
       position: relative;
       margin: 10px 0;
+      min-width: 60px;
 
       &:after{
         content:"";
