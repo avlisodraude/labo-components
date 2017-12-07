@@ -35,7 +35,7 @@ class BookmarkView extends React.PureComponent {
           dataset: "Beeld en Geluid : Open Beelden",
 
           // placeholder image if available
-          placeholderImage: "https://www.openbeelden.nl/images/690682/Watersnood_bij_Maastricht_%284_05%29.png"
+          placeholderImage: "https://www.openbeelden.nl/images/603292/Internationale_hondententoonstelling_%280_32%29.png"
 
         },
         
@@ -57,7 +57,7 @@ class BookmarkView extends React.PureComponent {
           title: "Example image",
           date: "1964-05-01T00:00:00Z",
           dataset: "NIOD",
-          placeholderImage: "https://www.openbeelden.nl/images/690682/Watersnood_bij_Maastricht_%284_05%29.png"
+          placeholderImage: "https://www.openbeelden.nl/images/789580/Schuttersgilde_sint_sebastiaan_bestaat_500_jaar_%280_42%29.png"
         },
         created: "2017-02-20T10:04:40Z",
         sort: 2,
@@ -71,7 +71,7 @@ class BookmarkView extends React.PureComponent {
           title: "Example entity",
           date: "1964-05-01T00:00:00Z",
           dataset: "VU: DIVE+",
-          placeholderImage: "https://www.openbeelden.nl/images/690682/Watersnood_bij_Maastricht_%284_05%29.png"
+          placeholderImage: "https://www.openbeelden.nl/images/689885/Sport_instuif_voor_het_hele_gezin_%280_44%29.png"
         },
         created: "2017-02-20T10:04:40Z",
         sort: 3,
@@ -83,13 +83,14 @@ class BookmarkView extends React.PureComponent {
 
     this.state = {
       bookmarks: placeholderData,
-      visibleBookmarks: placeholderData,
+      filteredBookmarks: [],
+      visibleBookmarks: [],
       loading : true,
       filter:{
         keywords: '',
         type: '',
       },
-      order: 'newest',
+      order: 'created',
       itemDetail: null 
     }
 
@@ -99,9 +100,14 @@ class BookmarkView extends React.PureComponent {
 
   }
 
-  // componentDidMount() {
-  //   this.loadBookmarks();
-  // }
+  componentDidMount() {
+    
+
+    // todo: load bookmarks from annotationstore
+    
+    // placeholder:
+    this.loadData();
+  }
 
   // /**
   //  * Load Annotation from Store
@@ -131,11 +137,16 @@ class BookmarkView extends React.PureComponent {
    * Load and filter data
    */
   loadData(){
-    let result = this.filterBookmarks(this.state.bookmarks,this.state.filter);
+    // filter
+    let filtered = this.filterBookmarks(this.state.bookmarks,this.state.filter);
+
+    // sort
+    let sorted = this.sortBookmarks(filtered, this.state.order);
 
     // update state
     this.setState({
-      visibleBookmarks: result
+      filteredBookmarks: filtered,
+      visibleBookmarks: sorted
     });
   }
 
@@ -163,6 +174,65 @@ class BookmarkView extends React.PureComponent {
     }
 
     return bookmarks;
+  }
+
+
+  /**
+   * Sort bookmarks by the given field
+   * @param {string} field Unique sort field   
+   */
+  setSort(field){
+
+    this.setState({
+      order: field,
+
+      // filter list from original bookmarks to keep sort list consistent
+      visibleBookmarks: this.sortBookmarks(this.state.filteredBookmarks, field)
+    });
+
+  }
+
+  /** 
+   * Sort bookmarks 
+   * @param {Array} bookmarks List of bookmarks to be sorted
+   * @param {string} sort Sort field
+   * 
+   */
+  sortBookmarks(bookmarks, field){
+   let sorted = bookmarks;
+   switch(field){
+    case 'created':
+      sorted.sort((a,b) => (a.created > b.created));
+    break;
+    case 'newest':
+      sorted.sort((a,b) => (a.object.date < b.object.date));
+    break;
+    case 'oldest':
+      sorted.sort((a,b) => (a.object.date > b.object.date));      
+    break;
+    case 'name-az':
+      sorted.sort((a,b) => (a.object.title > b.object.title));
+    break;
+    case 'name-za':
+      sorted.sort((a,b) => (a.object.title < b.object.title));
+    break;
+    case 'type':
+      sorted.sort((a,b) => (a.object.type > b.object.type));
+    break;
+    case 'dataset':
+      sorted.sort((a,b) => (a.object.dataset > b.object.dataset));
+    break;
+    case 'manual':
+      sorted.sort((a,b) => (a.sort > b.sort));
+    break;    
+    default:
+      // no sorting,just return
+      return sorted;
+   }
+
+
+   return sorted;
+
   }
 
   /**
@@ -217,13 +287,18 @@ class BookmarkView extends React.PureComponent {
    * @param {Object} bookmark Bookmark to be viewed
    */
   viewBookmark(bookmark){
-    console.log(bookmark);
     this.setState({
       itemDetail: bookmark
     })
   }
 
-
+  /**
+   * Sort change
+   * @param {string} sort Sort name
+   */
+  sortChange(e){
+    this.setSort(e.target.value);
+  }
 
 
   render(){
@@ -263,11 +338,12 @@ class BookmarkView extends React.PureComponent {
 
               <h3>Order</h3>
 
-              <select value={this.state.order}>
+              <select value={this.state.order} onChange={this.sortChange.bind(this)}>
+                <option value="created">Bookmark created</option>
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
-                <option value="name-az">Name A-Z</option>
-                <option value="name-za">Name Z-A</option>
+                <option value="name-az">Title A-Z</option>
+                <option value="name-za">Title Z-A</option>
                 <option value="type">Type</option>
                 <option value="dataset">Dataset</option>
                 <option value="manual">Manual</option>                

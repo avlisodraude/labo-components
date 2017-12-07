@@ -23,7 +23,7 @@ class SortTable extends React.PureComponent {
 
   /**
    * Sort projects based on the given field
-   * @oaram {string} field Unique sort field
+   * @param {string} field Unique sort field
    */
   sort(field){
     let sort = {

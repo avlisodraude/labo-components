@@ -163,7 +163,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Delete *multiple* projects if confirmed
-   * @param {object} project Project to delete
+   * @param {object} projects Projects to delete
    */
   deleteProjects(projects){
     if (window.confirm('Are you sure you want to delete ' + projects.length + ' projects?')){
@@ -188,6 +188,8 @@ class ProjectTable extends React.PureComponent {
 
   /**
   * Sort projects based on sort
+  * @param {Array} projects List of bookmarks to be sorted
+  * @param {object} sort Sort field and order
   */
   sortProjects(projects, sort){
    let sorted = projects;

@@ -33,8 +33,17 @@ class ProjectBookmarks extends React.PureComponent {
       return <div>{a.id}</div>
     })
 
+    let viewComponent = null;
+    switch(this.state.view){
+      case 'bookmark-centric':
+        viewComponent = <BookmarkView />;
+      break;
+      case 'annotation-centric':
+        viewComponent = <h2><br/>Todo: AnnotationView component</h2>;
+      break;
+    }
 
-    console.log(this.state.view);
+
     return (
       <div className={IDUtil.cssClassName('project-bookmarks')}>
         <div className="tools">
@@ -63,11 +72,8 @@ class ProjectBookmarks extends React.PureComponent {
           </div>
 
         </div>
-        { this.state.view === 'bookmark-centric' ? 
-          <BookmarkView />
-        : 
-          <h2>Todo: annotation table</h2>
-        }
+
+        { viewComponent }
 </div>
   )
   }
