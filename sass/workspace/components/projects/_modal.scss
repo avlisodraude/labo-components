@@ -1,0 +1,37 @@
+.modal{
+  display: block;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($clDark,0.8);
+  top: 0;
+  left: 0;
+  overflow-y: scroll;
+
+  .close{
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: block;
+    width: 60px;
+    height: 60px;
+    background-image: $iconCrossUrl;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    background-color: rgba($clDark, 0.5);
+    opacity: 0.8;
+    cursor: pointer;
+    
+    &:hover{
+      opacity: 1.0;
+    }
+  }
+
+  .container{
+    background-color: $clWhite;
+    margin:60px auto;
+    padding: 30px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+  }
+}

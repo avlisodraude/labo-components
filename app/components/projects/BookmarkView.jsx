@@ -4,6 +4,7 @@ import ProjectWrapper from './ProjectWrapper';
 import AnnotationStore from '../../flux/AnnotationStore';
 import BookmarkRow from './BookmarkRow';
 import { exportDataAsJSON } from '../helpers/Export';
+import ItemDetailsRecipe from '../../ItemDetailsRecipe';
 
 class BookmarkView extends React.PureComponent {
 
@@ -88,8 +89,14 @@ class BookmarkView extends React.PureComponent {
         keywords: '',
         type: '',
       },
-      order: 'newest'      
+      order: 'newest',
+      itemDetail: null 
     }
+
+    // binded functions
+    this.viewBookmark = this.viewBookmark.bind(this);
+    this.deleteBookmark = this.deleteBookmark.bind(this);
+
   }
 
   // componentDidMount() {
@@ -196,6 +203,29 @@ class BookmarkView extends React.PureComponent {
   }
 
 
+  /**
+   * Delete bookmark
+   * @param {Object} bookmark Bookmark to be removed
+   */
+  deleteBookmark(bookmark){
+    alert('Todo: Implement delete');
+  }
+
+
+  /**
+   * View bookmark
+   * @param {Object} bookmark Bookmark to be viewed
+   */
+  viewBookmark(bookmark){
+    console.log(bookmark);
+    this.setState({
+      itemDetail: bookmark
+    })
+  }
+
+
+
+
   render(){
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
@@ -251,9 +281,28 @@ class BookmarkView extends React.PureComponent {
           <h3><input type="checkbox"/>Bookmarks: <span>{this.state.visibleBookmarks.length || 0}</span></h3>
 
           <div className="table">
-            {this.state.visibleBookmarks.map((bookmark, index)=>(<BookmarkRow key={index} bookmark={bookmark} />))}           
+            {this.state.visibleBookmarks.map((bookmark, index)=>(
+              <BookmarkRow key={index} 
+                           bookmark={bookmark} 
+                           onDelete={this.deleteBookmark}
+                           onView={this.viewBookmark}
+                           />
+              ))}           
           </div>
       </div>
+
+      {this.state.itemDetail ? 
+        /* todo: display item details recipe in overlay */
+        <div className="modal">
+          <div className="close" onClick={()=>{this.viewBookmark(null);}} />
+          <div className="container">
+            Todo: ItemDetailsRecipe here.<br/><br/>
+            {"<ItemDetailsRecipe item={this.state.itemDetail} />"}
+            <br/><br/>
+          </div>
+        </div>
+        : null
+      }
         
 </div>
   )

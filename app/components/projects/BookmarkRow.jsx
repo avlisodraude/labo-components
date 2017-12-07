@@ -6,6 +6,22 @@ import PropTypes from 'prop-types';
 
 class BookmarkRow extends React.PureComponent {
 
+  constructor(props){
+    super(props);
+
+    // bind functions
+    this.onDelete = this.onDelete.bind(this);
+    this.onView = this.onView.bind(this);
+  }
+
+  onDelete(){
+    this.props.onDelete(this.props.bookmark);
+  }
+
+  onView(){
+    this.props.onView(this.props.bookmark);
+  }
+
   render(){
     let bookmark = this.props.bookmark;
    return (
@@ -44,8 +60,10 @@ class BookmarkRow extends React.PureComponent {
           </div>
 
           <div className="actions">
-            <div className="btn blank warning">Delete</div>
-            <div className="btn">View</div>
+            <div className="btn blank warning" 
+                 onClick={this.onDelete}>Delete</div>
+            <div className="btn"
+                 onClick={this.onView}>View</div>
           </div>
 
         </div>
@@ -55,7 +73,9 @@ class BookmarkRow extends React.PureComponent {
 }
 
 BookmarkRow.propTypes = {
-  bookmark: PropTypes.object
+  bookmark: PropTypes.object.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onView: PropTypes.func.isRequired,
 }
 
 export default BookmarkRow;
