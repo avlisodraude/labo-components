@@ -60,10 +60,10 @@
       cursor: pointer;
         
       &:hover, &.active{
-        background-color: darken($clGreyTint, 5);
+        background-color: darken($clGreyTint, 3);
         &:before{
-          border-right: 20px solid darken($clGreyTint, 5);
-          border-bottom: 20px solid darken($clGreyTint, 5);
+          border-right: 20px solid darken($clGreyTint, 3);
+          border-bottom: 20px solid darken($clGreyTint, 3);
         }
       }
 
