@@ -365,7 +365,7 @@ class BookmarkView extends React.PureComponent {
         </div>
 
         <div className="results">
-          <h3><input type="checkbox"/>Bookmarks: <span>{this.state.visibleBookmarks.length || 0}</span></h3>
+          <h3><input type="checkbox"/>Bookmarks: <span className="count">{this.state.visibleBookmarks.length || 0}</span></h3>
 
           <div className="table">
             {this.state.visibleBookmarks.map((bookmark, index)=>(

@@ -8,15 +8,11 @@
         margin-right: 10px;
       }
 
-      span{
+      @import '_count.scss';
+      .count{
         background-color: $clPrimary;
-        padding: 2px 6px;
-        min-width: 20px;
-        color: $clWhite;
-        border-radius: 25px;
-        text-align: center;
-        font-size: 13px;
-        display: inline-block;
+        float: none;
+        margin-left: 3px;
       }
     }
   }
