@@ -62,7 +62,7 @@ class ItemDetailsRecipe extends React.Component {
 
 			found : false, //whether the item metadata could be found
 
-			bookmarks : []
+			resourceAnnotations : []
 		}
 		this.tabListeners = false;
 		this.CLASS_PREFIX = 'rcp__id'
@@ -113,14 +113,12 @@ class ItemDetailsRecipe extends React.Component {
 		if(itemDetailData && itemDetailData.playableContent) {
 			const mediaObject = itemDetailData.playableContent[index];
 			if(mediaObject) {
-				console.debug(itemDetailData);
 				const annotation = AnnotationUtil.generateW3CEmptyAnnotation(
-					itemDetailData.resourceId,
-					itemDetailData.index,
 					this.props.user,
-					mediaObject.url,
-					mediaObject.mimeType,
-					this.state.activeProject
+					this.state.activeProject,
+					itemDetailData.index,
+					itemDetailData.resourceId,
+					mediaObject
 				);
 				return annotation.target;
 			}
@@ -148,7 +146,7 @@ class ItemDetailsRecipe extends React.Component {
 					}
 					let desiredState = {
 						itemData : itemDetailData,
-						annotationTarget : this.getAnnotationTarget.call(this, itemDetailData),
+						annotationTarget : this.getAnnotationTarget.call(this, itemDetailData), //for the list
 						found : true,
 						activeMediaTab : activeMediaTab
 					}
@@ -162,6 +160,14 @@ class ItemDetailsRecipe extends React.Component {
 					} else {
 						this.setState(desiredState);
 					}
+
+					//finally load the resource annotation with motivation bookmarking
+					AnnotationStore.getDirectResourceAnnotations(
+						itemDetailData.resourceId,
+						this.props.user,
+						this.state.activeProject,
+						this.onLoadResourceAnnotations.bind(this)
+					)
 				}
 			}.bind(this));
 		}
@@ -173,15 +179,13 @@ class ItemDetailsRecipe extends React.Component {
 			})
 			console.debug('this item does not exist');
 		}
-
-		//TODO test this
-		//AnnotationStore.getMediaAssetBookmarks(itemDetailData.id, onLoadMediaAssetBookmarks)
 	}
 
-	//TODO loaded all bookmarks associated with this media asset (e.g. program, newspaper)
-	onLoadMediaAssetBookmarks(data) {
+	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)
+	onLoadResourceAnnotations(data) {
+		console.debug('are there resource annotations?', data)
 		this.setState({
-			bookmarks : data
+			resourceAnnotations : data.annotations || []
 		})
 	}
 
@@ -327,7 +331,6 @@ class ItemDetailsRecipe extends React.Component {
 						enableFragmentMode={false} //add this to config
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
 					/>
 				);
 			});
@@ -359,7 +362,6 @@ class ItemDetailsRecipe extends React.Component {
 						enableFragmentMode={false} //add this to config
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
 					/>
 				);
 			});
@@ -403,7 +405,6 @@ class ItemDetailsRecipe extends React.Component {
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
 						editAnnotation={this.editAnnotation.bind(this)} //each annotation support should call this function
-						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
 					/>
 				)
 			}
@@ -466,38 +467,21 @@ class ItemDetailsRecipe extends React.Component {
 	}
 
 	bookmark() {
-		if(this.state.activeProject != null && this.state.annotationTarget) {
-			if(this.state.bookmarks[annotationTarget.source]) {
-				AnnotationActions.delete(
-					this.state.bookmarks[annotationTarget.source]
-				)
-			} else {
-				AnnotationActions.saveBookmark(
-					this.props.user,
-					this.state.activeProject,
-					this.state.itemData
-				)
-			}
-		} else {
-			alert('Please select both a project and mediaobject');
-		}
-	}
-
-	onBookmarked() {
-		if(this.state.annotationTarget) {
-			AnnotationStore.getMediaObjectBookmarks(
-				this.state.annotationTarget.source,
+		//open annotation window
+		//alert('This open the annotation dialog targetting the whole resource prefilling the motivation field with "bookmarking"');
+		const annotations = this.state.resourceAnnotations;
+		let annotation = null;
+		if(annotations.length == 0) {
+			annotation = AnnotationUtil.generateW3CEmptyAnnotation(
 				this.props.user,
-				this.props.project,
-				this.onLoadBookmarks.bind(this)
-			)
+				this.state.activeProject,
+				this.state.itemData.index, // collectionId
+				this.state.itemData.resourceId
+			);
+		} else {
+			annotation = annotations[0]
 		}
-	}
-
-	onLoadBookmarks(data) {
-		this.setState({
-			bookmarks : data
-		});
+		AnnotationActions.edit(annotation);
 	}
 
 	render() {
@@ -581,7 +565,9 @@ class ItemDetailsRecipe extends React.Component {
 							&nbsp;
 							<button className="btn btn-primary" onClick={this.bookmark.bind(this)}>
 								Bookmark
-								<i className="fa fa-star"></i>
+								<i className="fa fa-star" style={
+									this.state.resourceAnnotations.length > 0 ? {color: 'red'} : {color: 'white'}
+								}></i>
 							</button>
 							<br/>
 							{mediaPanel}

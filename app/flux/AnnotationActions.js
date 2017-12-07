@@ -50,13 +50,6 @@ const AnnotationActions = {
             eventName: 'change-project',
             project: project
         });
-    },
-
-    bookmark : function(annotationTarget) {
-        AppDispatcher.dispatch({
-            eventName: 'bookmark',
-            annotationTarget: annotationTarget
-        });
     }
 
 }

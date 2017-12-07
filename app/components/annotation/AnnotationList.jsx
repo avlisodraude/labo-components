@@ -8,6 +8,8 @@ import IconUtil from '../../util/IconUtil';
 import AnnotationActions from '../../flux/AnnotationActions';
 import AppAnnotationStore from '../../flux/AnnotationStore';
 
+import PropTypes from 'prop-types';
+
 /*
 Goal:
 	- Shows a list of annotations of a certain target URI
@@ -48,7 +50,6 @@ class AnnotationList extends React.Component {
 	}
 
 	loadAnnotations() {
-		console.debug('reloading annotations', this.props.project);
 		if(this.props.annotationTarget) {
 			AppAnnotationStore.getMediaObjectAnnotations(
 			   	this.props.annotationTarget.source,
@@ -106,5 +107,22 @@ class AnnotationList extends React.Component {
 		);
 	}
 };
+
+AnnotationList.PropTypes = {
+	user: PropTypes.shape({
+		id: PropTypes.string.isRequired
+	}).isRequired,
+
+	project: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired
+	}).isRequired,
+
+	activeAnnotation : PropTypes.shape({
+		id: PropTypes.string.isRequired
+	}),
+
+	filter : PropTypes.object.isRequired
+}
 
 export default AnnotationList;

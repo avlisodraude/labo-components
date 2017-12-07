@@ -205,11 +205,11 @@ class FlexImageViewer extends React.Component {
 					this.addEmptyAnnotation.call(
 						this,
 						AnnotationUtil.generateW3CEmptyAnnotation(
-							this.props.resourceId,
-							this.props.collectionId,
 							this.props.user,
-							this.props.mediaObject.url,
-							this.props.mediaObject.mimeType,
+							this.props.project,
+							this.props.collectionId,
+							this.props.resourceId,
+							this.props.mediaObject,
 							{
 								rect : {
 									x : rect.x,
@@ -218,8 +218,8 @@ class FlexImageViewer extends React.Component {
 									h : rect.height
 								},
 								rotation : rect.rotation
-							},
-							this.props.project
+							}
+
 						)
 					);*/
 				}.bind(this), // callback
@@ -354,13 +354,6 @@ class FlexImageViewer extends React.Component {
 	/* ------------------------------------------------------------------------------
 	------------------------------- COMMUNICATION WITH OWNER/RECIPE -----------------
 	------------------------------------------------------------------------------- */
-
-	//TODO assign the current media Object as target
-	setActiveAnnotationTarget(annotationTarget) {
-		if(this.props.setActiveAnnotationTarget) {
-			this.props.setActiveAnnotationTarget(annotationTarget);
-		}
-	}
 
 	//TODO this should 'play' props.playingAnnotation
 	playAnnotation(annotation) {

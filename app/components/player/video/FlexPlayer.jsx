@@ -101,7 +101,6 @@ class FlexPlayer extends React.Component {
 		this.setState(
 			{activeAnnotation : annotation},
 			() => {
-				console.debug('flexplayer reloading annotations', this.props.project)
 				AppAnnotationStore.getMediaObjectAnnotations(
 					this.props.mediaObject.url,
 					this.props.user,
@@ -450,12 +449,11 @@ class FlexPlayer extends React.Component {
 		let annotation = this.state.mediaObjectAnnotation;
 		if(!annotation) {
 			annotation = AnnotationUtil.generateW3CEmptyAnnotation(
-				this.props.resourceId,
-				this.props.collectionId,
 				this.props.user,
-				this.props.mediaObject.url,
-				this.props.mediaObject.mimeType,
-				this.props.project
+				this.props.project,
+				this.props.collectionId,
+				this.props.resourceId,
+				this.props.mediaObject
 			);
 		}
 		AnnotationActions.edit(annotation);
@@ -487,14 +485,16 @@ class FlexPlayer extends React.Component {
 	saveSegment() {
 		AnnotationActions.save(
 			AnnotationUtil.toUpdatedAnnotation(
-				this.props.resourceId,
-				this.props.collectionId,
-				this.state.activeAnnotation,
 				this.props.user,
+				this.props.project,
+				this.props.collectionId,
+				this.props.resourceId,
 				this.props.mediaObject,
-				this.state.start,
-				this.state.end,
-				this.props.project
+				{
+					start : this.state.start,
+					end : this.state.end
+				},
+				this.state.activeAnnotation
 			)
 		);
 	}

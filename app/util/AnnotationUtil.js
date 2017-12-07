@@ -39,25 +39,21 @@ const AnnotationUtil = {
 		return null;
 	},
 
-	toUpdatedAnnotation(resourceId, collectionId, annotation, user, mediaObject, start, end, project) {
+	//TODO test na lunch
+	toUpdatedAnnotation(user, project, collectionId, resourceId, mediaObject, segmentParams, annotation) {
 		if(!annotation) {
-			let params = null;
-			if(start && end) {
-				params = {start : start, end : end}
-			}
 			annotation = AnnotationUtil.generateW3CEmptyAnnotation(
-				resourceId,
-				collectionId,
 				user,
-				mediaObject.url,
-				mediaObject.mimeType,
-				params,
-				project
+				project,
+				collectionId,
+				resourceId,
+				mediaObject,
+				segmentParams
 			);
-		} else if(start && end) {
+		} else if(segmentParams) {
 			if(annotation.target.selector.refinedBy) {
-				annotation.target.selector.refinedBy.start = start;
-				annotation.target.selector.refinedBy.end = end;
+				annotation.target.selector.refinedBy.start = segmentParams.start;
+				annotation.target.selector.refinedBy.end = segmentParams.end;
 			} else {
 				console.debug('should not be here');
 			}
@@ -74,71 +70,98 @@ const AnnotationUtil = {
 	},
 
 	//called from components that want to create a new annotation with a proper target
-	generateW3CEmptyAnnotation : function(resourceId, collectionId, user, source, mimeType, params, project) {
+	generateW3CEmptyAnnotation : function(user, project, collectionId, resourceId, mediaObject = null, segmentParams = null) {
 		console.debug('creating empty annotation');
-		console.debug(resourceId, collectionId, user, source, mimeType, params, project)
-		if(!source) {
-			return null;
-		}
-		let selector = null; //when selecting a piece of the target
-		let targetType = null;
+		console.debug(user, project, collectionId, resourceId, mediaObject, segmentParams)
 
+		let annotation = null;
 		//only try to extract/append the spatio-temporal parameters from the params if there is a mimeType
-		if(mimeType) {
-			if(mimeType.indexOf('video') != -1) {
-				targetType = 'Video';
-				if(params && params.start && params.end && params.start != -1 && params.end != -1) {
+		if(mediaObject && mediaObject.mimeType) {
+			let selector = null; //when selecting a piece of the target
+			let mediaType = null;
+			if(mediaObject.mimeType.indexOf('video') != -1) {
+				mediaType = 'Video';
+				if(segmentParams && segmentParams.start && segmentParams.end &&
+					segmentParams.start != -1 && segmentParams.end != -1) {
 					selector = {
 						type: "FragmentSelector",
 						conformsTo: "http://www.w3.org/TR/media-frags/",
-						value: '#t=' + params.start + ',' + params.end,
-						start: params.start,
-						end: params.end
+						value: '#t=' + segmentParams.start + ',' + segmentParams.end,
+						start: segmentParams.start,
+						end: segmentParams.end
 	    			}
 				}
-			} else if(mimeType.indexOf('audio') != -1) {
-				targetType = 'Audio';
-				if(params && params.start && params.end && params.start != -1 && params.end != -1) {
+			} else if(mediaObject.mimeType.indexOf('audio') != -1) {
+				mediaType = 'Audio';
+				if(segmentParams && segmentParams.start && segmentParams.end &&
+					segmentParams.start != -1 && segmentParams.end != -1) {
 					selector = {
 						type: "FragmentSelector",
 						conformsTo: "http://www.w3.org/TR/media-frags/",
-						value: '#t=' + params.start + ',' + params.end,
-						start: params.start,
-						end: params.end
+						value: '#t=' + segmentParams.start + ',' + segmentParams.end,
+						start: segmentParams.start,
+						end: segmentParams.end
 	    			}
 				}
-			} else if(mimeType.indexOf('image') != -1) {
-				targetType = 'Image';
-				if(params && params.rect) {
+			} else if(mediaObject.mimeType.indexOf('image') != -1) {
+				mediaType = 'Image';
+				if(segmentParams && segmentParams.rect) {
 					selector = {
 						type: "FragmentSelector",
 						conformsTo: "http://www.w3.org/TR/media-frags/",
-						value: '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h,
-						rect : params.rect
+						value: '#xywh=' + segmentParams.rect.x + ',' + segmentParams.rect.y + ',' + segmentParams.rect.w + ',' + segmentParams.rect.h,
+						rect : segmentParams.rect
 	    			}
 				}
 			}
-		}
-		//this is basically the OLD target
-		let target = {
-			source: AnnotationUtil.removeSourceUrlParams(source), //TODO It should be a PID!
-			selector: selector,
-			type: targetType
-		}
 
-		return {
-			id : null,
-			user : user.id, //TODO like the selector, generate the w3c stuff here?
-			target : AnnotationUtil.generateNestedPIDTarget(collectionId, resourceId, target),
-			body : null,
-			project : project ? project.id : null //no suitable field found in W3C so far
+			//this is basically the OLD target. It will be transformed using generateTarget
+			let target = {
+				source: AnnotationUtil.removeSourceUrlParams(mediaObject.url), //TODO It should be a PID!
+				selector: selector,
+				type: mediaType
+			}
+
+			annotation = {
+				id : null,
+				user : user.id, //TODO like the selector, generate the w3c stuff here?
+				project : project ? project.id : null, //no suitable field found in W3C so far
+				target : AnnotationUtil.generateTarget(collectionId, resourceId, target),
+				body : null
+
+			}
+		} else {
+			annotation = {
+				id : null,
+				user : user.id,
+				project : project ? project.id : null, //no suitable field found in W3C so far
+				target : {
+					type : 'Resource',
+					source : resourceId,
+					selector : {
+						type: 'NestedPIDSelector',
+						value: [
+							{
+								id: collectionId,
+								type: ['Collection'],
+								property: 'isPartOf'
+							},
+							{
+								id: resourceId,
+								type: ['Resource'],
+								property: 'isPartOf'
+							}
+						]
+					}
+				},
+				body : null
+			}
 		}
+		return annotation
 	},
 
-	//TODO finish this; new function for the more elaborate targeting of annotations
-	//THIS IS A FUNCTION THAT NEEDS TO BE USED IN THE LONG TERM
-	//generateTarget : function(resource, targetType, params) {
-	generateNestedPIDTarget : function(collectionId, resourceId, target) {
+	//TODO make this suitable for resource annotations too (now it's currently only for mediaobject annotations)
+	generateTarget : function(collectionId, resourceId, target) {
 		let targetType = 'MediaObject';
 		let selector = {
 			type: 'NestedPIDSelector',
@@ -158,11 +181,11 @@ const AnnotationUtil = {
 		if (resourceId){
 			selector.value.push({
 				id: resourceId,
-				type: ['MediaObject'],
+				type: ['Resource'],
 				property: 'isPartOf'
 			})
 			//check if it's a segment or not
-			const representationTypes = ['Representation', target.type]
+			const representationTypes = ['Representation', 'MediaObject', target.type]
 			if (target.selector) {
 				representationTypes.push('Segment')
 			}

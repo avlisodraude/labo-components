@@ -2,7 +2,6 @@ import MicroEvent from 'microevent';
 import AnnotationAPI from '../api/AnnotationAPI';
 import AppDispatcher from './AppDispatcher';
 import AnnotationUtil from '../util//AnnotationUtil';
-import BookmarkAPI from '../api/BookmarkAPI';
 
 //See: https://github.com/jeromeetienne/microevent.js
 
@@ -11,6 +10,30 @@ class AnnotationStore {
 
 	/* --------------- FOR FETCHING ANNOTATIONS ------------------- */
 
+	getDirectResourceAnnotations(resourceId, user, project, callback) {
+		let filter = {
+			'target.type' : 'Resource', //indicates this annotations target is the resource
+			'target.selector.value.id' : resourceId,
+			'user.keyword' : user.id,
+		}
+		if(project && project.id) {
+			filter['project'] = project.id
+		}
+		AnnotationAPI.getFilteredAnnotations(filter, callback);
+	}
+
+	getAllAnnotationsOfResource(resourceId, user, project, callback) {
+		let filter = {
+			'target.selector.value.id' : resourceId,
+			'user.keyword' : user.id
+		}
+		if(project && project.id) {
+			filter['project'] = project.id
+		}
+		AnnotationAPI.getFilteredAnnotations(filter, callback);
+	}
+
+	//TODO rename later getDirectMediaObjectAnnotations
 	getMediaObjectAnnotations(mediaObjectURI, user, project, callback) {
 		let filter = {
 			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
@@ -28,46 +51,6 @@ class AnnotationStore {
 			'project' : project.id
 		}
 		AnnotationAPI.getFilteredAnnotations(filter, callback);
-	}
-
-	/* --------------- FOR FETCHING BOOKMARKS ------------------- */
-
-	getMediaObjectBookmarks(mediaObjectURI, user, project, callback) {
-		let filter = {
-			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
-			'user.keyword' : user.id,
-			'motivation' :'bookmarking'
-		}
-		if(project && project.id) {
-			filter['project'] = project.id
-		}
-		AnnotationAPI.getFilteredAnnotations(filter, callback);
-	}
-
-	getMediaAssetBookmarks(mediaAssetId, user, project, callback) {
-		let filter = {
-			'target.assetId' : mediaAssetId,
-			'user.keyword' : user.id,
-			'motivation' :'bookmarking'
-		}
-		if(project && project.id) {
-			filter['project'] = project.id
-		}
-		AnnotationAPI.getFilteredAnnotations(filter, callback);
-	}
-
-	getUserProjectBookmarks(user, project, callback) {
-		let filter = {
-			'user.keyword' : user.id,
-			'project' : project.id,
-			'motivation' : 'bookmarking'
-		}
-		AnnotationAPI.getFilteredAnnotations(filter, callback);
-	}
-
-	bookmark(annotationTarget, user, project, callback) {
-		console.debug('bookmarking');
-		BookmarkAPI.bookmark(annotationTarget, user, project, callback)
 	}
 
 	/* --------------- FOR TRIGGERS LISTENERS ------------------- */
@@ -155,9 +138,6 @@ AppDispatcher.register( function( action ) {
             break;
 		case 'change-project':
 			AppAnnotationStore.changeProject(action.project);
-			break;
-		case 'bookmark':
-			AppAnnotationStore.bookmark(action.annotationTarget);
 			break;
 
     }
