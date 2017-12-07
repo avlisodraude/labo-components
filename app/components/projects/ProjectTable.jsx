@@ -40,8 +40,7 @@ class ProjectTable extends React.PureComponent {
    */
   setProjects(projects){
     // decorate the projects
-    // also reverse to get the newest on top
-    this.toDummyData(projects || []).reverse();
+    this.toDummyData(projects || []);
 
     // we filter the results now on client side
     projects = this.filterProjects(projects);
@@ -216,6 +215,9 @@ class ProjectTable extends React.PureComponent {
     case 'access':
       sorted.sort((a,b) => (a.getAccess(this.props.user.id) > b.getAccess(this.props.user.id)));
     break;
+    case 'created':
+      sorted.sort((a,b) => (a.created > b.created));
+    break;
     default:
       // no sorting,just return
       return sorted;
@@ -232,7 +234,7 @@ class ProjectTable extends React.PureComponent {
 
     return (
       <div className={IDUtil.cssClassName('project-table')}>
-        <div className="filters">
+        <div className="tools">
           <div className="left">
             <h3>Filters</h3>
             <input className="search"
@@ -257,6 +259,7 @@ class ProjectTable extends React.PureComponent {
                 {field: 'bookmarks', content: <i className="bookmark-icon"/>, sortable: true},
                 {field: 'owner', content: 'Owner', sortable: true},
                 {field: 'access', content: 'Access', sortable: true},
+                {field: 'created', content: 'Created', sortable: true},
                 {field: '', content: '', sortable: false},
                 {field: '', content: '', sortable: false},
                 {field: '', content: '', sortable: false},
@@ -266,6 +269,7 @@ class ProjectTable extends React.PureComponent {
                 { props:{className:"number"}, content: project.getBookmarkCount()},
                 { content: <span>{project.owner.name} {project.getCollaboratorCount() ? <span className="collaborators">{project.getCollaboratorCount()} Collaborator{project.getCollaboratorCount() !== 1 ? 's' : ''}</span> : ''}</span> },
                 { props: { className: "access"}, content: project.getAccess(currentUserId) },
+                { props: {className: "smaller"}, content: project.created.substring(0,10) },
                 { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
                 { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={this.exportData.bind(this,project)}>Export</a> : ''},
                 { content: project.canOpen(currentUserId) ? <Link to={"/workspace/projects/" + project.id} className="btn">Open</Link> : ''}

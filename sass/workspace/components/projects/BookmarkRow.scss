@@ -1,0 +1,49 @@
+.bg__bookmark-row{
+  margin: 10px 0 20px 0;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  border-radius: 2px;
+  border: 1px solid $clGreyTint;
+    
+  .bookmark{
+    list-style: none;
+    display: flex;   
+    justify-content: flex-start; 
+    align-items: stretch;
+
+    .selector{
+      flex-basis: 40px;
+      input{
+        margin-left: 10px;
+      }
+    }
+
+    .image{
+      flex-basis: 245px;
+      height: 160px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .info{
+      flex-basis: 600px;
+      box-sizing: border-box;  
+      vertical-align: top;    
+      padding-left: 10px;
+      table{
+        width: 100%;
+        td{
+          padding: 10px;
+          height: 80px;
+        }
+      }
+    }
+
+    .actions{
+      text-align: right;
+    }
+
+  }
+  
+}

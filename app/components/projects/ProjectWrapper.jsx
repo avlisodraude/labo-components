@@ -23,7 +23,6 @@ class ProjectWrapper extends React.PureComponent {
    * Load project from url id and load it to the state
    */
   loadProject(){
-    // get project id from url
     let projectId = this.props.match.params.id; 
 
     // load project data, and set state

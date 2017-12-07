@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import ProjectAPI from './api/ProjectAPI';
 import IDUtil from './util/IDUtil';
-import ProjectsOverview from './components/projects/ProjectsOverview';
+import ProjectAPI from './api/ProjectAPI';
 import ProjectBookmarks from './components/projects/ProjectBookmarks';
-import ProjectSessions from './components/projects/ProjectSessions';
 import ProjectCreate from './components/projects/ProjectCreate';
 import ProjectDetails from './components/projects/ProjectDetails';
 import ProjectEdit from './components/projects/ProjectEdit';
+import ProjectSessions from './components/projects/ProjectSessions';
+import ProjectsOverview from './components/projects/ProjectsOverview';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
 
 import {
