@@ -17,6 +17,37 @@ const ComponentUtil = {
 			$('#' + elementId).modal('hide');
 		}
 		component.setState(stateObj);
+	},
+
+	supportsHTML5Storage() {
+		try {
+			return 'localStorage' in window && window['localStorage'] !== null
+		} catch (e) {
+			return false
+		}
+	},
+
+	storeJSONInLocalStorage(key, data) {
+		if(ComponentUtil.supportsHTML5Storage()) {
+			try {
+				localStorage[key] = JSON.stringify(data);
+				return true
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		return false
+	},
+
+	getJSONFromLocalStorage(key) {
+		if(ComponentUtil.supportsHTML5Storage()) {
+			try {
+				return JSON.parse(localStorage[key])
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		return null
 	}
 
 }

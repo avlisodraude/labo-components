@@ -124,16 +124,23 @@ class BookmarkView extends React.PureComponent {
    * @param  {Object} data Response object with annotation list
    */
   onLoadBookmarks(data) {
-    console.debug('got me some bookmarks baby', data);
     const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
       data.annotations || []
     )
+
 
     // filter
     let filtered = this.filterBookmarks(bookmarks,this.state.filter);
 
     // sort
     let sorted = this.sortBookmarks(filtered, this.state.order);
+
+
+    // //TODO @Werner je kunt deze gebruiken in de annotation-centric view
+    // const annotations = AnnotationUtil.nestedAnnotationListToAnnotationList(
+    //   data.annotations || []
+    // )
+    // console.debug(annotations)
 
 
     this.setState({
@@ -207,8 +214,7 @@ class BookmarkView extends React.PureComponent {
   /** 
    * Sort bookmarks 
    * @param {Array} bookmarks List of bookmarks to be sorted
-   * @param {string} sort Sort field
-   * 
+   * @param {string} sort Sort field   * 
    */
   sortBookmarks(bookmarks, field){
    let sorted = bookmarks;

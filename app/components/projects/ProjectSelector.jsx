@@ -2,15 +2,6 @@ import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import { PowerSelect } from 'react-power-select';
 
-/*
-TODO:
-	In general this needs to be made fit for both CKAN and other collection lists (e.g. for MotU and ARTtube)
-
-OUTPUT:
-	an instance of CollectionConfig
-
-*/
-
 class ProjectSelector extends React.Component {
 
 	constructor(props) {
@@ -28,10 +19,6 @@ class ProjectSelector extends React.Component {
 			this.setState({projectList :  projects || []});
 		});
 	}
-
-	/* ------------------------------------------------------------------------------
-	------------------------------- COMMUNICATION WITH OWNER/RECIPE -----------------
-	------------------------------------------------------------------------------- */
 
 	selectProject(event) {
 		if(event && event.option && event.option.index) {
