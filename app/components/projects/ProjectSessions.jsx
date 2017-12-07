@@ -5,7 +5,7 @@ import IDUtil from '../../util/IDUtil';
 import SortTable from './SortTable';
 import { Link } from 'react-router-dom';
 import ProjectWrapper from './ProjectWrapper';
-
+import { exportDataAsJSON } from '../helpers/Export';
 
 /**
  * Todo: Project sessions are currently stored on the project object
@@ -165,19 +165,6 @@ class ProjectSessions extends React.PureComponent {
   }
 
   /**
-   * Export data
-   * @param {object} data Data to export
-   */
-  exportData(data){    
-    // unique window name
-    let windowName = 'name_'+(new Date()).getTime();
-
-    // open window and write export contents as json
-    let exportWindow = window.open("", windowName, "width=800,height=800");
-    exportWindow.document.write("<pre>"+JSON.stringify(data, null, 4)+"</pre>");
-  }
-
-  /**
   * Sort sessions based on sort
   */
   sortSessions(sessions, sort){
@@ -234,7 +221,7 @@ class ProjectSessions extends React.PureComponent {
                 { content: session.tool},
                 { content: session.created.substring(0,10) },
                 { content: <a className="btn blank warning" onClick={this.deleteSession.bind(this,session)}>Delete</a>},
-                { content: <a className="btn blank" onClick={this.exportData.bind(this,session)}>Export</a>},
+                { content: <a className="btn blank" onClick={exportDataAsJSON.bind(this,session)}>Export</a>},
                 { content: <a href={session.data.url ? session.data.url : '#no-url-found'} target="_blank" rel="noopener noreferrer" className="btn">Open</a>}
               ])}           
 
@@ -242,7 +229,7 @@ class ProjectSessions extends React.PureComponent {
             loading={this.state.loading}
             bulkActions={[
               {title: 'Delete', onApply: this.deleteSessions.bind(this) },
-              {title: 'Export', onApply: this.exportData.bind(this) }
+              {title: 'Export', onApply: exportDataAsJSON.bind(this) }
               ]}
            />
       </div>

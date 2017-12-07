@@ -3,6 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectWrapper from './ProjectWrapper';
 import AnnotationStore from '../../flux/AnnotationStore';
 import BookmarkRow from './BookmarkRow';
+import { exportDataAsJSON } from '../helpers/Export';
 
 class BookmarkView extends React.PureComponent {
 
@@ -194,26 +195,13 @@ class BookmarkView extends React.PureComponent {
     });
   }
 
-  /**
-  * Export data
-  * @param {object} data Data to export
-  */
-  exportData(data){    
-    // unique window name
-    let windowName = 'name_'+(new Date()).getTime();
-
-    // open window and write export contents as json
-    let exportWindow = window.open("", windowName, "width=800,height=800");
-    exportWindow.document.write("<pre>"+JSON.stringify(data, null, 4)+"</pre>");
-  }
-
 
   render(){
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
         <div className="tools">
         
-          <div className="export-button btn primary" onClick={this.exportData.bind(this,this.state.bookmarks)}>Export</div>
+          <div className="export-button btn primary" onClick={exportDataAsJSON.bind(this,this.state.bookmarks)}>Export</div>
 
           <div className="filters">
             <div className="left">

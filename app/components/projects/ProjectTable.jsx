@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
 import SortTable from './SortTable';
 import { Link } from 'react-router-dom';
+import { exportDataAsJSON } from '../helpers/Export';
+
 
 class ProjectTable extends React.PureComponent {
 
@@ -183,19 +185,6 @@ class ProjectTable extends React.PureComponent {
     }
   }
 
-  /**
-   * Export data
-   * @param {object} data Data to export
-   */
-  exportData(data){    
-    // unique window name
-    let windowName = 'name_'+(new Date()).getTime();
-
-    // open window and write export contents as json
-    let exportWindow = window.open("", windowName, "width=800,height=800");
-    exportWindow.document.write("<pre>"+JSON.stringify(data, null, 4)+"</pre>");
-  }
-
 
   /**
   * Sort projects based on sort
@@ -271,7 +260,7 @@ class ProjectTable extends React.PureComponent {
                 { props: { className: "access"}, content: project.getAccess(currentUserId) },
                 { props: {className: "smaller"}, content: project.created.substring(0,10) },
                 { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
-                { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={this.exportData.bind(this,project)}>Export</a> : ''},
+                { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={exportDataAsJSON.bind(this,project)}>Export</a> : ''},
                 { content: project.canOpen(currentUserId) ? <Link to={"/workspace/projects/" + project.id} className="btn">Open</Link> : ''}
               ])}           
 
@@ -279,7 +268,7 @@ class ProjectTable extends React.PureComponent {
             loading={this.state.loading}
             bulkActions={[
               {title: 'Delete', onApply: this.deleteProjects.bind(this) },
-              {title: 'Export', onApply: this.exportData.bind(this) }
+              {title: 'Export', onApply: exportDataAsJSON.bind(this) }
               ]}
            />
       </div>
