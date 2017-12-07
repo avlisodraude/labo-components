@@ -578,6 +578,7 @@ class ItemDetailsRecipe extends React.Component {
 							<button className="btn btn-primary" onClick={this.triggerProjectSelector.bind(this)}>
 								Projects ({this.state.activeProject ? this.state.activeProject.name : 'none selected'})
 							</button>
+							&nbsp;
 							<button className="btn btn-primary" onClick={this.bookmark.bind(this)}>
 								Bookmark
 								<i className="fa fa-star"></i>
