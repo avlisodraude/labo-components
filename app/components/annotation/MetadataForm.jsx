@@ -83,14 +83,14 @@ class MetadataForm extends React.Component {
 
 	determinePossibleTemplates() {
 		let templates = null;
-		if(this.props.annotationTarget.selector && this.props.config.mediaSegment) {
+		if(this.props.annotationTarget.selector.refinedBy && this.props.config.mediaSegment) {
 			//return the first template defined for media segments
 			if(this.props.config.mediaSegment.templates) {
 				templates = this.props.config.mediaSegment.templates.map((key) => {
 					return this.props.config.templates[key];
 				});
 			}
-		} else if(!this.props.annotationTarget.selector && this.props.config.mediaObject) {
+		} else if(!this.props.annotationTarget.selector.refinedBy && this.props.config.mediaObject) {
 			//return the first template defined for media objects
 			if(this.props.config.mediaObject.templates) {
 				templates = this.props.config.mediaObject.templates.map((key) => {
@@ -102,12 +102,12 @@ class MetadataForm extends React.Component {
 	}
 
 	getActiveTemplate() {
-		if(this.props.annotationTarget.selector && this.props.config.mediaSegment) {
+		if(this.props.annotationTarget.selector.refinedBy && this.props.config.mediaSegment) {
 			//return the first template defined for media segments
 			if(this.props.config.mediaSegment.templates) {
 				return this.props.config.templates[this.props.config.mediaSegment.templates[0]];
 			}
-		} else if(!this.props.annotationTarget.selector && this.props.config.mediaObject) {
+		} else if(!this.props.annotationTarget.selector.refinedBy && this.props.config.mediaObject) {
 			//return the first template defined for media objects
 			if(this.props.config.mediaObject.templates) {
 				return this.props.config.templates[this.props.config.mediaObject.templates[0]];
@@ -146,12 +146,12 @@ class MetadataForm extends React.Component {
 	//this is for determining whether the user only able to edit a single card. If so the card list won't be dispalyed
 	determineSingleCardMode() {
 		//if there is more than one template, always return false, otherwise check whether cardsPerUser is set to 1
-		if(this.props.annotationTarget.selector && this.props.config.mediaSegment) {
+		if(this.props.annotationTarget.selector.refinedBy && this.props.config.mediaSegment) {
 			//do this check for the media segment config
 			if(this.props.config.mediaSegment.templates) {
 				return this.props.config.mediaSegment.cardsPerUser === 1;
 			}
-		} else if(!this.props.annotationTarget.selector && this.props.config.mediaObject) {
+		} else if(!this.props.annotationTarget.selector.refinedBy && this.props.config.mediaObject) {
 			//do this check for the media object config
 			if(this.props.config.mediaObject.templates) {
 				return this.props.config.mediaObject.cardsPerUser === 1;

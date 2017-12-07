@@ -1,19 +1,22 @@
 import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import ProjectWrapper from './ProjectWrapper';
+
 import AnnotationStore from '../../flux/AnnotationStore';
+import AnnotationUtil from '../../util/AnnotationUtil';
+
 import BookmarkRow from './BookmarkRow';
 
 class BookmarkView extends React.PureComponent {
 
   constructor(props) {
     super(props);
-
+    /*
     let placeholderData =[
       {
         // unique bookmark id, used for referencing
         id: "unique-bookmark-id-12345",
-        
+
         // general object (document,fragment,entity) data
         object:{
 
@@ -21,11 +24,11 @@ class BookmarkView extends React.PureComponent {
           id: "openbeelden-video-10201",
 
           // object type: "Video", Video-Fragment", "Image", "Audio", "Entity", ...
-          type: "Video", 
+          type: "Video",
 
           // short object title
           title: "Polygoonjournaal 1953-02-05 20:00",
-          
+
           // (Creation) date of the object (nice to have)
           date: "1953-02-05T20:00:00Z",
 
@@ -36,10 +39,10 @@ class BookmarkView extends React.PureComponent {
           placeholderImage: "https://www.openbeelden.nl/images/690682/Watersnood_bij_Maastricht_%284_05%29.png"
 
         },
-        
+
         // Bookmark created
         created: "2017-02-20T10:04:45Z",
-        
+
         // sort position
         sort: 1,
 
@@ -76,47 +79,52 @@ class BookmarkView extends React.PureComponent {
         annotations:[ ]
       }
 
-    ];
+    ];*/
 
 
     this.state = {
-      bookmarks: placeholderData,
-      visibleBookmarks: placeholderData,
+      bookmarks: [],
+      visibleBookmarks: [],
       loading : true,
       filter:{
         keywords: '',
         type: '',
       },
-      order: 'newest'      
+      order: 'newest'
     }
   }
 
-  // componentDidMount() {
-  //   this.loadBookmarks();
-  // }
+  componentDidMount() {
+    this.loadBookmarks();
+  }
 
-  // /**
-  //  * Load Annotation from Store
-  //  * (todo) -- rename to bookmarks
-  //  */
-  // loadBookmarks() {
-  //   BookmarkStore.getUserProjectBookmarks(
-  //     this.props.user,
-  //     this.props.project,
-  //     this.onLoadBookmarks.bind(this)
-  //   )
-  // }
+  /**
+   * Load Annotation from Store
+   * (todo) -- rename to bookmarks
+   */
+  loadBookmarks() {
+    AnnotationStore.getUserProjectAnnotations(
+      this.props.user,
+      this.props.project,
+      this.onLoadBookmarks.bind(this)
+    )
+  }
 
-  // /**
-  //  * Annotation load callback: set data to state
-  //  * @param  {Object} data Response object with annotation list
-  //  */
-  // onLoadBookmarks(data) {
-  //   this.setState({
-  //     bookmarks : data.bookmarks || [],
-  //     loading : false
-  //   })
-  // }
+  /**
+   * Annotation load callback: set data to state
+   * @param  {Object} data Response object with annotation list
+   */
+  onLoadBookmarks(data) {
+    console.debug('got me some bookmarks baby', data);
+    const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
+      data.annotations || []
+    )
+    this.setState({
+      bookmarks: bookmarks,
+      visibleBookmarks: bookmarks,
+      loading : false
+    })
+  }
 
 
   /**
@@ -143,8 +151,8 @@ class BookmarkView extends React.PureComponent {
       let keywords = filter.keywords.split(" ");
       keywords.forEach((k)=>{
         k = k.toLowerCase();
-        bookmarks = bookmarks.filter((bookmark)=>(bookmark.object.title.toLowerCase().includes(k) 
-                                                  || bookmark.object.dataset.toLowerCase().includes(k) 
+        bookmarks = bookmarks.filter((bookmark)=>(bookmark.object.title.toLowerCase().includes(k)
+                                                  || bookmark.object.dataset.toLowerCase().includes(k)
                                                   || bookmark.object.type.toLowerCase().includes(k)))
       });
     }
@@ -198,7 +206,7 @@ class BookmarkView extends React.PureComponent {
   * Export data
   * @param {object} data Data to export
   */
-  exportData(data){    
+  exportData(data){
     // unique window name
     let windowName = 'name_'+(new Date()).getTime();
 
@@ -212,7 +220,7 @@ class BookmarkView extends React.PureComponent {
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
         <div className="tools">
-        
+
           <div className="export-button btn primary" onClick={this.exportData.bind(this,this.state.bookmarks)}>Export</div>
 
           <div className="filters">
@@ -232,11 +240,11 @@ class BookmarkView extends React.PureComponent {
               <select className="type-select" value={this.state.type} onChange={this.typeChange.bind(this)}>
                  {/* todo: dynamically disable/enable options based on set? */}
                  <option></option>
-                 <option value="video">Video</option> 
-                 <option value="fragment">Fragment</option> 
-                 <option value="image">Image</option> 
-                 <option value="audio">Audio</option> 
-                 <option value="entity">Entity</option> 
+                 <option value="video">Video</option>
+                 <option value="fragment">Fragment</option>
+                 <option value="image">Image</option>
+                 <option value="audio">Audio</option>
+                 <option value="entity">Entity</option>
               </select>
 
             </div>
@@ -252,7 +260,7 @@ class BookmarkView extends React.PureComponent {
                 <option value="name-za">Name Z-A</option>
                 <option value="type">Type</option>
                 <option value="dataset">Dataset</option>
-                <option value="manual">Manual</option>                
+                <option value="manual">Manual</option>
               </select>
 
             </div>
@@ -263,10 +271,10 @@ class BookmarkView extends React.PureComponent {
           <h3><input type="checkbox"/>Bookmarks: <span>{this.state.visibleBookmarks.length || 0}</span></h3>
 
           <div className="table">
-            {this.state.visibleBookmarks.map((bookmark, index)=>(<BookmarkRow key={index} bookmark={bookmark} />))}           
+            {this.state.visibleBookmarks.map((bookmark, index)=>(<BookmarkRow key={index} bookmark={bookmark} />))}
           </div>
       </div>
-        
+
 </div>
   )
   }

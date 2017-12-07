@@ -60,7 +60,9 @@ class ItemDetailsRecipe extends React.Component {
 			activeSubAnnotation: null,//TODO this will be removed whenever switching to the new graph model
 			annotationTarget : null,
 
-			found : false //whether the item metadata could be found
+			found : false, //whether the item metadata could be found
+
+			resourceAnnotations : []
 		}
 		this.tabListeners = false;
 		this.CLASS_PREFIX = 'rcp__id'
@@ -113,9 +115,10 @@ class ItemDetailsRecipe extends React.Component {
 			if(mediaObject) {
 				const annotation = AnnotationUtil.generateW3CEmptyAnnotation(
 					this.props.user,
-					mediaObject.url,
-					mediaObject.mimeType,
-					this.state.activeProject
+					this.state.activeProject,
+					itemDetailData.index,
+					itemDetailData.resourceId,
+					mediaObject
 				);
 				return annotation.target;
 			}
@@ -143,7 +146,7 @@ class ItemDetailsRecipe extends React.Component {
 					}
 					let desiredState = {
 						itemData : itemDetailData,
-						annotationTarget : this.getAnnotationTarget.call(this, itemDetailData),
+						annotationTarget : this.getAnnotationTarget.call(this, itemDetailData), //for the list
 						found : true,
 						activeMediaTab : activeMediaTab
 					}
@@ -157,6 +160,14 @@ class ItemDetailsRecipe extends React.Component {
 					} else {
 						this.setState(desiredState);
 					}
+
+					//finally load the resource annotation with motivation bookmarking
+					AnnotationStore.getDirectResourceAnnotations(
+						itemDetailData.resourceId,
+						this.props.user,
+						this.state.activeProject,
+						this.onLoadResourceAnnotations.bind(this)
+					)
 				}
 			}.bind(this));
 		}
@@ -305,12 +316,13 @@ class ItemDetailsRecipe extends React.Component {
 					<FlexPlayer
 						user={this.props.user} //current user
 						project={this.state.activeProject} //selected via the ProjectSelector
+						resourceId={this.state.itemData.resourceId}
+						collectionId={this.state.itemData.index}
 						mediaObject={mediaObject} //TODO make this plural for playlist support
 						active={this.state.activeMediaTab == index}
 						enableFragmentMode={false} //add this to config
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
 					/>
 				);
 			});
@@ -335,12 +347,13 @@ class ItemDetailsRecipe extends React.Component {
 					<FlexPlayer
 						user={this.props.user} //current user
 						project={this.state.activeProject} //selected via the ProjectSelector
+						resourceId={this.state.itemData.resourceId}
+						collectionId={this.state.itemData.index}
 						mediaObject={mediaObject} //TODO make this plural for playlist support
 						active={this.state.activeMediaTab == index}
 						enableFragmentMode={false} //add this to config
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
-						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
 					/>
 				);
 			});
@@ -378,11 +391,12 @@ class ItemDetailsRecipe extends React.Component {
 					<FlexImageViewer
 						user={this.props.user} //current user
 						project={this.state.activeProject} //selected via the ProjectSelector
+						resourceId={this.state.itemData.resourceId}
+						collectionId={this.state.itemData.index}
 						mediaObjects={images}//TODO make this plural for playlist support
 						annotationSupport={this.props.recipe.ingredients.annotationSupport} //annotation support the component should provide
 						annotationLayers={this.props.recipe.ingredients.annotationLayers} //so the player can distribute annotations in layers
 						editAnnotation={this.editAnnotation.bind(this)} //each annotation support should call this function
-						setActiveAnnotationTarget={this.setActiveAnnotationTarget.bind(this)}//so the component can callback the active mediaObject
 					/>
 				)
 			}
@@ -435,6 +449,13 @@ class ItemDetailsRecipe extends React.Component {
 	onProjectChanged(project) {
 		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true);
 		AnnotationActions.changeProject(project);
+		//finally load the resource annotation with motivation bookmarking
+		AnnotationStore.getDirectResourceAnnotations(
+			this.state.itemData.resourceId,
+			this.props.user,
+			this.state.activeProject,
+			this.onLoadResourceAnnotations.bind(this)
+		)
 	}
 
 	triggerProjectSelector() {
@@ -442,6 +463,32 @@ class ItemDetailsRecipe extends React.Component {
 		this.setState({
 			showProjectModal : !showProjectModal
 		});
+	}
+
+	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)
+	onLoadResourceAnnotations(data) {
+		console.debug('are there resource annotations?', data)
+		this.setState({
+			resourceAnnotations : data.annotations || []
+		})
+	}
+
+	bookmark() {
+		//open annotation window
+		//alert('This open the annotation dialog targetting the whole resource prefilling the motivation field with "bookmarking"');
+		const annotations = this.state.resourceAnnotations;
+		let annotation = null;
+		if(annotations.length == 0) {
+			annotation = AnnotationUtil.generateW3CEmptyAnnotation(
+				this.props.user,
+				this.state.activeProject,
+				this.state.itemData.index, // collectionId
+				this.state.itemData.resourceId
+			);
+		} else {
+			annotation = annotations[0]
+		}
+		AnnotationActions.edit(annotation);
 	}
 
 	render() {
@@ -521,6 +568,14 @@ class ItemDetailsRecipe extends React.Component {
 						<div className="col-md-12">
 							<button className="btn btn-primary" onClick={this.triggerProjectSelector.bind(this)}>
 								Projects ({this.state.activeProject ? this.state.activeProject.name : 'none selected'})
+							</button>
+							&nbsp;
+							<button className="btn btn-primary" onClick={this.bookmark.bind(this)}>
+								Bookmark
+								&nbsp;
+								<i className="fa fa-star" style={
+									this.state.resourceAnnotations.length > 0 ? {color: 'red'} : {color: 'white'}
+								}></i>
 							</button>
 							<br/>
 							{mediaPanel}
