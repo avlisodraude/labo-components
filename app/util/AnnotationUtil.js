@@ -49,7 +49,11 @@ const AnnotationUtil = {
 
 	//extracts all contained annotations into a list for the annotation-centric view
 	nestedAnnotationListToAnnotationList(annotations) {
-		//TODO
+		return annotations.filter(an => an.body).map((an) => {
+			return an.body
+		}).reduce((acc, cur) => {
+			return acc.concat(cur);
+		});
 	},
 
 	getStructuralElementFromSelector(selector, resourceType) {

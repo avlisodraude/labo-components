@@ -27,15 +27,27 @@ const ComponentUtil = {
 		}
 	},
 
+	storeJSONInLocalStorage(key, data) {
+		if(ComponentUtil.supportsHTML5Storage()) {
+			try {
+				localStorage[key] = JSON.stringify(data);
+				return true
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		return false
+	},
+
 	getJSONFromLocalStorage(key) {
-		if(!ComponentUtil.supportsHTML5Storage()) {
-			return false
+		if(ComponentUtil.supportsHTML5Storage()) {
+			try {
+				return JSON.parse(localStorage[key])
+			} catch (e) {
+				console.error(e);
+			}
 		}
-		try {
-			return JSON.parse(localStorage[key])
-		} catch (e) {
-			return null
-		}
+		return null
 	}
 
 }

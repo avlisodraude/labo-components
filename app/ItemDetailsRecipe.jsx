@@ -447,10 +447,7 @@ class ItemDetailsRecipe extends React.Component {
 	}
 
 	onProjectChanged(project) {
-		if(ComponentUtil.supportsHTML5Storage()) {
-			console.debug('storing the selecting project in local storage')
-			localStorage['activeProject'] = JSON.stringify(project);
-		}
+		ComponentUtil.storeJSONInLocalStorage('activeProject', project)
 		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true);
 		AnnotationActions.changeProject(project);
 		//finally load the resource annotation with motivation bookmarking
