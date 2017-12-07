@@ -8,12 +8,39 @@ import AnnotationUtil from '../util//AnnotationUtil';
 
 class AnnotationStore {
 
-	/* --------------- FOR FETCHING DATA ------------------- */
+	/* --------------- FOR FETCHING ANNOTATIONS ------------------- */
 
+	getDirectResourceAnnotations(resourceId, user, project, callback) {
+		let filter = {
+			'target.type' : 'Resource', //indicates this annotations target is the resource
+			'target.selector.value.id' : resourceId,
+			'user.keyword' : user.id,
+		}
+		if(project && project.id) {
+			filter['project'] = project.id
+		}
+		AnnotationAPI.getFilteredAnnotations(filter, callback);
+	}
+
+	getAllAnnotationsOfResource(resourceId, user, project, callback) {
+		let filter = {
+			'target.selector.value.id' : resourceId,
+			'user.keyword' : user.id
+		}
+		if(project && project.id) {
+			filter['project'] = project.id
+		}
+		AnnotationAPI.getFilteredAnnotations(filter, callback);
+	}
+
+	//TODO rename later getDirectMediaObjectAnnotations
 	getMediaObjectAnnotations(mediaObjectURI, user, project, callback) {
 		let filter = {
 			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
 			'user.keyword' : user.id
+		}
+		if(project && project.id) {
+			filter['project'] = project.id
 		}
 		AnnotationAPI.getFilteredAnnotations(filter, callback);
 	}

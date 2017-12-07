@@ -1,8 +1,64 @@
 const AnnotationUtil = {
 
+	/*************************************************************************************
+	 --------------------------  FILTER TARGETS FROM ANNOTATIONS -------------------------
+	*************************************************************************************/
+
+	//extracts all contained targets/resources into a list for the bookmark-centric view
+	nestedAnnotationListToResourceList(annotations) {
+		return annotations.map((na, index) => {
+			return {
+				// unique bookmark id, used for referencing
+				id: na.id,
+
+				// general object (document,fragment,entity) data
+				object: {
+
+					// unique object id
+					id: na.target.source,
+
+					// object type: "Video", Video-Fragment", "Image", "Audio", "Entity", ...
+					type: na.target.type,
+
+					// short object title
+					title: "NEED TO FETCH (DEPENDS ON RESOURCE)",
+
+					// (Creation) date of the object (nice to have)
+					date: "NEED TO FETCH (DEPENDS ON RESOURCE)",
+
+					// dataset the object originates from
+					dataset: AnnotationUtil.getStructuralElementFromSelector(na.target.selector, 'Collection'),
+
+					// placeholder image if available
+					placeholderImage: "http://localhost:5304/static/images/placeholder.2b77091b.svg"
+
+				},
+
+				// Bookmark created
+				created: na.created,
+
+				// sort position
+				sort: index,
+
+				// optional list of annotations here
+				// (could also be requested in separate calls)
+				annotations: na.body,
+			}
+		});
+	},
+
+	//extracts all contained annotations into a list for the annotation-centric view
+	nestedAnnotationListToAnnotationList(annotations) {
+		//TODO
+	},
+
+	getStructuralElementFromSelector(selector, resourceType) {
+		const tmp = selector.value.filter(rt => rt.type === resourceType);
+		return tmp.length > 0 ? tmp[0] : null;
+	},
 
 	/*************************************************************************************
-	 ************************************* W3C BUSINESS LOGIC HERE ********************
+	 --------------------------- W3C BUSINESS LOGIC HERE ---------------------------------
 	*************************************************************************************/
 
 	//get the index of the segment within a list of annotations of a certain target
@@ -10,7 +66,7 @@ const AnnotationUtil = {
 		if(annotations && annotation) {
 			let i = 0;
 			for(const a of annotations) {
-				if(a.target.selector) {
+				if(a.target.selector.refinedBy) {
 					if(a.id == annotation.id) {
 						return i;
 					}
@@ -27,7 +83,7 @@ const AnnotationUtil = {
 			index = index < 0 ? 0 : index;
 			let i = 0;
 			for(const a of annotations) {
-				if(a.target.selector) {
+				if(a.target.selector.refinedBy) {
 					if(i == index) {
 						return a;
 					}
@@ -39,23 +95,21 @@ const AnnotationUtil = {
 		return null;
 	},
 
-	toUpdatedAnnotation(annotation, user, mediaObject, start, end, project) {
+	//TODO test na lunch
+	toUpdatedAnnotation(user, project, collectionId, resourceId, mediaObject, segmentParams, annotation) {
 		if(!annotation) {
-			let params = null;
-			if(start && end) {
-				params = {start : start, end : end}
-			}
 			annotation = AnnotationUtil.generateW3CEmptyAnnotation(
 				user,
-				mediaObject.url,
-				mediaObject.mimeType,
-				params,
-				project
+				project,
+				collectionId,
+				resourceId,
+				mediaObject,
+				segmentParams
 			);
-		} else if(start && end) {
-			if(annotation.target.selector) {
-				annotation.target.selector.start = start;
-				annotation.target.selector.end = end;
+		} else if(segmentParams) {
+			if(annotation.target.selector.refinedBy) {
+				annotation.target.selector.refinedBy.start = segmentParams.start;
+				annotation.target.selector.refinedBy.end = segmentParams.end;
 			} else {
 				console.debug('should not be here');
 			}
@@ -72,118 +126,137 @@ const AnnotationUtil = {
 	},
 
 	//called from components that want to create a new annotation with a proper target
-	generateW3CEmptyAnnotation : function(user, source, mimeType, params, project) {
-		if(!source) {
-			return null;
-		}
-		let selector = null; //when selecting a piece of the target
-		let targetType = null;
+	generateW3CEmptyAnnotation : function(user, project, collectionId, resourceId, mediaObject = null, segmentParams = null) {
+		console.debug('creating empty annotation');
+		console.debug(user, project, collectionId, resourceId, mediaObject, segmentParams)
 
+		let annotation = null;
 		//only try to extract/append the spatio-temporal parameters from the params if there is a mimeType
-		if(mimeType) {
-			if(mimeType.indexOf('video') != -1) {
-				targetType = 'Video';
-				if(params && params.start && params.end && params.start != -1 && params.end != -1) {
+		if(mediaObject && mediaObject.mimeType) {
+			let selector = null; //when selecting a piece of the target
+			let mediaType = null;
+			if(mediaObject.mimeType.indexOf('video') != -1) {
+				mediaType = 'Video';
+				if(segmentParams && segmentParams.start && segmentParams.end &&
+					segmentParams.start != -1 && segmentParams.end != -1) {
 					selector = {
 						type: "FragmentSelector",
 						conformsTo: "http://www.w3.org/TR/media-frags/",
-						value: '#t=' + params.start + ',' + params.end,
-						start: params.start,
-						end: params.end
+						value: '#t=' + segmentParams.start + ',' + segmentParams.end,
+						start: segmentParams.start,
+						end: segmentParams.end
 	    			}
 				}
-			} else if(mimeType.indexOf('audio') != -1) {
-				targetType = 'Audio';
-				if(params && params.start && params.end && params.start != -1 && params.end != -1) {
+			} else if(mediaObject.mimeType.indexOf('audio') != -1) {
+				mediaType = 'Audio';
+				if(segmentParams && segmentParams.start && segmentParams.end &&
+					segmentParams.start != -1 && segmentParams.end != -1) {
 					selector = {
 						type: "FragmentSelector",
 						conformsTo: "http://www.w3.org/TR/media-frags/",
-						value: '#t=' + params.start + ',' + params.end,
-						start: params.start,
-						end: params.end
+						value: '#t=' + segmentParams.start + ',' + segmentParams.end,
+						start: segmentParams.start,
+						end: segmentParams.end
 	    			}
 				}
-			} else if(mimeType.indexOf('image') != -1) {
-				targetType = 'Image';
-				if(params && params.rect) {
+			} else if(mediaObject.mimeType.indexOf('image') != -1) {
+				mediaType = 'Image';
+				if(segmentParams && segmentParams.rect) {
 					selector = {
 						type: "FragmentSelector",
 						conformsTo: "http://www.w3.org/TR/media-frags/",
-						value: '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h,
-						rect : params.rect
+						value: '#xywh=' + segmentParams.rect.x + ',' + segmentParams.rect.y + ',' + segmentParams.rect.w + ',' + segmentParams.rect.h,
+						rect : segmentParams.rect
 	    			}
 				}
 			}
-		}
-		return {
-			id : null,
-			user : user.id, //TODO like the selector, generate the w3c stuff here?
-			target : {
-				source: AnnotationUtil.removeSourceUrlParams(source), //TODO It should be a PID!
+
+			//this is basically the OLD target. It will be transformed using generateTarget
+			let target = {
+				source: AnnotationUtil.removeSourceUrlParams(mediaObject.url), //TODO It should be a PID!
 				selector: selector,
-				type: targetType
-			},
-			body : null,
-			project : project ? project.id : null //no suitable field found in W3C so far
+				type: mediaType
+			}
+
+			annotation = {
+				id : null,
+				user : user.id, //TODO like the selector, generate the w3c stuff here?
+				project : project ? project.id : null, //no suitable field found in W3C so far
+				target : AnnotationUtil.generateTarget(collectionId, resourceId, target),
+				body : null
+
+			}
+		} else {
+			annotation = {
+				id : null,
+				user : user.id,
+				project : project ? project.id : null, //no suitable field found in W3C so far
+				target : {
+					type : 'Resource',
+					source : resourceId,
+					selector : {
+						type: 'NestedPIDSelector',
+						value: [
+							{
+								id: collectionId,
+								type: ['Collection'],
+								property: 'isPartOf'
+							},
+							{
+								id: resourceId,
+								type: ['Resource'],
+								property: 'isPartOf'
+							}
+						]
+					}
+				},
+				body : null
+			}
 		}
+		return annotation
 	},
 
-	//TODO finish this; new function for the more elaborate targeting of annotations
-	//THIS IS A FUNCTION THAT NEEDS TO BE USED IN THE LONG TERM
-	generateTarget : function(resource, targetType, params) {
-		let target = {
-			"source": resource.id,
-			"type": targetType,
-			"selector": {
-				"type": "SubresourceSelector",
-				"value": {
-					"id": "http://beeldengeluid.nl/clariah/nisv-catalogue-aggr",
-					"type": ["Collection"],
-					"subresource": {
-						"id": "131909@program",
-						"type": ["AggregatedProgram"],
-						"property": "inCollection",
-						"subresource": {
-							"id": "http://lbas2.beeldengeluid.nl:8093/viz/DEFAMILIEWERK-HRE0002E71A",
-							"type": "Video",
-							"property": "hasRepresentation",
-						}
-					}
+	//TODO make this suitable for resource annotations too (now it's currently only for mediaobject annotations)
+	generateTarget : function(collectionId, resourceId, target) {
+		let targetType = 'MediaObject';
+		let selector = {
+			type: 'NestedPIDSelector',
+			value: [
+				{
+					id: collectionId,
+					type: ['Collection'],
+					property: 'isPartOf'
 				}
-			}
+			]
 		}
-		if(targetType == 'Video') {
-			if(params && params.start && params.end && params.start != -1 && params.end != -1) {
-				target.selector.refinedBy = {
-					type: "FragmentSelector",
-					conformsTo: "http://www.w3.org/TR/media-frags/",
-					value: '#t=' + params.start + ',' + params.end,
-					start: params.start,
-					end: params.end
-    			}
-			}
-		} else if(targetType == 'Audio') {
-			if(params && params.start && params.end && params.start != -1 && params.end != -1) {
-				target.selector.refinedBy = {
-					type: "FragmentSelector",
-					conformsTo: "http://www.w3.org/TR/media-frags/",
-					value: '#t=' + params.start + ',' + params.end,
-					start: params.start,
-					end: params.end
-    			}
-			}
-		} else if(targetType == 'Image') {
-			if(params && params.rect) {
-				target.selector.refinedBy = {
-					type: "FragmentSelector",
-					conformsTo: "http://www.w3.org/TR/media-frags/",
-					value: '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h,
-					rect : params.rect
-    			}
-			}
+		if (target.selector) {
+			selector['refinedBy'] = target.selector
+			targetType = 'Segment'
 		}
-		console.debug(target);
-		return target
+
+		if (resourceId){
+			selector.value.push({
+				id: resourceId,
+				type: ['Resource'],
+				property: 'isPartOf'
+			})
+			//check if it's a segment or not
+			const representationTypes = ['Representation', 'MediaObject', target.type]
+			if (target.selector) {
+				representationTypes.push('Segment')
+			}
+			selector.value.push({
+				id: target.source.substring(target.source.lastIndexOf('/') + 1),
+				type: representationTypes,
+				property: 'isRepresentation'
+			})
+		}
+
+		return {
+			type : targetType,
+			source : target.source,
+			selector : selector
+		}
 	},
 
 	/*************************************************************************************
@@ -214,22 +287,23 @@ const AnnotationUtil = {
 	},
 
 	extractTemporalFragmentFromAnnotation : function(annotation) {
-		if(annotation && annotation.target && annotation.target.selector && annotation.target.selector.start) {
+		if(annotation && annotation.target && annotation.target.selector
+			&& annotation.target.selector.refinedBy && annotation.target.selector.refinedBy.start) {
 			return {
-				start : annotation.target.selector.start,
-				end : annotation.target.selector.end
+				start : annotation.target.selector.refinedBy.start,
+				end : annotation.target.selector.refinedBy.end
 			}
 		}
 		return null;
 	},
 
 	extractSpatialFragmentFromAnnotation : function(annotation) {
-		if(annotation && annotation.target && annotation.target.selector) {
+		if(annotation && annotation.target && annotation.target.selector && annotation.target.selector.refinedBy) {
 			return {
-				x: annotation.target.selector.x,
-				y: annotation.target.selector.y,
-				w: annotation.target.selector.w,
-				h: annotation.target.selector.h
+				x: annotation.target.selector.refinedBy.x,
+				y: annotation.target.selector.refinedBy.y,
+				w: annotation.target.selector.refinedBy.w,
+				h: annotation.target.selector.refinedBy.h
 			}
 		}
 		return null;
