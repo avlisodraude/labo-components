@@ -127,9 +127,6 @@ const AnnotationUtil = {
 
 	//called from components that want to create a new annotation with a proper target
 	generateW3CEmptyAnnotation : function(user, project, collectionId, resourceId, mediaObject = null, segmentParams = null) {
-		console.debug('creating empty annotation');
-		console.debug(user, project, collectionId, resourceId, mediaObject, segmentParams)
-
 		let annotation = null;
 		//only try to extract/append the spatio-temporal parameters from the params if there is a mimeType
 		if(mediaObject && mediaObject.mimeType) {

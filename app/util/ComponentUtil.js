@@ -17,6 +17,25 @@ const ComponentUtil = {
 			$('#' + elementId).modal('hide');
 		}
 		component.setState(stateObj);
+	},
+
+	supportsHTML5Storage() {
+		try {
+			return 'localStorage' in window && window['localStorage'] !== null
+		} catch (e) {
+			return false
+		}
+	},
+
+	getJSONFromLocalStorage(key) {
+		if(!ComponentUtil.supportsHTML5Storage()) {
+			return false
+		}
+		try {
+			return JSON.parse(localStorage[key])
+		} catch (e) {
+			return null
+		}
 	}
 
 }

@@ -49,7 +49,7 @@ class ItemDetailsRecipe extends React.Component {
 		this.state = {
 			showModal : false, //triggered by the media players whenever an annotation needs to be edited
 			showProjectModal : false, //triggered by a button at the top of this recipe
-			activeProject : null,
+			activeProject : ComponentUtil.getJSONFromLocalStorage('activeProject'),
 			itemData : null, //populated from componentDidMount
 			activeMediaTab : 0, //which tab, i.e. media player, is visible/active
 
@@ -447,6 +447,10 @@ class ItemDetailsRecipe extends React.Component {
 	}
 
 	onProjectChanged(project) {
+		if(ComponentUtil.supportsHTML5Storage()) {
+			console.debug('storing the selecting project in local storage')
+			localStorage['activeProject'] = JSON.stringify(project);
+		}
 		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true);
 		AnnotationActions.changeProject(project);
 		//finally load the resource annotation with motivation bookmarking
@@ -467,7 +471,6 @@ class ItemDetailsRecipe extends React.Component {
 
 	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)
 	onLoadResourceAnnotations(data) {
-		console.debug('are there resource annotations?', data)
 		this.setState({
 			resourceAnnotations : data.annotations || []
 		})
