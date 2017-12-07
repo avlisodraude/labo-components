@@ -24,7 +24,8 @@ class BookmarkRow extends React.PureComponent {
 
   render(){
     let bookmark = this.props.bookmark;
-   return (
+    console.log(bookmark);
+    return (
       <div className={IDUtil.cssClassName('bookmark-row')}>
 
         <div className="bookmark">

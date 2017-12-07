@@ -11,11 +11,11 @@ class ProjectBookmarks extends React.PureComponent {
 
     this.state = {
       annotations : [],
-      loading : true,      
+      loading : true,
       view: 'bookmark-centric', // bookmark-centric, annotation-centric
     }
   }
-  
+
    /**
    * View changes
    * @param {SyntheticEvent} e Event
@@ -36,7 +36,7 @@ class ProjectBookmarks extends React.PureComponent {
     let viewComponent = null;
     switch(this.state.view){
       case 'bookmark-centric':
-        viewComponent = <BookmarkView />;
+        viewComponent = <BookmarkView user={this.props.user} project={this.props.project} />;
       break;
       case 'annotation-centric':
         viewComponent = <h2><br/>Todo: AnnotationView component</h2>;
@@ -47,23 +47,23 @@ class ProjectBookmarks extends React.PureComponent {
     return (
       <div className={IDUtil.cssClassName('project-bookmarks')}>
         <div className="tools">
-        
+
           <div className="view">
             <h3>View</h3>
             <div className="radiogroup" onChange={this.viewChange.bind(this)}>
-            
-              <input type="radio" 
-                     name="view" 
-                     value="bookmark-centric" 
-                     id="view-bookmark" 
+
+              <input type="radio"
+                     name="view"
+                     value="bookmark-centric"
+                     id="view-bookmark"
                      defaultChecked={this.state.view==='bookmark-centric'}
                      />
               <label htmlFor="view-bookmark">Bookmark-centric</label>
 
-              <input type="radio" 
-                     name="view" 
-                     value="annotation-centric" 
-                     id="view-annotation" 
+              <input type="radio"
+                     name="view"
+                     value="annotation-centric"
+                     id="view-annotation"
                      defaultChecked={this.state.view==='annotation-centric'}
                      />
               <label htmlFor="view-annotation">Annotation-centric</label>
@@ -72,7 +72,6 @@ class ProjectBookmarks extends React.PureComponent {
           </div>
 
         </div>
-
         { viewComponent }
 </div>
   )
