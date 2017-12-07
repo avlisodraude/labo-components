@@ -1,8 +1,64 @@
 const AnnotationUtil = {
 
+	/*************************************************************************************
+	 --------------------------  FILTER TARGETS FROM ANNOTATIONS -------------------------
+	*************************************************************************************/
+
+	//extracts all contained targets/resources into a list for the bookmark-centric view
+	nestedAnnotationListToResourceList(annotations) {
+		return annotations.map((na, index) => {
+			return {
+				// unique bookmark id, used for referencing
+				id: na.id,
+
+				// general object (document,fragment,entity) data
+				object: {
+
+					// unique object id
+					id: na.target.source,
+
+					// object type: "Video", Video-Fragment", "Image", "Audio", "Entity", ...
+					type: na.target.type,
+
+					// short object title
+					title: "NEED TO FETCH (DEPENDS ON RESOURCE)",
+
+					// (Creation) date of the object (nice to have)
+					date: "NEED TO FETCH (DEPENDS ON RESOURCE)",
+
+					// dataset the object originates from
+					dataset: AnnotationUtil.getStructuralElementFromSelector(na.target.selector, 'Collection'),
+
+					// placeholder image if available
+					placeholderImage: "http://localhost:5304/static/images/placeholder.2b77091b.svg"
+
+				},
+
+				// Bookmark created
+				created: na.created,
+
+				// sort position
+				sort: index,
+
+				// optional list of annotations here
+				// (could also be requested in separate calls)
+				annotations: na.body,
+			}
+		});
+	},
+
+	//extracts all contained annotations into a list for the annotation-centric view
+	nestedAnnotationListToAnnotationList(annotations) {
+		//TODO
+	},
+
+	getStructuralElementFromSelector(selector, resourceType) {
+		const tmp = selector.value.filter(rt => rt.type === resourceType);
+		return tmp.length > 0 ? tmp[0] : null;
+	},
 
 	/*************************************************************************************
-	 ************************************* W3C BUSINESS LOGIC HERE ********************
+	 --------------------------- W3C BUSINESS LOGIC HERE ---------------------------------
 	*************************************************************************************/
 
 	//get the index of the segment within a list of annotations of a certain target
@@ -10,7 +66,7 @@ const AnnotationUtil = {
 		if(annotations && annotation) {
 			let i = 0;
 			for(const a of annotations) {
-				if(a.target.selector) {
+				if(a.target.selector.refinedBy) {
 					if(a.id == annotation.id) {
 						return i;
 					}
@@ -27,7 +83,7 @@ const AnnotationUtil = {
 			index = index < 0 ? 0 : index;
 			let i = 0;
 			for(const a of annotations) {
-				if(a.target.selector) {
+				if(a.target.selector.refinedBy) {
 					if(i == index) {
 						return a;
 					}

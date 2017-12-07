@@ -181,14 +181,6 @@ class ItemDetailsRecipe extends React.Component {
 		}
 	}
 
-	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)
-	onLoadResourceAnnotations(data) {
-		console.debug('are there resource annotations?', data)
-		this.setState({
-			resourceAnnotations : data.annotations || []
-		})
-	}
-
 	//TODO call this after the details are loaded
 	onLoadPlayoutAccess(accessApproved, desiredState) {
 		this.setState(desiredState);
@@ -457,6 +449,13 @@ class ItemDetailsRecipe extends React.Component {
 	onProjectChanged(project) {
 		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true);
 		AnnotationActions.changeProject(project);
+		//finally load the resource annotation with motivation bookmarking
+		AnnotationStore.getDirectResourceAnnotations(
+			this.state.itemData.resourceId,
+			this.props.user,
+			this.state.activeProject,
+			this.onLoadResourceAnnotations.bind(this)
+		)
 	}
 
 	triggerProjectSelector() {
@@ -464,6 +463,14 @@ class ItemDetailsRecipe extends React.Component {
 		this.setState({
 			showProjectModal : !showProjectModal
 		});
+	}
+
+	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)
+	onLoadResourceAnnotations(data) {
+		console.debug('are there resource annotations?', data)
+		this.setState({
+			resourceAnnotations : data.annotations || []
+		})
 	}
 
 	bookmark() {
@@ -565,6 +572,7 @@ class ItemDetailsRecipe extends React.Component {
 							&nbsp;
 							<button className="btn btn-primary" onClick={this.bookmark.bind(this)}>
 								Bookmark
+								&nbsp;
 								<i className="fa fa-star" style={
 									this.state.resourceAnnotations.length > 0 ? {color: 'red'} : {color: 'white'}
 								}></i>
