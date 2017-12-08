@@ -9,107 +9,38 @@ import BookmarkRow from './BookmarkRow';
 import { exportDataAsJSON } from '../helpers/Export';
 import ItemDetailsRecipe from '../../ItemDetailsRecipe';
 
+import BookmarkTable from './BookmarkTable';
+
 class BookmarkView extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    /*
-    let placeholderData =[
-      {
-        // unique bookmark id, used for referencing
-        id: "unique-bookmark-id-12345",
-
-        // general object (document,fragment,entity) data
-        object:{
-
-          // unique object id
-          id: "openbeelden-video-10201",
-
-          // object type: "Video", Video-Fragment", "Image", "Audio", "Entity", ...
-          type: "Video",
-
-          // short object title
-          title: "Polygoonjournaal 1953-02-05 20:00",
-
-          // (Creation) date of the object (nice to have)
-          date: "1953-02-05T20:00:00Z",
-
-          // dataset the object originates from
-          dataset: "Beeld en Geluid : Open Beelden",
-
-          // placeholder image if available
-          placeholderImage: "https://www.openbeelden.nl/images/603292/Internationale_hondententoonstelling_%280_32%29.png"
-
-        },
-
-        // Bookmark created
-        created: "2017-02-20T10:04:45Z",
-
-        // sort position
-        sort: 1,
-
-        // optional list of annotations here
-        // (could also be requested in separate calls)
-        annotations:[],
-      },
-      {
-        id: "unique-bookmark-id-12344",
-        object:{
-          id: "niod-image-192929",
-          type: "Image",
-          title: "Example image",
-          date: "1964-05-01T00:00:00Z",
-          dataset: "NIOD",
-          placeholderImage: "https://www.openbeelden.nl/images/789580/Schuttersgilde_sint_sebastiaan_bestaat_500_jaar_%280_42%29.png"
-        },
-        created: "2017-02-20T10:04:40Z",
-        sort: 2,
-        annotations:[ ]
-      },
-      {
-        id: "unique-bookmark-id-12346",
-        object:{
-          id: "dive-entity-99111",
-          type: "Entity",
-          title: "Example entity",
-          date: "1964-05-01T00:00:00Z",
-          dataset: "VU: DIVE+",
-          placeholderImage: "https://www.openbeelden.nl/images/689885/Sport_instuif_voor_het_hele_gezin_%280_44%29.png"
-        },
-        created: "2017-02-20T10:04:40Z",
-        sort: 3,
-        annotations:[ ]
-      }
-
-    ];*/
-
-
+    
     this.state = {
-      bookmarks: [],
-      filteredBookmarks: [],
-      visibleBookmarks: [],
+      bookmarks: [],  
+      selection: [],    
       loading : true,
-      filter:{
-        keywords: '',
-        type: '',
-      },
-      order: 'created',
-      itemDetail: null 
+      viewObject: null,
     }
 
-    // binded functions
+    // bind functions
     this.viewBookmark = this.viewBookmark.bind(this);
     this.deleteBookmark = this.deleteBookmark.bind(this);
 
+    this.filterBookmarks = this.filterBookmarks.bind(this);
+    this.sortBookmarks = this.sortBookmarks.bind(this);
+    this.renderResults = this.renderResults.bind(this);
+
+    this.selectAllChange = this.selectAllChange.bind(this);
+    this.selectBookmark = this.selectBookmark.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.loadBookmarks();
   }
 
   /**
    * Load Annotation from Store
-   * (todo) -- rename to bookmarks
    */
   loadBookmarks() {
     AnnotationStore.getUserProjectAnnotations(
@@ -128,47 +59,13 @@ class BookmarkView extends React.PureComponent {
       data.annotations || []
     )
 
-
-    // filter
-    let filtered = this.filterBookmarks(bookmarks,this.state.filter);
-
-    // sort
-    let sorted = this.sortBookmarks(filtered, this.state.order);
-
-
-    // //TODO @Werner je kunt deze gebruiken in de annotation-centric view
-    // const annotations = AnnotationUtil.nestedAnnotationListToAnnotationList(
-    //   data.annotations || []
-    // )
-    // console.debug(annotations)
-
-
     this.setState({
-      bookmarks: bookmarks,
-      filteredBookmarks: filtered,
-      visibleBookmarks: sorted,
-      loading : false
+      bookmarks: bookmarks, 
+      loading : false,
+      selection: [],
     });
   }
-
-
-  /**
-   * Load and filter data
-   */
-  reloadData(){
-    // filter
-    let filtered = this.filterBookmarks(this.state.bookmarks,this.state.filter);
-
-    // sort
-    let sorted = this.sortBookmarks(filtered, this.state.order);
-
-    // update state
-    this.setState({
-      filteredBookmarks: filtered,
-      visibleBookmarks: sorted,
-    });
-  }
-
+ 
   /**
    * Filter bookmark list by given filter
    * @param  {array} bookmarks  Bookmarks array
@@ -176,14 +73,15 @@ class BookmarkView extends React.PureComponent {
    * @return {array}            Filtered bookmarks array
    */
   filterBookmarks(bookmarks, filter){
+
     // filter on keywords in title, dataset or type
     if (filter.keywords){
       let keywords = filter.keywords.split(" ");
       keywords.forEach((k)=>{
         k = k.toLowerCase();
         bookmarks = bookmarks.filter((bookmark)=>(bookmark.object.title.toLowerCase().includes(k)
-                                                  || bookmark.object.dataset.toLowerCase().includes(k)
-                                                  || bookmark.object.type.toLowerCase().includes(k)))
+                                                  || (bookmark.object.dataset && bookmark.object.dataset.toLowerCase().includes(k))
+                                                  || (bookmark.object.type && bookmark.object.type.toLowerCase().includes(k))))
       });
     }
 
@@ -195,26 +93,11 @@ class BookmarkView extends React.PureComponent {
     return bookmarks;
   }
 
-
-  /**
-   * Sort bookmarks by the given field
-   * @param {string} field Unique sort field   
-   */
-  setSort(field){
-
-    this.setState({
-      order: field,
-
-      // filter list from original bookmarks to keep sort list consistent
-      visibleBookmarks: this.sortBookmarks(this.state.filteredBookmarks, field)
-    });
-
-  }
-
   /** 
    * Sort bookmarks 
    * @param {Array} bookmarks List of bookmarks to be sorted
-   * @param {string} sort Sort field   * 
+   * @param {string} sort Sort field   
+   * @return {Array} Sorted bookmarks
    */
   sortBookmarks(bookmarks, field){
    let sorted = bookmarks;
@@ -248,46 +131,8 @@ class BookmarkView extends React.PureComponent {
       return sorted;
    }
 
-
    return sorted;
 
-  }
-
-  /**
-   * Listen for update, request new data if filter has been changed
-   */
-  componentDidUpdate(){
-    if (this.lastFilter !== this.state.filter){
-      this.lastFilter = this.state.filter;
-
-      // throttle data requests
-      clearTimeout(this.requestDataTimeout);
-      this.requestDataTimeout = setTimeout(this.reloadData.bind(this), 500);
-    }
-  }
-
-  /**
-   * Keywords filter changes
-   * @param {SyntheticEvent} e Event
-   */
-  keywordsChange(e){
-    this.setState({
-        filter: Object.assign({}, this.state.filter, {
-        keywords: e.target.value
-      })
-    });
-  }
-
-  /**
-   * Type filter changes
-   * @param {SyntheticEvent} e Event
-   */
-  typeChange(e){
-    this.setState({
-        filter: Object.assign({}, this.state.filter, {
-        type: e.target.value
-      })
-    });
   }
 
 
@@ -306,7 +151,7 @@ class BookmarkView extends React.PureComponent {
    */
   viewBookmark(bookmark){
     this.setState({
-      itemDetail: bookmark
+      viewObject: bookmark
     })
   }
 
@@ -319,78 +164,123 @@ class BookmarkView extends React.PureComponent {
   }
 
 
+  /**
+   * Select all items
+   */
+  selectAllChange(items, e){
+    if (e.target.checked){
+      let newSelection = this.state.selection.slice();
+      items.forEach((item)=>{ if(!newSelection.includes(item)){ newSelection.push(item)}});
+      // set
+      this.setState({
+        selection: newSelection
+      });  
+    } else{
+      // unset
+      this.setState({
+        selection: this.state.selection.filter((item)=>(!items.includes(item)))
+      });  
+    }
+    
+  }
+
+  /**
+   * Select bookmark   
+   */
+  selectBookmark(bookmark, select){ 
+    if (select){  
+
+      if(!this.state.selection.includes(bookmark)){
+        // add to selection
+        this.setState({
+          selection: [...this.state.selection, bookmark]
+        });
+      }
+      return;
+    }
+
+    // remove from selection
+    if (!select){
+      this.setState({
+        selection: this.state.selection.filter((selected)=>(selected!== bookmark))
+      });
+    }
+  }
+
+  /**
+   * Renders the results in the BookmarkTable component
+   * @param {object} state State of the render component
+   * @return {Element} View results
+   */
+  renderResults(renderState){
+    return (
+      <div>
+        <h2>
+          <input type="checkbox" 
+                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item))) }
+                 onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
+                />
+          Bookmarks: <span className="count">{renderState.visibleItems.length || 0}</span>
+        </h2>
+        <div className="table">
+          {renderState.visibleItems.map((bookmark, index)=>(
+            <BookmarkRow key={index} 
+                         bookmark={bookmark} 
+                         onDelete={this.deleteBookmark}
+                         onView={this.viewBookmark}
+                         selected={this.state.selection.includes(bookmark)}
+                         onSelect={this.selectBookmark}                         
+                         />
+            ))}           
+        </div>
+      </div>
+      );
+  }
+
   render(){
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
-        <div className="tools">
-          <div className="export-button btn primary" onClick={exportDataAsJSON.bind(this,this.state.bookmarks)}>Export</div>
+        <BookmarkTable 
+          items={this.state.bookmarks}
+          sortItems={this.sortBookmarks}
+          orders={[
+            {value:"created", name:"Bookmark created"},
+            {value:"newest", name:"Newest objects first"},
+            {value:"oldest", name:"Oldest objects first"},
+            {value:"name-az", name:"Title A-Z"},
+            {value:"name-za", name:"Title Z-A"},
+            {value:"type", name:"Type"},
+            {value:"dataset", name:"Dataset"},
+            {value:"manual", name:"Manual"},
+            ]}
+          filterItems={this.filterBookmarks}
+          filters={[
+            {value: "audio", name: "Audio"},
+            {value: "entity", name: "Entity"},
+            {value: "image", name: "Image"},
+            {value: "segment", name: "Segment"},
+            {value: "video", name: "Video"},
+            ]}          
+          renderResults={this.renderResults}
+          onExport={exportDataAsJSON}
+          />
 
-          <div className="filters">
-            <div className="left">
-
-              <h3>Filters</h3>
-
-              <input className="search"
-                     type="text"
-                     placeholder="Search"
-                     value={this.state.filter.keywords}
-                     onChange={this.keywordsChange.bind(this)}
-                     />
-
-              <label className="type-label">Type</label>
-
-              <select className="type-select" value={this.state.type} onChange={this.typeChange.bind(this)}>
-                 {/* todo: dynamically disable/enable options based on set? */}
-                 <option></option>
-                 <option value="video">Video</option>
-                 <option value="fragment">Fragment</option>
-                 <option value="image">Image</option>
-                 <option value="audio">Audio</option>
-                 <option value="entity">Entity</option>
-              </select>
-
-            </div>
-
-            <div className="right">
-
-              <h3>Order</h3>
-
-              <select value={this.state.order} onChange={this.sortChange.bind(this)}>
-                <option value="created">Bookmark created</option>
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="name-az">Title A-Z</option>
-                <option value="name-za">Title Z-A</option>
-                <option value="type">Type</option>
-                <option value="dataset">Dataset</option>
-                <option value="manual">Manual</option>
-              </select>
-
-            </div>
-          </div>
-        </div>
-
-        <div className="results">
-          <h3><input type="checkbox"/>Bookmarks: <span className="count">{this.state.visibleBookmarks.length || 0}</span></h3>
-
-          <div className="table">
-            {this.state.visibleBookmarks.map((bookmark, index)=>(
-              <BookmarkRow key={index} 
-                           bookmark={bookmark} 
-                           onDelete={this.deleteBookmark}
-                           onView={this.viewBookmark}
-                           />
-              ))}           
-          </div>
-      </div>
-
-      {this.state.itemDetail ? 
+        {this.state.viewObject ? 
         /* todo: display item details recipe in overlay */
         <div className="modal">
           <div className="close" onClick={()=>{this.viewBookmark(null);}} />
           <div className="container">
-            Todo: ItemDetailsRecipe here.<br/><br/>
-            {"<ItemDetailsRecipe item={this.state.itemDetail} />"}
+              
+            Todo: viewObjectsRecipe here: this requires the ID and Collection ID from the object (or rather a single unique ID)<br/><br/>
+            {"<ItemDetailsRecipe id=\"\" cid=\"\" />"} 
+            
+            {/* 
+
+            Params from url: id=5180841@program&cid=nisv-catalogue-aggr
+            <itemDetailsRecipe id={this.state.viewObject.object.id} cid="nisv-catalogue-aggr" />
+
+            */}
+            
             <br/><br/>
           </div>
         </div>

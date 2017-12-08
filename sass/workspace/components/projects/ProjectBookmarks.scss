@@ -2,8 +2,13 @@
   @import '_tools.scss';
 
   .tools{
+    background-color: $clWhite;
+    
     .radiogroup{
       display: inline-block;
+      label,input{
+        cursor: pointer;
+      }
     }
 
     .view{
