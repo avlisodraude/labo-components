@@ -16,11 +16,14 @@ class BookmarkView extends React.PureComponent {
   constructor(props) {
     super(props);
     
+    this.bookmarkTypes = ["Video", "Video-Fragment", "Image", "Audio", "Entity"];
+
     this.state = {
       bookmarks: [],  
       selection: [],    
       loading : true,
       viewObject: null,
+      filters: []
     }
 
     // bind functions
@@ -51,6 +54,27 @@ class BookmarkView extends React.PureComponent {
   }
 
   /**
+   * Get filter list of unique object types
+   * @param  {array} items List of bookmarks
+   * @return {array}       List of filters
+   */
+  getFilters(items){
+   
+    let result = [];
+    let hits = {};
+
+    items.forEach((item)=>{ 
+      var t = item.object.type;
+      if (!(t in hits)){
+        result.push( {value: t, name: t.charAt(0).toUpperCase() + t.slice(1)},);
+        hits[t] = true;
+      }
+    });
+    return result.sort();
+  }
+
+ 
+  /**
    * Annotation load callback: set data to state
    * @param  {Object} data Response object with annotation list
    */
@@ -63,6 +87,7 @@ class BookmarkView extends React.PureComponent {
       bookmarks: bookmarks, 
       loading : false,
       selection: [],
+      filters: this.getFilters(bookmarks),
     });
   }
  
@@ -87,7 +112,7 @@ class BookmarkView extends React.PureComponent {
 
     // filter on type
     if (filter.type){
-      bookmarks = bookmarks.filter((bookmark)=>(bookmark.object.type.toLowerCase().includes(filter.type)));
+      bookmarks = bookmarks.filter((bookmark)=>(bookmark.object.type.toLowerCase().includes(filter.type.toLowerCase())));
     }
 
     return bookmarks;
@@ -254,13 +279,7 @@ class BookmarkView extends React.PureComponent {
             {value:"manual", name:"Manual"},
             ]}
           filterItems={this.filterBookmarks}
-          filters={[
-            {value: "audio", name: "Audio"},
-            {value: "entity", name: "Entity"},
-            {value: "image", name: "Image"},
-            {value: "segment", name: "Segment"},
-            {value: "video", name: "Video"},
-            ]}          
+          filters={this.state.filters}          
           renderResults={this.renderResults}
           onExport={exportDataAsJSON}
           />

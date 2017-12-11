@@ -58,6 +58,22 @@ class AnnotationView extends React.PureComponent {
     )
   }
 
+
+/**
+   * Get filter list of existing annotation types
+   * @param  {array} items List of annotations
+   * @return {array}       List of filters
+   */
+  getFilters(items){
+  let filters = [];
+    // only add existing types to the filter
+    this.annotationTypes.forEach((type)=>{
+      if (items.some((annotation)=>(annotation.annotationType == type.value))){
+        filters.push(type);
+      }
+    });
+  }
+
   /**
    * Annotation load callback: set data to state
    * @param  {Object} data Response object with annotation list
@@ -68,19 +84,13 @@ class AnnotationView extends React.PureComponent {
       data.annotations || []
     )
 
-    let filters = [];
-    // only add existing types to the filter
-    this.annotationTypes.forEach((type)=>{
-      if (annotations.some((annotation)=>(annotation.annotationType == type.value))){
-        filters.push(type);
-      }
-    });
+    
 
     this.setState({
       annotations: annotations,
       loading : false,
       selection: [],
-      filters,
+      filters: this.getFilters(annotations),
     });
   }
  
