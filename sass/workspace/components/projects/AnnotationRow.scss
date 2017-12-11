@@ -1,3 +1,19 @@
 .bg__annotation-row{
-  
+  .item{
+    .classification{
+      .vocabulary{
+        width: 150px;
+      }
+    }
+
+    .metadata{
+      .template{
+        width: 100px;
+      }
+    }
+
+    .created{
+      width: 100px;
+    }
+  }
 }
