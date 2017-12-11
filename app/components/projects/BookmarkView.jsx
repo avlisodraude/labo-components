@@ -222,7 +222,7 @@ class BookmarkView extends React.PureComponent {
                 />
           Bookmarks: <span className="count">{renderState.visibleItems.length || 0}</span>
         </h2>
-        <div className="table">
+        <div className="bookmark-table">
           {renderState.visibleItems.map((bookmark, index)=>(
             <BookmarkRow key={index} 
                          bookmark={bookmark} 

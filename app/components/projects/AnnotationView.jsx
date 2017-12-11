@@ -229,7 +229,7 @@ class AnnotationView extends React.PureComponent {
                 />
           {type}: <span className="count">{items.length || 0}</span>
         </h3>
-        <div className="table">          
+        <div className="bookmark-table">          
             {items.map((annotation, index)=>(
             <AnnotationRow key={index} 
                          annotation={annotation} 
