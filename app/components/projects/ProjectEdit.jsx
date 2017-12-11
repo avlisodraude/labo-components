@@ -20,13 +20,6 @@ class ProjectEdit extends React.PureComponent {
     // get project id from url
     let projectId = this.props.match.params.id; 
 
-    // request current project data
-    // This function is missing from the API
-    if (!ProjectAPI.get){
-      console.error('This page requires the projectAPI.get function to be implemented');
-      return;
-    }
-
     // load project data, and set state
     ProjectAPI.get(this.props.user.id, projectId, (project) => {
       // inject project name to breadcrumbs
