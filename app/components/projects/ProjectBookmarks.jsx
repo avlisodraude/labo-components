@@ -17,8 +17,6 @@ class ProjectBookmarks extends React.PureComponent {
 
     // get view from session storage
     let view = window.sessionStorage.getItem(this.keys.view) || 'bookmark-centric'; // bookmark-centric, annotation-centric
-    
-
     this.state = {
       annotations : [],
       loading : true,
@@ -37,7 +35,6 @@ class ProjectBookmarks extends React.PureComponent {
 
     // store view to session storage
     window.sessionStorage.setItem(this.keys.view,view);
-
 
     this.setState({
         view

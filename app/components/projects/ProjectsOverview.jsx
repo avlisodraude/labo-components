@@ -3,7 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectTable from './ProjectTable';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { setBreadCrumbs } from '../helpers/BreadCrumbs';
+import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
 class ProjectsOverview extends React.PureComponent {
 
@@ -12,7 +12,7 @@ class ProjectsOverview extends React.PureComponent {
   }
 
   componentDidMount(){
-    setBreadCrumbs(this.props.match.path.split('/'));
+    setBreadCrumbsFromMatch(this.props.match);
   }
 
   render(){    

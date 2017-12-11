@@ -28,7 +28,7 @@ const ComponentUtil = {
 	},
 
 	storeJSONInLocalStorage(key, data) {
-		if(ComponentUtil.supportsHTML5Storage()) {
+		if(ComponentUtil.supportsHTML5Storage() && data) {
 			try {
 				localStorage[key] = JSON.stringify(data);
 				return true
@@ -40,7 +40,7 @@ const ComponentUtil = {
 	},
 
 	getJSONFromLocalStorage(key) {
-		if(ComponentUtil.supportsHTML5Storage()) {
+		if(ComponentUtil.supportsHTML5Storage() && localStorage[key]) {
 			try {
 				return JSON.parse(localStorage[key])
 			} catch (e) {

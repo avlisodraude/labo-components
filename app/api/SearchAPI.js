@@ -112,8 +112,11 @@ const SearchAPI = {
 
 	//Primarily called by the ItemDetailsRecipe for fetching all metadata of a single collection item (ES document)
 	getItemDetails :function(collectionId, itemId, callback) {
-		const url = _config.SEARCH_API_BASE + '/document/get_doc/' + collectionId + '/' + itemId;
+		const url = _config.SEARCH_API_BASE + '/document/get_doc/' + collectionId;
 		const xhr = new XMLHttpRequest();
+		const postData = {
+			id : itemId
+		}
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
 				if(xhr.status == 200) {
@@ -123,9 +126,9 @@ const SearchAPI = {
 				}
 			}
 		}
-		xhr.open("GET", url);
+		xhr.open("POST", url);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		xhr.send();
+		xhr.send(JSON.stringify(postData));
 	},
 
 	//Sends your ES query to the Search API. Not used by any component at the moment

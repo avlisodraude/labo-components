@@ -83,7 +83,7 @@ class CollectionSelector extends React.Component {
 			if(this.props.showSelect) {
 		        const collectionOptionsArray = this.state.collectionList.map((collection) => {
 					return {
-						"key": collection.creator_user_id,
+						"key": collection.index,
 						"title": collection.title,
 						"index": collection.index
 					}
@@ -108,15 +108,9 @@ class CollectionSelector extends React.Component {
 
 				//the collections visualized as blocks
 				const collectionBlocks = this.state.collectionList.map((collection) => {
-					const tmp = collection.organization.image_url;
-					let image = null;
-					if(tmp && tmp.indexOf('http:') != -1) {
-						image = <img src={tmp}/>
-					}
 					return (
 						<div className={IDUtil.cssClassName('collection', this.CLASS_PREFIX)}
 							onClick={this.selectCollection.bind(this, collection.index)}>
-							{image}
 							<div className={IDUtil.cssClassName('caption', this.CLASS_PREFIX)}>
 								<h4>{collection.title}</h4>
 								<p>{collection.organization.title}</p>

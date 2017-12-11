@@ -3,7 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import { setBreadCrumbs } from '../helpers/BreadCrumbs';
+import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
 class ProjectWrapper extends React.PureComponent {
 
@@ -18,7 +18,6 @@ class ProjectWrapper extends React.PureComponent {
 
   componentDidMount(){
     this.loadProject();
-    setBreadCrumbs(this.props.match.path.split('/'));
   }
 
   /**
@@ -29,6 +28,13 @@ class ProjectWrapper extends React.PureComponent {
 
     // load project data, and set state
     ProjectAPI.get(this.props.user.id, projectId, (project) => {
+      // inject project name to breadcrumbs
+      let titles = {};
+      titles[project.id]=project.name;
+      // update breadcrumbs
+      setBreadCrumbsFromMatch(this.props.match, titles);
+
+      // set to state
       this.setState({
         loading: false,
         project

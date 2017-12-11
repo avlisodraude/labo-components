@@ -501,7 +501,11 @@ class ItemDetailsRecipe extends React.Component {
 			let annotationList = null;
 			let metadataPanel = null;
 			let mediaPanel = null;
+
+			//disabled when there is ingredients.disableProject = true
 			let projectModal = null;
+			let projectSelectorBtn = null;
+			let bookmarkBtn = null;
 
 
 			//on the top level we only check if there is any form of annotationSupport
@@ -535,17 +539,38 @@ class ItemDetailsRecipe extends React.Component {
 				);
 			}
 
-			//project modal
-			if(this.state.showProjectModal) {
-				projectModal = (
-					<FlexModal
-						elementId="project__modal"
-						stateVariable="showProjectModal"
-						owner={this}
-						size="large"
-						title="Select a project">
-							<ProjectSelector onOutput={this.onComponentOutput.bind(this)} user={this.props.user}/>
-					</FlexModal>
+			if(!this.props.recipe.ingredients.disableProjects) {
+
+				//project modal
+				if(this.state.showProjectModal) {
+					projectModal = (
+						<FlexModal
+							elementId="project__modal"
+							stateVariable="showProjectModal"
+							owner={this}
+							size="large"
+							title="Select a project">
+								<ProjectSelector onOutput={this.onComponentOutput.bind(this)} user={this.props.user}/>
+						</FlexModal>
+					)
+				}
+
+				//project selector button
+				projectSelectorBtn = (
+					<button className="btn btn-primary" onClick={this.triggerProjectSelector.bind(this)}>
+						Projects ({this.state.activeProject ? this.state.activeProject.name : 'none selected'})
+					</button>
+				)
+
+				//bookmark button
+				bookmarkBtn = (
+					<button className="btn btn-primary" onClick={this.bookmark.bind(this)}>
+						Bookmark
+						&nbsp;
+						<i className="fa fa-star" style={
+							this.state.resourceAnnotations.length > 0 ? {color: 'red'} : {color: 'white'}
+						}></i>
+					</button>
 				)
 			}
 
@@ -566,17 +591,9 @@ class ItemDetailsRecipe extends React.Component {
 					{projectModal}
 					<div className="row">
 						<div className="col-md-12">
-							<button className="btn btn-primary" onClick={this.triggerProjectSelector.bind(this)}>
-								Projects ({this.state.activeProject ? this.state.activeProject.name : 'none selected'})
-							</button>
+							{projectSelectorBtn}
 							&nbsp;
-							<button className="btn btn-primary" onClick={this.bookmark.bind(this)}>
-								Bookmark
-								&nbsp;
-								<i className="fa fa-star" style={
-									this.state.resourceAnnotations.length > 0 ? {color: 'red'} : {color: 'white'}
-								}></i>
-							</button>
+							{bookmarkBtn}
 							<br/>
 							{mediaPanel}
 							<div className="row">

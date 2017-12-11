@@ -2,6 +2,7 @@ import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
+import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
 class ProjectEdit extends React.PureComponent {
 
@@ -28,6 +29,12 @@ class ProjectEdit extends React.PureComponent {
 
     // load project data, and set state
     ProjectAPI.get(this.props.user.id, projectId, (project) => {
+      // inject project name to breadcrumbs
+      let titles = {};
+      titles[project.id]=project.name;
+      // update breadcrumbs
+      setBreadCrumbsFromMatch(this.props.match, titles);
+
       this.setState({
         loading: false,
         project
