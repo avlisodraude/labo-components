@@ -172,6 +172,10 @@ class QueryBuilder extends React.Component {
 
 	/*---------------------------------- SEARCH --------------------------------------*/
 
+	blockSearch(e) {
+		e.preventDefault();
+	}
+
 	doSearch(args) {
 		this.setState(
 			{
@@ -182,7 +186,7 @@ class QueryBuilder extends React.Component {
 	}
 
 	searchFormKeyPressed(target) {
-		if(target.charCode==13){
+		if(target.charCode==13) {
 			this.newSearch();
 		}
 	}
@@ -702,7 +706,7 @@ class QueryBuilder extends React.Component {
 					<div className="separator"></div>
 					<div className="row">
 						<div className="col-md-12">
-							<form className="form-horizontal">
+							<form className="form-horizontal" onSubmit={this.blockSearch.bind(this)}>
 								<div className="form-group">
 									<div className="col-sm-6">
 										<div className="input-group">
