@@ -143,9 +143,7 @@ class BookmarkTable extends React.PureComponent {
               <label className="type-label">Type</label>
 
               <select className="type-select" value={this.state.type} onChange={this.typeChange.bind(this)}>
-                 {/* todo: dynamically disable/enable options based on set? */}
                  <option></option>
-
                  {this.props.filters.map((filter,index)=>(<option key={index} value={filter.value}>{filter.name}</option>))}
               </select>
 
