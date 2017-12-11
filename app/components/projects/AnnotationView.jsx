@@ -16,11 +16,19 @@ class AnnotationView extends React.PureComponent {
   constructor(props) {
     super(props);
     
+    this.annotationTypes = [
+      {value: "classification", name: "Classification"},
+      {value: "comment", name: "Comment"},
+      {value: "link", name: "Link"},
+      {value: "metadata", name: "Metadata"},
+    ];
+
     this.state = {
       annotations: [],  
       selection: [],    
       loading : true,
       viewObject: null,
+      filters: []
     }
 
     // bind functions
@@ -60,10 +68,19 @@ class AnnotationView extends React.PureComponent {
       data.annotations || []
     )
 
+    let filters = [];
+    // only add existing types to the filter
+    this.annotationTypes.forEach((type)=>{
+      if (annotations.some((annotation)=>(annotation.annotationType == type.value))){
+        filters.push(type);
+      }
+    });
+
     this.setState({
       annotations: annotations,
       loading : false,
       selection: [],
+      filters,
     });
   }
  
@@ -197,6 +214,12 @@ class AnnotationView extends React.PureComponent {
    * @param {object} state State of the render component
    */
   renderResultType(type, items){
+
+    // don't render empty results
+    if (items.length == 0){
+      return null;
+    }
+
     return(
       <div className="type-list">
         <h3>
@@ -237,9 +260,9 @@ class AnnotationView extends React.PureComponent {
           Annotations: <span className="count">{renderState.visibleItems.length || 0}</span>
         </h2>
         <div className="table">          
-            {['classification','comment','link','metadata'].map((type) => (
-                this.renderResultType(type, renderState.visibleItems.filter((item)=>(item.annotationType == type )))
-              )) }
+          {this.annotationTypes.map((type) => (
+              this.renderResultType(type.name, renderState.visibleItems.filter((item)=>(item.annotationType == type.value )))
+            )) }
         </div> 
       </div>
       );
@@ -255,12 +278,7 @@ class AnnotationView extends React.PureComponent {
               {value:"created", name:"Annotation created"},
             ]}
           filterItems={this.filterAnnotations}
-          filters={[
-            {value: "classification", name: "Classification"},
-            {value: "comment", name: "Comment"},
-            {value: "link", name: "Link"},
-            {value: "metadata", name: "Metadata"},
-            ]}          
+          filters={this.state.filters}          
           renderResults={this.renderResults}
           onExport={exportDataAsJSON}
           />
