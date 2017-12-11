@@ -3,6 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+import { setBreadCrumbs } from '../helpers/BreadCrumbs';
 
 class ProjectWrapper extends React.PureComponent {
 
@@ -17,6 +18,7 @@ class ProjectWrapper extends React.PureComponent {
 
   componentDidMount(){
     this.loadProject();
+    setBreadCrumbs(this.props.match.path.split('/'));
   }
 
   /**
