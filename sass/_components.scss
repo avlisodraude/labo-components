@@ -426,7 +426,17 @@
 	.bg__rcp__id__media-player {}
 }
 
-.bg__comparative-search-recipe {} /* ComparativeSearchRecipe.jsx */
+.bg__comparative-search-recipe {
+	.react-datepicker__input-container {
+		input	{
+			min-width: 130px;
+		}
+
+	}
+	.react-datepicker-wrapper {
+		margin-top: -10px !important;
+	}
+} /* ComparativeSearchRecipe.jsx */
 
 .bg__single-search-recipe {} /* SingleSearchRecipe.jsx */
 
