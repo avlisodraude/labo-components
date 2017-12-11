@@ -1,21 +1,5 @@
 .bg__bookmark-view{
-  .results{
-    h3{
-      margin: 20px 0;
-
-      input{
-        margin-left: 10px;
-        margin-right: 10px;
-      }
-
-      @import '_count.scss';
-      .count{
-        background-color: $clPrimary;
-        float: none;
-        margin-left: 3px;
-      }
-    }
-  }
+  @import '_resultTop.scss';
 
   @import '_modal.scss';
 }
