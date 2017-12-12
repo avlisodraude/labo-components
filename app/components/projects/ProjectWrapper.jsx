@@ -18,7 +18,7 @@ class ProjectWrapper extends React.PureComponent {
     }
 
     let bookmarkCount = window.sessionStorage.getItem(this.keys.bookmarkCount) || 0;
-    
+
     this.state={
       loading: true,
       project: null,
@@ -34,7 +34,7 @@ class ProjectWrapper extends React.PureComponent {
    * Load project from url id and load it to the state
    */
   loadProject(){
-    let projectId = this.props.match.params.id; 
+    let projectId = this.props.match.params.id;
 
     // load project data, and set state
     ProjectAPI.get(this.props.user.id, projectId, (project) => {
@@ -69,29 +69,27 @@ class ProjectWrapper extends React.PureComponent {
    * Set bookmark count to state
    */
   setBookmarkCount(data){
-   const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
+    const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
       data.annotations || []
     );
+    const bookmarkCount = bookmarks ? bookmarks.length : 0;
 
-   let bookmarkCount = bookmarks ? bookmarks.length : 0;
+    window.sessionStorage.setItem(this.keys.bookmarkCount, bookmarkCount);
 
-   window.sessionStorage.setItem(this.keys.bookmarkCount,bookmarkCount);
-
-   this.setState({
+    this.setState({
       bookmarkCount
     })
   }
-   
 
   render(){
     let RenderComponent = this.props.renderComponent;
     let project = this.state.project;
     return (
       <div className={IDUtil.cssClassName('project-wrapper')}>
-        {this.state.loading ? 
+        {this.state.loading ?
           <h3 className="loading">Loading...</h3>
-          : 
-          project ? 
+          :
+          project ?
             <div>
               <div className="project-header">
 

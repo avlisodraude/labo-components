@@ -99,14 +99,13 @@ class ProjectTable extends React.PureComponent {
    * Set bookmark count to state
    */
   setBookmarkCount(project, data){
-   const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
+    const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
       data.annotations || []
     );
-
-   let bookmarkCount = bookmarks ? bookmarks.length : 0;
-   let newCount  = {};
-   newCount[project.id] = bookmarkCount;
-   this.setState({
+    const bookmarkCount = bookmarks ? bookmarks.length : 0;
+    const newCount  = {};
+    newCount[project.id] = bookmarkCount;
+    this.setState({
       bookmarkCount: Object.assign({},this.state.bookmarkCount, newCount)
     })
   }
