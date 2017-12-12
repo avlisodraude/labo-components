@@ -252,7 +252,7 @@ class ProjectTable extends React.PureComponent {
       sorted.sort((a,b) => (a.name > b.name));
     break;
     case 'bookmarks':
-      sorted.sort((a,b) => (a.bookmarks.length - b.bookmarks.length));
+      sorted.sort((a,b) => (this.getBookmarkCount(a.id) > this.getBookmarkCount(b.id)));
     break;
     case 'owner':
       sorted.sort((a,b) => (a.owner.name > b.owner.name));
