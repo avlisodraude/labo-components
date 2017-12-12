@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
+import ComponentUtil from '../../util/ComponentUtil';
 import SortTable from './SortTable';
 import { Link } from 'react-router-dom';
 import AnnotationStore from '../../flux/AnnotationStore';
@@ -23,7 +24,7 @@ class ProjectTable extends React.PureComponent {
       },
       bookmarkCount:{}
     }
-        
+
     this.requestedBookmark={};
 
     this.requestDataTimeout = -1;
@@ -52,6 +53,9 @@ class ProjectTable extends React.PureComponent {
     // we filter the results now on client side
     projects = this.filterProjects(projects);
 
+     //TODO this is for now the only place where this is set. Probably not good enough
+    ComponentUtil.storeJSONInLocalStorage('myProjects', projects);
+
     this.setState({
       projects: projects,
       loading: false,
@@ -77,7 +81,7 @@ class ProjectTable extends React.PureComponent {
         this.loadBookmarkCount(project);
       }
     });
-  } 
+  }
 
    /**
    * Load bookmark count from annotation store
@@ -135,7 +139,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Decorate projects data with helper functions
-   * (currently placeholders) 
+   * (currently placeholders)
    */
   toDummyData(projects){
     return projects.map((p) => {
@@ -225,17 +229,17 @@ class ProjectTable extends React.PureComponent {
 
       // after each return calls is decreased
       // when calls is 0, data is reloaded
-      // this is async safe      
+      // this is async safe
       projects.forEach((project, index)=>{
-        this.props.api.delete(this.props.user.id, project.id, (status) => {          
+        this.props.api.delete(this.props.user.id, project.id, (status) => {
             calls--;
             if (calls == 0){
               // after the last delete just retrieve the latest data
-              this.loadData();  
-            }            
-          }          
-        );  
-      });      
+              this.loadData();
+            }
+          }
+        );
+      });
     }
   }
 
@@ -331,7 +335,7 @@ class ProjectTable extends React.PureComponent {
                 { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
                 { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={exportDataAsJSON.bind(this,project)}>Export</a> : ''},
                 { content: project.canOpen(currentUserId) ? <Link to={"/workspace/projects/" + project.id} className="btn">Open</Link> : ''}
-              ])}           
+              ])}
 
             sort={this.sortProjects.bind(this)}
             loading={this.state.loading}
