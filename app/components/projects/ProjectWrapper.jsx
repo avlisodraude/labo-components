@@ -3,6 +3,8 @@ import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+import AnnotationStore from '../../flux/AnnotationStore';
+import AnnotationUtil from '../../util/AnnotationUtil';
 import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
 class ProjectWrapper extends React.PureComponent {
@@ -10,9 +12,17 @@ class ProjectWrapper extends React.PureComponent {
   constructor(props){
     super(props);
 
+    // unique keys used for storage
+    this.keys={
+      bookmarkCount: "bg__project-bookmarks-count"
+    }
+
+    let bookmarkCount = window.sessionStorage.getItem(this.keys.bookmarkCount) || 0;
+    
     this.state={
       loading: true,
-      project: null
+      project: null,
+      bookmarkCount: bookmarkCount
     }
   }
 
@@ -38,10 +48,40 @@ class ProjectWrapper extends React.PureComponent {
       this.setState({
         loading: false,
         project
-      })
+      });
+
+      this.loadBookmarkCount(project);
     })
   }
 
+  /**
+   * Load bookmark count from annotation store
+   */
+   loadBookmarkCount(project){
+      AnnotationStore.getUserProjectAnnotations(
+        this.props.user,
+        project,
+        this.setBookmarkCount.bind(this)
+      )
+    }
+
+  /**
+   * Set bookmark count to state
+   */
+  setBookmarkCount(data){
+   const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
+      data.annotations || []
+    );
+
+   let bookmarkCount = bookmarks ? bookmarks.length : 0;
+
+   window.sessionStorage.setItem(this.keys.bookmarkCount,bookmarkCount);
+
+   this.setState({
+      bookmarkCount
+    })
+  }
+   
 
   render(){
     let RenderComponent = this.props.renderComponent;
@@ -61,7 +101,7 @@ class ProjectWrapper extends React.PureComponent {
                 </div>
 
                 <div className="submenu">
-                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/bookmarks"}>Bookmarks & Annotations<span className="count">{project.bookmarks ? project.bookmarks.length : 0}</span></NavLink>
+                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/bookmarks"}>Bookmarks & Annotations<span className="count">{this.state.bookmarkCount}</span></NavLink>
                   <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/sessions"}>Tool Sessions<span className="count">{project.sessions ? project.sessions.length : 0}</span></NavLink>
                   <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/details"}>Details</NavLink>
                 </div>
