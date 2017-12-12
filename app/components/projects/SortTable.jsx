@@ -142,7 +142,7 @@ class SortTable extends React.PureComponent {
         <table>
           <thead>
             <tr>
-              <th><input type="checkbox" title="Select all" checked={this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
+              <th><input type="checkbox" title="Select all" checked={this.state.items.length > 0 && this.state.selection.length === this.state.items.length} onChange={this.selectAll.bind(this)} /></th>
               {this.props.head.map((head, index) => (this.getHeader(index, head.field, head.content, head.sortable)))}
             </tr>
           </thead>

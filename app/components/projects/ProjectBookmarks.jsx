@@ -17,13 +17,13 @@ class ProjectBookmarks extends React.PureComponent {
 
     // get view from session storage
     let view = window.sessionStorage.getItem(this.keys.view) || 'bookmark-centric'; // bookmark-centric, annotation-centric
-    
-
     this.state = {
       annotations : [],
       loading : true,
       view: view
     }
+
+    this.viewChange = this.viewChange.bind(this);
   }
 
    /**
@@ -31,13 +31,13 @@ class ProjectBookmarks extends React.PureComponent {
    * @param {SyntheticEvent} e Event
    */
   viewChange(e){
-    
-    // store view to session storage
-    window.sessionStorage.setItem(this.keys.view,e.target.value);
+    let view = e.target.value;
 
+    // store view to session storage
+    window.sessionStorage.setItem(this.keys.view,view);
 
     this.setState({
-        view: e.target.value
+        view
     });
   }
 
@@ -63,13 +63,14 @@ class ProjectBookmarks extends React.PureComponent {
 
           <div className="view">
             <h3>View</h3>
-            <div className="radiogroup" onChange={this.viewChange.bind(this)}>
+            <div className="radiogroup">
 
               <input type="radio"
                      name="view"
                      value="bookmark-centric"
                      id="view-bookmark"
-                     defaultChecked={this.state.view==='bookmark-centric'}
+                     checked={this.state.view==='bookmark-centric'}
+                     onChange={this.viewChange}
                      />
               <label htmlFor="view-bookmark">Bookmark-centric</label>
 
@@ -77,7 +78,8 @@ class ProjectBookmarks extends React.PureComponent {
                      name="view"
                      value="annotation-centric"
                      id="view-annotation"
-                     defaultChecked={this.state.view==='annotation-centric'}
+                     checked={this.state.view==='annotation-centric'}
+                     onChange={this.viewChange}
                      />
               <label htmlFor="view-annotation">Annotation-centric</label>
 

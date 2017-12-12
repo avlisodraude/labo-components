@@ -49,6 +49,11 @@ const AnnotationUtil = {
 
 	//extracts all contained annotations into a list for the annotation-centric view
 	nestedAnnotationListToAnnotationList(annotations) {
+		// check for empty: can't reduce an empty array
+		if (annotations.length === 0){
+			return [];
+		}
+
 		return annotations.filter(an => an.body).map((an) => {
 			return an.body
 		}).reduce((acc, cur) => {

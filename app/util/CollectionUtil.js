@@ -25,6 +25,15 @@ const CollectionUtil = {
 		let configClass = null;
 		if(lookupMapping) {
 			configClass = CollectionMapping[collectionId];
+			if(configClass == null) { //go through the wildcard mappings
+				const temp = Object.keys(CollectionMapping).filter(k => {
+					if(k.indexOf('*') != -1) {
+						return collectionId.startsWith(k.substring(0, k.length -2))
+					}
+					return false;
+				})
+				configClass = temp.length == 1 ? CollectionMapping[temp[0]] : null;
+			}
 		}
 		if(configClass == null || !lookupMapping) {
 			configClass = CollectionConfig;
