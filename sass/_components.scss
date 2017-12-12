@@ -51,6 +51,22 @@
 	font-size: 100% !important;
 	display: inline-block !important;
 	margin: 0px 5px 5px 0px;
+	&.ms_custom {
+		color: $subdued-bg;
+	}
+}
+
+.react-autosuggest__suggestion {
+	background-color: #fff;
+
+	>  * .label.label-info, .label.label-warning, .label.label-success, .label.label-danger {
+		margin-bottom: 0;
+		text-align: left;
+		color: #333;
+		text-transform: none;
+		background-color: #fff;
+		padding: 0;
+	}
 }
 
 .bg__classify-form {}  /* ClassifyingForm.jsx */
