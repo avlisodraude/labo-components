@@ -16,11 +16,19 @@ class AnnotationView extends React.PureComponent {
   constructor(props) {
     super(props);
     
+    this.annotationTypes = [
+      {value: "classification", name: "Classification"},
+      {value: "comment", name: "Comment"},
+      {value: "link", name: "Link"},
+      {value: "metadata", name: "Metadata"},
+    ];
+
     this.state = {
       annotations: [],  
       selection: [],    
       loading : true,
       viewObject: null,
+      filters: []
     }
 
     // bind functions
@@ -50,6 +58,23 @@ class AnnotationView extends React.PureComponent {
     )
   }
 
+
+/**
+   * Get filter list of existing annotation types
+   * @param  {array} items List of annotations
+   * @return {array}       List of filters
+   */
+  getFilters(items){
+  let filters = [];
+    // only add existing types to the filter
+    this.annotationTypes.forEach((type)=>{
+      if (items.some((annotation)=>(annotation.annotationType == type.value))){
+        filters.push(type);
+      }
+    });
+    return filters;
+  }
+
   /**
    * Annotation load callback: set data to state
    * @param  {Object} data Response object with annotation list
@@ -60,10 +85,13 @@ class AnnotationView extends React.PureComponent {
       data.annotations || []
     )
 
+    
+
     this.setState({
       annotations: annotations,
       loading : false,
       selection: [],
+      filters: this.getFilters(annotations),
     });
   }
  
@@ -197,6 +225,12 @@ class AnnotationView extends React.PureComponent {
    * @param {object} state State of the render component
    */
   renderResultType(type, items){
+
+    // don't render empty results
+    if (items.length == 0){
+      return null;
+    }
+
     return(
       <div className="type-list">
         <h3>
@@ -206,7 +240,7 @@ class AnnotationView extends React.PureComponent {
                 />
           {type}: <span className="count">{items.length || 0}</span>
         </h3>
-        <div className="table">          
+        <div className="bookmark-table">          
             {items.map((annotation, index)=>(
             <AnnotationRow key={index} 
                          annotation={annotation} 
@@ -237,9 +271,9 @@ class AnnotationView extends React.PureComponent {
           Annotations: <span className="count">{renderState.visibleItems.length || 0}</span>
         </h2>
         <div className="table">          
-            {['classification','comment','link','metadata'].map((type) => (
-                this.renderResultType(type, renderState.visibleItems.filter((item)=>(item.annotationType == type )))
-              )) }
+          {this.annotationTypes.map((type) => (
+              this.renderResultType(type.name, renderState.visibleItems.filter((item)=>(item.annotationType == type.value )))
+            )) }
         </div> 
       </div>
       );
@@ -255,12 +289,7 @@ class AnnotationView extends React.PureComponent {
               {value:"created", name:"Annotation created"},
             ]}
           filterItems={this.filterAnnotations}
-          filters={[
-            {value: "classification", name: "Classification"},
-            {value: "comment", name: "Comment"},
-            {value: "link", name: "Link"},
-            {value: "metadata", name: "Metadata"},
-            ]}          
+          filters={this.state.filters}          
           renderResults={this.renderResults}
           onExport={exportDataAsJSON}
           />

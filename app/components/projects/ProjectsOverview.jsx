@@ -3,7 +3,7 @@ import IDUtil from '../../util/IDUtil';
 import ProjectTable from './ProjectTable';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-
+import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
 class ProjectsOverview extends React.PureComponent {
 
@@ -11,7 +11,11 @@ class ProjectsOverview extends React.PureComponent {
     super(props);
   }
 
-render(){    
+  componentDidMount(){
+    setBreadCrumbsFromMatch(this.props.match);
+  }
+
+  render(){    
     return (
       <div className={IDUtil.cssClassName('projects-overview')}>
           

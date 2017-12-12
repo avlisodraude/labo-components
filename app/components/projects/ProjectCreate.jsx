@@ -1,8 +1,13 @@
 import IDUtil from '../../util/IDUtil';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
+import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
 class ProjectCreate extends React.PureComponent {
+  
+  componentDidMount(){
+    setBreadCrumbsFromMatch(this.props.match);
+  }
 
   render(){
     return (

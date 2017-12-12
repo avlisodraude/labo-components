@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
 import SortTable from './SortTable';
 import { Link } from 'react-router-dom';
+import AnnotationStore from '../../flux/AnnotationStore';
+import AnnotationUtil from '../../util/AnnotationUtil';
 import { exportDataAsJSON } from '../helpers/Export';
 
 
@@ -18,8 +20,11 @@ class ProjectTable extends React.PureComponent {
       filter:{
         keywords: '',
         currentUser: false,
-      }
+      },
+      bookmarkCount:{}
     }
+        
+    this.requestedBookmark={};
 
     this.requestDataTimeout = -1;
   }
@@ -51,6 +56,55 @@ class ProjectTable extends React.PureComponent {
       projects: projects,
       loading: false,
     });
+
+    // check for bookmark count
+    // Future: This can be optimized by only requesting the count
+    // for visible projects
+    this.getAllBookmarkCount(projects);
+  }
+
+
+  /**
+   * Load bookmark count async
+   */
+  getAllBookmarkCount(projects){
+    projects.forEach((project)=>{
+      if (!(project.id in this.requestedBookmark)){
+        // mark as requested
+        this.requestedBookmark[project.id] = true;
+
+        // load bookmarks
+        this.loadBookmarkCount(project);
+      }
+    });
+  } 
+
+   /**
+   * Load bookmark count from annotation store
+   * Future: This can be optimized by storing the counts in the SessionStorage
+   */
+   loadBookmarkCount(project){
+      AnnotationStore.getUserProjectAnnotations(
+        this.props.user,
+        project,
+        this.setBookmarkCount.bind(this, project)
+      )
+    }
+
+  /**
+   * Set bookmark count to state
+   */
+  setBookmarkCount(project, data){
+   const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
+      data.annotations || []
+    );
+
+   let bookmarkCount = bookmarks ? bookmarks.length : 0;
+   let newCount  = {};
+   newCount[project.id] = bookmarkCount;
+   this.setState({
+      bookmarkCount: Object.assign({},this.state.bookmarkCount, newCount)
+    })
   }
 
   /**
@@ -198,7 +252,7 @@ class ProjectTable extends React.PureComponent {
       sorted.sort((a,b) => (a.name > b.name));
     break;
     case 'bookmarks':
-      sorted.sort((a,b) => (a.bookmarks.length - b.bookmarks.length));
+      sorted.sort((a,b) => (this.getBookmarkCount(a.id) > this.getBookmarkCount(b.id)));
     break;
     case 'owner':
       sorted.sort((a,b) => (a.owner.name > b.owner.name));
@@ -216,6 +270,19 @@ class ProjectTable extends React.PureComponent {
 
    return sort.order === 'desc' ? sorted.reverse() : sorted;
 
+  }
+
+
+  /**
+   * Get bookmark count if available in the state
+   * @param [string] id Project id
+   * @return {string}   Bookmark count
+   */
+  getBookmarkCount(id){
+    if (id in this.state.bookmarkCount){
+      return this.state.bookmarkCount[id];
+    }
+    return '...';
   }
 
   render() {
@@ -257,7 +324,7 @@ class ProjectTable extends React.PureComponent {
               ]}
             row={(project) =>([
                 { props:{className:"primary"}, content: <Link to={"/workspace/projects/" + project.id}>{project.name}</Link> },
-                { props:{className:"number"}, content: project.getBookmarkCount()},
+                { props:{className:"number"}, content: this.getBookmarkCount(project.id)},
                 { content: <span>{project.owner.name} {project.getCollaboratorCount() ? <span className="collaborators">{project.getCollaboratorCount()} Collaborator{project.getCollaboratorCount() !== 1 ? 's' : ''}</span> : ''}</span> },
                 { props: { className: "access"}, content: project.getAccess(currentUserId) },
                 { props: {className: "smaller"}, content: project.created.substring(0,10) },
