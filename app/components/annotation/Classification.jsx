@@ -27,6 +27,7 @@ class Classification extends React.Component {
 				classNames.push('label-success');
 				break;
 		}
+        classNames.push('ms_custom');
 		classNames.push(IDUtil.cssClassName('classification'));
 
 		return (
