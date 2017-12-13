@@ -83,9 +83,13 @@ const AnnotationUtil = {
 				resourceIds[key], //input
 				(collectionId, idList, resourceData) => {
 					//reconsile and callback the "client"
-					accumulatedData[collectionId] = resourceData;
+					const configClass = CollectionUtil.getCollectionClass(collectionId, true);
+					const collectionConfig = new configClass(collectionId);
+					const mappedResourceData = resourceData['docs'].map((doc) => {
+						return doc.found ? collectionConfig.getItemDetailData(doc) : null;
+					})
+					accumulatedData[collectionId] = mappedResourceData;
 					if(Object.keys(resourceIds).length == Object.keys(accumulatedData).length) {
-						console.debug('DONE!')
 						callback(AnnotationUtil.reconsileAll(resourceList, accumulatedData));
 					}
 				}
@@ -93,17 +97,21 @@ const AnnotationUtil = {
 		})
 	},
 
-	//TODO implement
+	//TODO FINISH THIS AND WE'RE ALL DONE!
 	reconsileAll(resourceList, resourceData) {
-		console.debug('reconsiling the flat list with resource data:')
-		console.debug(resourceList)
-		console.debug(resourceData)
 		resourceList.forEach((x) => {
-			console.debug(x);
-			let temp = resourceData[x.object.dataset]['docs'].filter((r) => {
-				return r._id == x.object.id
+			let temp = resourceData[x.object.dataset].filter((doc) => {
+				return doc && doc.resourceId == x.object.id
 			});
-			x.object.title = temp.length == 1 ? temp[0]._id : 'dunno';
+			x.object.title = 'Resource not found';
+			x.object.date = 'N/A';
+			if(temp.length == 1) {
+				x.object.title = temp[0].title;
+				x.object.date = temp[0].date;
+				if(temp[0].posterURL) {
+					x.object.placeholderImage = temp[0].posterURL
+				}
+			}
 		})
 		return resourceList
 	},
