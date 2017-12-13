@@ -65,7 +65,7 @@ const AnnotationAPI = {
 	},
 
 	//TODO always add the user too!
-	getFilteredAnnotations : function(params, callback) {
+	getFilteredAnnotationsOld : function(params, callback) {
 		let url = _config.ANNOTATION_API_BASE + '/annotations/filter';
 		const temp = [];
 		Object.keys(params).forEach((key) => {
@@ -86,6 +86,33 @@ const AnnotationAPI = {
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send();
 	},
+
+	getFilteredAnnotations : function(filters, callback, offset = 0, size = 10, sort = null, dateRange = null) {
+		console.debug(filters);
+		let url = _config.ANNOTATION_API_BASE + '/annotations/filter';
+		const postData = {
+			clientId : _clientId,
+			token : _chickenStock,
+			filters : filters,
+			offset : offset,
+			size : size,
+			sort : sort,
+			dateRange : dateRange
+		}
+		const xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == XMLHttpRequest.DONE) {
+				if(xhr.status == 200) {
+					callback(JSON.parse(xhr.responseText));
+				} else {
+					callback(null);
+				}
+			}
+		}
+		xhr.open("POST", url);
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xhr.send(JSON.stringify(postData));
+	}
 }
 
 export default AnnotationAPI;
