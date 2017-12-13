@@ -15,12 +15,12 @@ class BookmarkView extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    
+
     this.bookmarkTypes = ["Video", "Video-Fragment", "Image", "Audio", "Entity"];
 
     this.state = {
-      bookmarks: [],  
-      selection: [],    
+      bookmarks: [],
+      selection: [],
       loading : true,
       viewObject: null,
       filters: []
@@ -59,11 +59,11 @@ class BookmarkView extends React.PureComponent {
    * @return {array}       List of filters
    */
   getFilters(items){
-   
+
     let result = [];
     let hits = {};
 
-    items.forEach((item)=>{ 
+    items.forEach((item)=>{
       var t = item.object.type;
       if (!(t in hits)){
         result.push( {value: t, name: t.charAt(0).toUpperCase() + t.slice(1)},);
@@ -73,24 +73,28 @@ class BookmarkView extends React.PureComponent {
     return result.sort();
   }
 
- 
+
   /**
    * Annotation load callback: set data to state
    * @param  {Object} data Response object with annotation list
    */
   onLoadBookmarks(data) {
     const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
-      data.annotations || []
+      data.annotations || [],
+      this.onLoadResourceList.bind(this)
     )
+  }
 
+  //the resource list now also contains the data of the resources
+  onLoadResourceList(bookmarks) {
     this.setState({
-      bookmarks: bookmarks, 
+      bookmarks: bookmarks,
       loading : false,
       selection: [],
       filters: this.getFilters(bookmarks),
     });
   }
- 
+
   /**
    * Filter bookmark list by given filter
    * @param  {array} bookmarks  Bookmarks array
@@ -118,10 +122,10 @@ class BookmarkView extends React.PureComponent {
     return bookmarks;
   }
 
-  /** 
-   * Sort bookmarks 
+  /**
+   * Sort bookmarks
    * @param {Array} bookmarks List of bookmarks to be sorted
-   * @param {string} sort Sort field   
+   * @param {string} sort Sort field
    * @return {Array} Sorted bookmarks
    */
   sortBookmarks(bookmarks, field){
@@ -134,7 +138,7 @@ class BookmarkView extends React.PureComponent {
       sorted.sort((a,b) => (a.object.date < b.object.date));
     break;
     case 'oldest':
-      sorted.sort((a,b) => (a.object.date > b.object.date));      
+      sorted.sort((a,b) => (a.object.date > b.object.date));
     break;
     case 'name-az':
       sorted.sort((a,b) => (a.object.title > b.object.title));
@@ -150,7 +154,7 @@ class BookmarkView extends React.PureComponent {
     break;
     case 'manual':
       sorted.sort((a,b) => (a.sort > b.sort));
-    break;    
+    break;
     default:
       // no sorting,just return
       return sorted;
@@ -199,21 +203,21 @@ class BookmarkView extends React.PureComponent {
       // set
       this.setState({
         selection: newSelection
-      });  
+      });
     } else{
       // unset
       this.setState({
         selection: this.state.selection.filter((item)=>(!items.includes(item)))
-      });  
+      });
     }
-    
+
   }
 
   /**
-   * Select bookmark   
+   * Select bookmark
    */
-  selectBookmark(bookmark, select){ 
-    if (select){  
+  selectBookmark(bookmark, select){
+    if (select){
 
       if(!this.state.selection.includes(bookmark)){
         // add to selection
@@ -241,7 +245,7 @@ class BookmarkView extends React.PureComponent {
     return (
       <div>
         <h2>
-          <input type="checkbox" 
+          <input type="checkbox"
                  checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item))) }
                  onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
                 />
@@ -249,14 +253,14 @@ class BookmarkView extends React.PureComponent {
         </h2>
         <div className="bookmark-table">
           {renderState.visibleItems.map((bookmark, index)=>(
-            <BookmarkRow key={index} 
-                         bookmark={bookmark} 
+            <BookmarkRow key={index}
+                         bookmark={bookmark}
                          onDelete={this.deleteBookmark}
                          onView={this.viewBookmark}
                          selected={this.state.selection.includes(bookmark)}
-                         onSelect={this.selectBookmark}                         
+                         onSelect={this.selectBookmark}
                          />
-            ))}           
+            ))}
         </div>
       </div>
       );
@@ -265,7 +269,7 @@ class BookmarkView extends React.PureComponent {
   render(){
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
-        <BookmarkTable 
+        <BookmarkTable
           items={this.state.bookmarks}
           sortItems={this.sortBookmarks}
           orders={[
@@ -279,27 +283,27 @@ class BookmarkView extends React.PureComponent {
             {value:"manual", name:"Manual"},
             ]}
           filterItems={this.filterBookmarks}
-          filters={this.state.filters}          
+          filters={this.state.filters}
           renderResults={this.renderResults}
           onExport={exportDataAsJSON}
           />
 
-        {this.state.viewObject ? 
+        {this.state.viewObject ?
         /* todo: display item details recipe in overlay */
         <div className="modal">
           <div className="close" onClick={()=>{this.viewBookmark(null);}} />
           <div className="container">
-              
+
             Todo: viewObjectsRecipe here: this requires the ID and Collection ID from the object (or rather a single unique ID)<br/><br/>
-            {"<ItemDetailsRecipe id=\"\" cid=\"\" />"} 
-            
-            {/* 
+            {"<ItemDetailsRecipe id=\"\" cid=\"\" />"}
+
+            {/*
 
             Params from url: id=5180841@program&cid=nisv-catalogue-aggr
             <itemDetailsRecipe id={this.state.viewObject.object.id} cid="nisv-catalogue-aggr" />
 
             */}
-            
+
             <br/><br/>
           </div>
         </div>
