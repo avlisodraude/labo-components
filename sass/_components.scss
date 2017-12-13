@@ -57,18 +57,27 @@
 }
 
 .react-autosuggest__suggestion {
-	background-color: #fff;
-
-	>  * .label.label-info, .label.label-warning, .label.label-success, .label.label-danger {
+	>  * .label {
+		color: #fff;
+		display: inline;
+		float: right;
 		margin-bottom: 0;
-		text-align: left;
-		color: #333;
-		text-transform: none;
-		background-color: #fff;
-		padding: 0;
+		padding:  2px 8px 3px;
+
+		&.label-info {
+			background-color: #5bc0de;
+		}
+		&.label-warning {
+			background-color: #f0ad4e;
+		}
+		&.label-success {
+			background-color: #5cb85c;
+		}
+		&.label-danger {
+			background-color: #d9534f;
+		}
 	}
 }
-
 .bg__classify-form {}  /* ClassifyingForm.jsx */
 
 .bg__comment-form {}  /* CommentingForm.jsx */
