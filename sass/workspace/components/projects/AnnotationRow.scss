@@ -14,6 +14,25 @@
 
     .created{
       width: 100px;
+    }  
+
+    .info{
+      table{
+        td{
+          padding-top: 5px;
+        }  
+      }      
+    }
+  }
+
+  
+
+  .sublevel{
+    td.actions{
+      text-align: right;
+      .btn{
+        margin: 0;
+      }
     }
   }
 }

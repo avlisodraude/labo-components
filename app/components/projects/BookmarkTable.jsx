@@ -11,6 +11,7 @@ import BookmarkRow from './BookmarkRow';
 import { exportDataAsJSON } from '../helpers/Export';
 import ItemDetailsRecipe from '../../ItemDetailsRecipe';
 
+
 class BookmarkTable extends React.PureComponent {
 
   constructor(props) {
@@ -132,6 +133,8 @@ class BookmarkTable extends React.PureComponent {
     this.setSort(e.target.value);
   }
 
+
+
   render(){
     return (
       <div className={IDUtil.cssClassName('bookmark-table')}>
@@ -174,12 +177,14 @@ class BookmarkTable extends React.PureComponent {
         <div className="results">
           {this.props.renderResults(this.state)}
         </div>
+         
     </div>
   )}
 }
 
 BookmarkTable.propTypes = {
   items: PropTypes.array.isRequired,
+  selection: PropTypes.array,
   orders:[],
   sortItems: PropTypes.func.isRequired,
   filters:[],

@@ -11,7 +11,7 @@ class AnnotationRow extends React.PureComponent {
     super(props);
 
     this.state={
-      showObjects: this.props.annotation.objects && this.props.annotation.objects.length > 0,
+      showBookmarks: this.props.annotation.bookmarks && this.props.annotation.bookmarks.length > 0,
     }
 
     // bind functions
@@ -29,8 +29,8 @@ class AnnotationRow extends React.PureComponent {
   /**
    * View action
    */
-  onView(){
-    this.props.onView(this.props.annotation);
+  onView(bookmark){
+    this.props.onView(bookmark);
   }
 
 
@@ -47,7 +47,7 @@ class AnnotationRow extends React.PureComponent {
    */
   toggleAnnotations(){
     this.setState({
-      showObjects: !this.state.showObjects
+      showBookmarks: !this.state.showBookmarks
     })
   }
 
@@ -134,8 +134,8 @@ class AnnotationRow extends React.PureComponent {
 
   render(){
     let annotation = this.props.annotation;
-    let objects = annotation.objects || [];
-    let hasObjects = objects.length > 0;
+    let bookmarks = annotation.bookmarks || [];
+    let hasBookmarks = bookmarks.length > 0;
 
     return (
       <div className={classNames(IDUtil.cssClassName('annotation-row'),"item-row")}>
@@ -162,18 +162,18 @@ class AnnotationRow extends React.PureComponent {
                  onClick={this.onView}>View</div> */}
           </div>
 
-          <div className={classNames('sublevel-button',{'active':this.state.showObjects, 'zero': !hasObjects})}
+          <div className={classNames('sublevel-button',{'active':this.state.showBookmarks, 'zero': !hasBookmarks})}
                onClick={this.toggleAnnotations.bind(this)}
                >
-            Bookmarks <span className="count">{objects.length}</span>
+            Bookmarks <span className="count">{bookmarks.length}</span>
           </div>
 
         </div>
 
 
-        { this.state.showObjects ?
+        { this.state.showBookmarks ?
           <div className="sublevel">
-            {!hasObjects ?
+            {!hasBookmarks ?
               <p>This {annotation.annotationType.toLowerCase() || 'annotation'} has no bookmarks</p>
               :
             <table>
@@ -181,18 +181,21 @@ class AnnotationRow extends React.PureComponent {
                 <tr>
                   <th>Type</th>
                   <th>Title</th>
-                  <th>Details</th>
+                  <th>Dataset</th>
                 </tr>
               </thead>
               <tbody>
-              {objects.map((object)=>(
+              {bookmarks.map((bookmark)=>(
                 <tr>
-                  <td>{object.type}</td>
-                  <td>{object.title}</td>
-                  <td>
-                    {/* Add object specific details here */}
-                    {/* object.details */}
-                  </td>
+                  <td>{bookmark.object.type}</td>
+                  <td>{bookmark.object.title}</td>
+                  <td>{bookmark.object.dataset}</td>
+                  <td className="actions">
+                    <div className="btn"
+                         onClick={this.onView.bind(this,bookmark)}>
+                         View
+                    </div>
+                 </td>
                 </tr>
                 ))}
               </tbody>

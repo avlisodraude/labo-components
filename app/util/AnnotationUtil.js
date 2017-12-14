@@ -120,12 +120,15 @@ const AnnotationUtil = {
 
 	//extracts all contained annotations into a list for the annotation-centric view
 	nestedAnnotationListToAnnotationList(annotations) {
+
 		// check for empty: can't reduce an empty array
 		if (annotations.length === 0){
 			return [];
 		}
 
 		return annotations.filter(an => an.body).map((an) => {
+			// store bookmark to the annotation for later use
+			an.body.forEach((b)=>{b.bookmarkAnnotation = an});
 			return an.body
 		}).reduce((acc, cur) => {
 			return acc.concat(cur);

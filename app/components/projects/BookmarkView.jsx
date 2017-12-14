@@ -10,6 +10,7 @@ import ProjectAPI from '../../api/ProjectAPI';
 import ProjectWrapper from './ProjectWrapper';
 import PropTypes from 'prop-types';
 import { exportDataAsJSON } from '../helpers/Export';
+import BulkActions from '../helpers/BulkActions';
 
 class BookmarkView extends React.PureComponent {
 
@@ -19,15 +20,20 @@ class BookmarkView extends React.PureComponent {
     this.bookmarkTypes = ["Video", "Video-Fragment", "Image", "Audio", "Entity"];
 
     this.orders = [
-            {value:"created", name:"Bookmark created"},
-            {value:"newest", name:"Newest objects first"},
-            {value:"oldest", name:"Oldest objects first"},
-            {value:"name-az", name:"Title A-Z"},
-            {value:"name-za", name:"Title Z-A"},
-            {value:"type", name:"Type"},
-            {value:"dataset", name:"Dataset"},
-            {value:"manual", name:"Manual"},
-            ];
+      {value:"created", name:"Bookmark created"},
+      {value:"newest", name:"Newest objects first"},
+      {value:"oldest", name:"Oldest objects first"},
+      {value:"name-az", name:"Title A-Z"},
+      {value:"name-za", name:"Title Z-A"},
+      {value:"type", name:"Type"},
+      {value:"dataset", name:"Dataset"},
+      {value:"manual", name:"Manual"},
+    ];
+
+    this.bulkActions = [
+      {title: 'Delete', onApply: this.deleteBookmarks.bind(this) },
+      {title: 'Export', onApply: this.exportBookmarks.bind(this) }
+    ];
 
     this.state = {
       bookmarks: [],
@@ -114,14 +120,13 @@ class BookmarkView extends React.PureComponent {
   }
 
   /** 
-   * Update Selection list, based on available bookmarks
-   * @param  {array} bookmarks  Current data
+   * Update Selection list, based on available items
+   * @param  {array} items  Current data
    */
-  updateSelection(bookmarks){
+  updateSelection(items){
     this.setState({
-      selection: bookmarks.map((bookmark)=>(bookmark.id)).filter((bookmarkId)=>(this.state.selection.includes(bookmarkId)))
+      selection: items.map((item)=>(item.id)).filter((itemId)=>(this.state.selection.includes(itemId)))
     })
-
   }
 
 
@@ -218,6 +223,51 @@ class BookmarkView extends React.PureComponent {
       }
       
     });
+  }
+
+ /**
+  * Delete multiple bookmarks
+  * @param {array} selection List of bookmark ids to be deleted
+  */
+  deleteBookmarks(selection){
+    // always ask before deleting
+    if (!confirm('Are you sure you want to remove the selected bookmarks?')){
+      return;
+    }
+
+    let data = this.state.bookmarks.filter((item)=>(selection.includes(item.id)));
+
+    // counts number of hits
+    var hits = data.length;
+
+    // delete the bookmark
+    data.forEach((item)=>{
+      AnnotationAPI.deleteAnnotation(item, (data)=>{
+        hits--;
+
+        // only on last callback, check the status and reload the data
+        if (hits == 0){
+          if (data && data.status){
+            if (data.status == 'success'){
+              this.loadBookmarks();
+            } else{
+              alert(data.message ? data.message : 'An unknown error has occured while deleting the bookmark');
+            } 
+          } else{
+            alert('An error has occured while deleting the bookmark.');
+          }      
+        }
+      });
+    });
+  }
+
+   /**
+   * Export bookmarks
+   * @param {Object} annotations Annotations to be exported
+   */
+  exportBookmarks(selection){
+    let data = this.state.bookmarks.filter((item)=>(selection.includes(item.id)));
+    exportDataAsJSON(data)
   }
 
 
@@ -342,14 +392,17 @@ class BookmarkView extends React.PureComponent {
       <div className={IDUtil.cssClassName('bookmark-view')}>
         <BookmarkTable
           items={this.state.bookmarks} 
-          selection={this.state.selection}         
+          selection={this.state.selection}
           sortItems={this.sortBookmarks}
           orders={this.orders}
           filterItems={this.filterBookmarks}
           filters={this.state.filters}
           renderResults={this.renderResults}
-          onExport={exportDataAsJSON}
+          onExport={exportDataAsJSON}          
           />
+
+        <BulkActions bulkActions={this.bulkActions} 
+                     selection={this.state.selection} />
 
         {this.state.detailBookmark ?
           <ItemDetailsModal object={this.state.detailBookmark.object}
