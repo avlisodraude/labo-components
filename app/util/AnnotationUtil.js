@@ -51,7 +51,7 @@ const AnnotationUtil = {
 				annotations: na.body,
 			}
 		});
-		if(callback) {
+		if(callback && resourceList.length > 0) {
 			return AnnotationUtil.reconsileResourceList(resourceList, callback)
 		}
 		return resourceList;
@@ -59,21 +59,23 @@ const AnnotationUtil = {
 
 	//TODO do a mget to fetch all the resource data from the search API.
 	reconsileResourceList(resourceList, callback) {
-		const resourceIds = resourceList.map((na) => {
+		const temp = resourceList.map((na) => {
 			return {
 				resourceId : na.object.id,
 				collectionId : na.object.dataset
 			}
-		}).reduce((acc, cur) => {
+		})
+		const resourceIds = temp.reduce((acc, cur) => {
 			//the first accumulator is the same as the current object...
 			if(acc.resourceId) {
 				let temp = {}
 				temp[acc.collectionId] = [acc.resourceId];
 				acc = temp;
+			} else {
+				acc[cur.collectionId] ? acc[cur.collectionId].push(cur.resourceId) : acc[cur.collectionId] = [cur.resourceId]
 			}
-			acc[cur.collectionId] ? acc[cur.collectionId].push(cur.resourceId) : acc[cur.collectionId] = [cur.resourceId]
 			return acc
-		});
+		}, temp[0]); //initial value needed in case of one element!
 
 		//now loop through the clustered (by collectionId) resourceIdLists and call the searchAPI
 		const accumulatedData = {}
@@ -94,7 +96,7 @@ const AnnotationUtil = {
 					}
 				}
 			)
-		})
+		});
 	},
 
 	//TODO FINISH THIS AND WE'RE ALL DONE!
