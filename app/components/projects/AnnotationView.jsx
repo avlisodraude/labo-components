@@ -1,15 +1,13 @@
-import ProjectAPI from '../../api/ProjectAPI';
-import IDUtil from '../../util/IDUtil';
-import ProjectWrapper from './ProjectWrapper';
-
+import AnnotationRow from './AnnotationRow';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
-
-import AnnotationRow from './AnnotationRow';
-import { exportDataAsJSON } from '../helpers/Export';
-import ItemDetailsRecipe from '../../ItemDetailsRecipe';
-
 import BookmarkTable from './BookmarkTable';
+import ComponentUtil from '../../util/ComponentUtil';
+import IDUtil from '../../util/IDUtil';
+import ItemDetailsModal from './ItemDetailsModal';
+import ProjectAPI from '../../api/ProjectAPI';
+import ProjectWrapper from './ProjectWrapper';
+import { exportDataAsJSON } from '../helpers/Export';
 
 class AnnotationView extends React.PureComponent {
 
@@ -27,12 +25,12 @@ class AnnotationView extends React.PureComponent {
       annotations: [],  
       selection: [],    
       loading : true,
-      viewObject: null,
+      detailBookmark: null,
       filters: []
     }
 
     // bind functions
-    this.viewAnnotation = this.viewAnnotation.bind(this);
+    this.viewBookmark = this.viewBookmark.bind(this);
     this.deleteAnnotation = this.deleteAnnotation.bind(this);
 
     this.filterAnnotations = this.filterAnnotations.bind(this);
@@ -85,7 +83,7 @@ class AnnotationView extends React.PureComponent {
       data.annotations || []
     )
 
-    
+    console.log(annotations);
 
     this.setState({
       annotations: annotations,
@@ -159,12 +157,12 @@ class AnnotationView extends React.PureComponent {
 
 
   /**
-   * View annotation
-   * @param {Object} annotation Annotation to be viewed
+   * View bookmark
+   * @param {Object} bookmark Bookmark (object) to be viewed
    */
-  viewAnnotation(annotation){
+  viewBookmark(bookmark){
     this.setState({
-      viewObject: annotation
+      detailBookmark: annotation
     })
   }
 
@@ -245,7 +243,7 @@ class AnnotationView extends React.PureComponent {
             <AnnotationRow key={index} 
                          annotation={annotation} 
                          onDelete={this.deleteAnnotation}
-                         onView={this.viewAnnotation}
+                         onView={this.viewBookmark}
                          selected={this.state.selection.includes(annotation)}
                          onSelect={this.selectAnnotation}                         
                          />
@@ -294,25 +292,9 @@ class AnnotationView extends React.PureComponent {
           onExport={exportDataAsJSON}
           />
 
-        {this.state.viewObject ? 
-        /* todo: display item details recipe in overlay */
-        <div className="modal">
-          <div className="close" onClick={()=>{this.viewAnnotation(null);}} />
-          <div className="container">
-              
-            Todo: viewObjectsRecipe here: this requires the ID and Collection ID from the object (or rather a single unique ID)<br/><br/>
-            {"<ItemDetailsRecipe id=\"\" cid=\"\" />"} 
-            
-            {/* 
-
-            Params from url: id=5180841@program&cid=nisv-catalogue-aggr
-            <itemDetailsRecipe id={this.state.viewObject.object.id} cid="nisv-catalogue-aggr" />
-
-            */}
-            
-            <br/><br/>
-          </div>
-        </div>
+        {this.state.detailBookmark ? 
+         <ItemDetailsModal object={this.state.detailBookmark.object}
+                            onClose={this.closeItemDetails} />
         : null
       }
   </div>

@@ -1,15 +1,14 @@
-import ProjectAPI from '../../api/ProjectAPI';
-import IDUtil from '../../util/IDUtil';
-import ProjectWrapper from './ProjectWrapper';
-
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
-
 import BookmarkRow from './BookmarkRow';
-import { exportDataAsJSON } from '../helpers/Export';
-import ItemDetailsRecipe from '../../ItemDetailsRecipe';
-
 import BookmarkTable from './BookmarkTable';
+import ComponentUtil from '../../util/ComponentUtil';
+import IDUtil from '../../util/IDUtil';
+import ItemDetailsModal from './ItemDetailsModal';
+import ProjectAPI from '../../api/ProjectAPI';
+import ProjectWrapper from './ProjectWrapper';
+import PropTypes from 'prop-types';
+import { exportDataAsJSON } from '../helpers/Export';
 
 class BookmarkView extends React.PureComponent {
 
@@ -18,11 +17,22 @@ class BookmarkView extends React.PureComponent {
 
     this.bookmarkTypes = ["Video", "Video-Fragment", "Image", "Audio", "Entity"];
 
+    this.orders = [
+            {value:"created", name:"Bookmark created"},
+            {value:"newest", name:"Newest objects first"},
+            {value:"oldest", name:"Oldest objects first"},
+            {value:"name-az", name:"Title A-Z"},
+            {value:"name-za", name:"Title Z-A"},
+            {value:"type", name:"Type"},
+            {value:"dataset", name:"Dataset"},
+            {value:"manual", name:"Manual"},
+            ];
+
     this.state = {
       bookmarks: [],
       selection: [],
       loading : true,
-      viewObject: null,
+      detailBookmark: null,
       filters: []
     }
 
@@ -36,6 +46,8 @@ class BookmarkView extends React.PureComponent {
 
     this.selectAllChange = this.selectAllChange.bind(this);
     this.selectBookmark = this.selectBookmark.bind(this);
+
+    this.closeItemDetails = this.closeItemDetails.bind(this);
   }
 
   componentWillMount() {
@@ -79,13 +91,16 @@ class BookmarkView extends React.PureComponent {
    * @param  {Object} data Response object with annotation list
    */
   onLoadBookmarks(data) {
-    const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
+    AnnotationUtil.nestedAnnotationListToResourceList(
       data.annotations || [],
       this.onLoadResourceList.bind(this)
     )
   }
 
-  //the resource list now also contains the data of the resources
+  /**
+   * The resource list now also contains the data of the resources
+   * @param  {array} bookmarks Full bookmark data
+   */
   onLoadResourceList(bookmarks) {
     this.setState({
       bookmarks: bookmarks,
@@ -175,12 +190,23 @@ class BookmarkView extends React.PureComponent {
 
 
   /**
+   * Make current project active
+   */
+  makeActiveProject(){
+    ComponentUtil.storeJSONInLocalStorage('activeProject', this.props.project);  
+  }
+
+  /**
    * View bookmark
    * @param {Object} bookmark Bookmark to be viewed
    */
   viewBookmark(bookmark){
+    // make current project active
+    if (bookmark){    
+      this.makeActiveProject();
+    }    
     this.setState({
-      viewObject: bookmark
+      detailBookmark: bookmark
     })
   }
 
@@ -235,6 +261,17 @@ class BookmarkView extends React.PureComponent {
       });
     }
   }
+  
+  /**
+   * Close itemDetails view, and refresh the data (assuming changes have been made)
+   */
+  closeItemDetails(){
+    // set viewbookmark to null
+    this.viewBookmark(null);
+
+    // refresh data
+    this.loadBookmarks();
+  }
 
   /**
    * Renders the results in the BookmarkTable component
@@ -270,48 +307,31 @@ class BookmarkView extends React.PureComponent {
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
         <BookmarkTable
-          items={this.state.bookmarks}
+          items={this.state.bookmarks}          
           sortItems={this.sortBookmarks}
-          orders={[
-            {value:"created", name:"Bookmark created"},
-            {value:"newest", name:"Newest objects first"},
-            {value:"oldest", name:"Oldest objects first"},
-            {value:"name-az", name:"Title A-Z"},
-            {value:"name-za", name:"Title Z-A"},
-            {value:"type", name:"Type"},
-            {value:"dataset", name:"Dataset"},
-            {value:"manual", name:"Manual"},
-            ]}
+          orders={this.orders}
           filterItems={this.filterBookmarks}
           filters={this.state.filters}
           renderResults={this.renderResults}
           onExport={exportDataAsJSON}
           />
 
-        {this.state.viewObject ?
-        /* todo: display item details recipe in overlay */
-        <div className="modal">
-          <div className="close" onClick={()=>{this.viewBookmark(null);}} />
-          <div className="container">
-
-            Todo: viewObjectsRecipe here: this requires the ID and Collection ID from the object (or rather a single unique ID)<br/><br/>
-            {"<ItemDetailsRecipe id=\"\" cid=\"\" />"}
-
-            {/*
-
-            Params from url: id=5180841@program&cid=nisv-catalogue-aggr
-            <itemDetailsRecipe id={this.state.viewObject.object.id} cid="nisv-catalogue-aggr" />
-
-            */}
-
-            <br/><br/>
-          </div>
-        </div>
-        : null
-      }
+        {this.state.detailBookmark ?
+          <ItemDetailsModal object={this.state.detailBookmark.object}
+                            onClose={this.closeItemDetails} />
+        
+        : null}
   </div>
   )
   }
 }
+
+
+BookmarkView.propTypes = {
+  user: PropTypes.object.isRequired,
+  project: PropTypes.object.isRequired
+}
+
+
 
 export default BookmarkView;

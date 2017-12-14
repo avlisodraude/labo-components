@@ -75,7 +75,14 @@ class BookmarkTable extends React.PureComponent {
    /**
    * Listen for update, request new data if filter has been changed
    */
-  componentDidUpdate(){
+  componentDidUpdate(prevProps, prevState){
+    //listen for items change
+    if(prevProps.items != this.props.items){
+      this.reloadData();
+      return;
+    }
+
+    // listen for filter change
     if (this.lastFilter !== this.state.filter){
       this.lastFilter = this.state.filter;
 
@@ -88,6 +95,9 @@ class BookmarkTable extends React.PureComponent {
         this.reloadData();  
       }      
     }
+
+
+
   }
 
   /**
