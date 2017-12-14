@@ -88,7 +88,6 @@ const AnnotationAPI = {
 	},
 
 	getFilteredAnnotations : function(filters, callback, offset = 0, size = 10, sort = null, dateRange = null) {
-		console.debug(filters);
 		let url = _config.ANNOTATION_API_BASE + '/annotations/filter';
 		const postData = {
 			clientId : _clientId,
