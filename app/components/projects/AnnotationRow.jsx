@@ -191,7 +191,7 @@ class AnnotationRow extends React.PureComponent {
                   <td>{bookmark.object.title}</td>
                   <td>{bookmark.object.dataset}</td>
                   <td className="actions">
-                    <div className="btn"
+                    <div className="btn primary"
                          onClick={this.onView.bind(this,bookmark)}>
                          View
                     </div>

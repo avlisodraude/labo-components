@@ -74,7 +74,7 @@ class BookmarkRow extends React.PureComponent {
               <tr>
                 <td>
                   <h4 className="label">Title</h4>
-                  <p>{bookmark.object.title}</p>
+                  <p className="bold">{bookmark.object.title}</p>
                 </td><td>
                   <h4 className="label">Date</h4>
                   <p>{bookmark.object.date ? (bookmark.object.date.match(/^\d/) ? bookmark.object.date.substring(0,10) : bookmark.object.date ): '' }</p>
@@ -96,7 +96,7 @@ class BookmarkRow extends React.PureComponent {
           <div className="actions">
             <div className="btn blank warning" 
                  onClick={this.onDelete}>Delete</div>
-            <div className="btn"
+            <div className="btn primary"
                  onClick={this.onView}>View</div>
           </div>
 
