@@ -2,6 +2,7 @@ import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
 import ProjectWrapper from './ProjectWrapper';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class ProjectDetails extends React.PureComponent {
 
@@ -45,6 +46,10 @@ class ProjectDetails extends React.PureComponent {
   }
 }
 
+ProjectDetails.propTypes = {
+  project: PropTypes.object.isRequired
+}
+
 class WrappedProjectDetails extends React.PureComponent{
   render(){
     return(
@@ -52,5 +57,8 @@ class WrappedProjectDetails extends React.PureComponent{
     )
   }
 }
+
+WrappedProjectDetails.propTypes = ProjectDetails.propTypes;
+
 
 export default WrappedProjectDetails;
