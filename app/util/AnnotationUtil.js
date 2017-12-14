@@ -85,7 +85,7 @@ const AnnotationUtil = {
 					//reconsile and callback the "client"
 					const configClass = CollectionUtil.getCollectionClass(collectionId, true);
 					const collectionConfig = new configClass(collectionId);
-					const mappedResourceData = resourceData['docs'].map((doc) => {
+					const mappedResourceData = resourceData.map((doc) => {
 						return doc.found ? collectionConfig.getItemDetailData(doc) : null;
 					})
 					accumulatedData[collectionId] = mappedResourceData;
