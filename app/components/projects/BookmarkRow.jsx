@@ -77,10 +77,10 @@ class BookmarkRow extends React.PureComponent {
                   <p>{bookmark.object.title}</p>
                 </td><td>
                   <h4 className="label">Date</h4>
-                  <p>{bookmark.object.date ? bookmark.object.date.substring(0,10) : ''}</p>
+                  <p>{bookmark.object.date ? (bookmark.object.date.match(/^\d/) ? bookmark.object.date.substring(0,10) : bookmark.object.date ): '' }</p>
                 </td>
               </tr>
-              <tr>
+              <tr className="subcol">
                 <td>         
                   <h4 className="label">Type</h4>
                   <p>{bookmark.object.type}</p>
