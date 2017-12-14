@@ -166,6 +166,18 @@ class AnnotationView extends React.PureComponent {
     })
   }
 
+ /**
+   * Close itemDetails view, and refresh the data (assuming changes have been made)
+   */
+
+  closeItemDetails(){
+    // set viewbookmark to null
+    this.viewBookmark(null);
+
+    // refresh data
+    this.loadBookmarks();
+  }
+
   /**
    * Sort change
    * @param {string} sort Sort name
