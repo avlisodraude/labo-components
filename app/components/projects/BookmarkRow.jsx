@@ -63,7 +63,9 @@ class BookmarkRow extends React.PureComponent {
           <div className="selector">
             <input type="checkbox" 
                    checked={this.props.selected} 
-                   onChange={this.onSelectChange.bind(this)}/>
+                   onChange={this.onSelectChange.bind(this)}
+                   title={"Select this bookmark with id:\n" + bookmark.id}
+                   />
           </div>
 
           <div className="image" style={{backgroundImage: 'url('+bookmark.object.placeholderImage+')'}}/>

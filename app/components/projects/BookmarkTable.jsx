@@ -8,7 +8,6 @@ import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
 
 import BookmarkRow from './BookmarkRow';
-import { exportDataAsJSON } from '../helpers/Export';
 import ItemDetailsRecipe from '../../ItemDetailsRecipe';
 
 
@@ -139,7 +138,7 @@ class BookmarkTable extends React.PureComponent {
     return (
       <div className={IDUtil.cssClassName('bookmark-table')}>
         <div className="tools">
-          <div className="export-button btn primary" onClick={this.props.onExport.bind(this,this.state.visibleItems)}>Export</div>
+          <div className="export-button btn primary" onClick={this.props.onExport.bind(this,this.state.visibleItems)}>Export all</div>
 
           <div className="filters">
             <div className="left">

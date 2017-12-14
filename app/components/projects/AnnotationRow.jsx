@@ -93,7 +93,7 @@ class AnnotationRow extends React.PureComponent {
        return (<tr className="link">
           <td>
             <h4 className="label">Id</h4>
-            <p>{annotation.id}</p>
+            <p>{annotation.annotationId}</p>
           </td>
           <td>
             <h4 className="label">?</h4>
@@ -136,7 +136,6 @@ class AnnotationRow extends React.PureComponent {
     let annotation = this.props.annotation;
     let bookmarks = annotation.bookmarks || [];
     let hasBookmarks = bookmarks.length > 0;
-
     return (
       <div className={classNames(IDUtil.cssClassName('annotation-row'),"item-row")}>
 
@@ -144,7 +143,9 @@ class AnnotationRow extends React.PureComponent {
           <div className="selector">
             <input type="checkbox"
                    checked={this.props.selected}
-                   onChange={this.onSelectChange.bind(this)}/>
+                   onChange={this.onSelectChange.bind(this)}
+                   title={"Select this annotation with id:\n" + annotation.annotationId}
+                   />
           </div>
 
           <div className="info">
