@@ -13,8 +13,9 @@ class ItemDetailsModal extends React.PureComponent {
     return(
     <div className={IDUtil.cssClassName('item-details-modal')}>
       <div className="modal">
-        <div className="close" onClick={this.props.onClose}>Close</div>
         <div className="container">
+         <div className="close" onClick={this.props.onClose}>Close</div>
+
           <iframe src={"/tool/default-item-details?id="+encodeURIComponent(object.id)+"&cid="+encodeURIComponent(object.dataset)+"&bodyClass=noHeader"} />
           {/* Note: displaying the ItemDetailsRecipe in an overlay doesn't work smooth (css, dependencies, js errors)
               so, just show the page in an iframe for now. 

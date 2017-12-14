@@ -8,33 +8,8 @@
   top: 0;
   width: 100%;
 
-  .close{
-    background-color: rgba($clDark, 0.5);
-    background-image: $iconCrossUrl;
-    background-position: center right 15px;
-    background-repeat: no-repeat;
-    background-size: 20px;
-    color: $clWhite;
-    font-family: $fontHeading;
-    cursor: pointer;    
-    display: block;
-    height: 40px;
-    line-height: 40px;
-    opacity: 0.8;
-    position: absolute;
-    right: 0;
-    text-shadow: none;
-    text-transform: uppercase;
-    top: 0;
-    width: 90px;
-    font-size: 15px;
-    
-    &:hover{
-      opacity: 1.0;
-    }
-  }
-
   .container{
+    position: relative;
     background-color: $clWhite;
     box-shadow: 0 5px 10px rgba(0,0,0,0.3);
     margin: 40px auto;
@@ -47,6 +22,33 @@
       width: 100%;
       height: 100%;        
     }
+
+    .close{
+      background-color: rgba($clDark, 0.5);
+      background-image: $iconCrossUrl;
+      background-position: center right 15px;
+      background-repeat: no-repeat;
+      background-size: 20px;
+      color: $clWhite;
+      font-family: $fontHeading;
+      cursor: pointer;    
+      display: block;
+      height: 40px;
+      line-height: 40px;
+      opacity: 0.8;
+      position: absolute;
+      right: 0;
+      text-shadow: none;
+      text-transform: uppercase;
+      top: -40px;
+      width: 90px;
+      font-size: 15px;
+      
+      &:hover{
+        opacity: 1.0;
+      }
+    }
+
   }
 
 }
