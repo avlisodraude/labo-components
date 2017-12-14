@@ -246,7 +246,7 @@ class AnnotationView extends React.PureComponent {
       <div className="type-list">
         <h3>
           <input type="checkbox" 
-                 checked={items.length > 0 && items.every((item)=>(this.state.selection.includes(item))) }
+                 checked={items.length > 0 && items.every((item)=>(this.state.selection.includes(item.id))) }
                  onChange={this.selectAllChange.bind(this, items)}
                 />
           {type}: <span className="count">{items.length || 0}</span>
@@ -257,7 +257,7 @@ class AnnotationView extends React.PureComponent {
                          annotation={annotation} 
                          onDelete={this.deleteAnnotation}
                          onView={this.viewBookmark}
-                         selected={this.state.selection.includes(annotation)}
+                         selected={this.state.selection.includes(annotation.id)}
                          onSelect={this.selectItem}                         
                          />
             ))}           
@@ -276,7 +276,7 @@ class AnnotationView extends React.PureComponent {
       <div>
         <h2>
           <input type="checkbox" 
-                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item))) }
+                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item.id))) }
                  onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
                 />
           Annotations: <span className="count">{renderState.visibleItems.length || 0}</span>
