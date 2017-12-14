@@ -38,7 +38,7 @@ class AnnotationView extends React.PureComponent {
     this.renderResults = this.renderResults.bind(this);
 
     this.selectAllChange = this.selectAllChange.bind(this);
-    this.selectAnnotation = this.selectAnnotation.bind(this);
+    this.selectItem = this.selectItem.bind(this);
   }
 
   componentWillMount() {
@@ -186,37 +186,38 @@ class AnnotationView extends React.PureComponent {
     this.setSort(e.target.value);
   }
 
-
   /**
    * Select all items
    */
   selectAllChange(items, e){
     if (e.target.checked){
       let newSelection = this.state.selection.slice();
-      items.forEach((item)=>{ if(!newSelection.includes(item)){ newSelection.push(item)}});
+      items.forEach((item)=>{ if(!newSelection.includes(item.id)){ newSelection.push(item.id)}});
       // set
       this.setState({
         selection: newSelection
-      });  
+      });
     } else{
+      items = items.map((item)=>(item.id))
       // unset
       this.setState({
         selection: this.state.selection.filter((item)=>(!items.includes(item)))
-      });  
+      });
     }
-    
+
   }
 
   /**
-   * Select annotation   
+   * Select bookmark
    */
-  selectAnnotation(annotation, select){ 
-    if (select){  
+  selectItem(item, select){
+    
+    if (select){
 
-      if(!this.state.selection.includes(annotation)){
+      if(!this.state.selection.includes(item.id)){
         // add to selection
         this.setState({
-          selection: [...this.state.selection, annotation]
+          selection: [...this.state.selection, item.id]
         });
       }
       return;
@@ -225,7 +226,7 @@ class AnnotationView extends React.PureComponent {
     // remove from selection
     if (!select){
       this.setState({
-        selection: this.state.selection.filter((selected)=>(selected!== annotation))
+        selection: this.state.selection.filter((selected)=>(selected!== item.id))
       });
     }
   }
@@ -257,7 +258,7 @@ class AnnotationView extends React.PureComponent {
                          onDelete={this.deleteAnnotation}
                          onView={this.viewBookmark}
                          selected={this.state.selection.includes(annotation)}
-                         onSelect={this.selectAnnotation}                         
+                         onSelect={this.selectItem}                         
                          />
             ))}           
         </div> 

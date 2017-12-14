@@ -1,3 +1,4 @@
+import AnnotationAPI from '../../api/AnnotationAPI';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
 import BookmarkRow from './BookmarkRow';
@@ -45,7 +46,7 @@ class BookmarkView extends React.PureComponent {
     this.renderResults = this.renderResults.bind(this);
 
     this.selectAllChange = this.selectAllChange.bind(this);
-    this.selectBookmark = this.selectBookmark.bind(this);
+    this.selectItem = this.selectItem.bind(this);
 
     this.closeItemDetails = this.closeItemDetails.bind(this);
   }
@@ -53,6 +54,7 @@ class BookmarkView extends React.PureComponent {
   componentWillMount() {
     this.loadBookmarks();
   }
+
 
   /**
    * Load Annotation from Store
@@ -105,10 +107,23 @@ class BookmarkView extends React.PureComponent {
     this.setState({
       bookmarks: bookmarks,
       loading : false,
-      selection: [],
       filters: this.getFilters(bookmarks),
     });
+
+    this.updateSelection(bookmarks);
   }
+
+  /** 
+   * Update Selection list, based on available bookmarks
+   * @param  {array} bookmarks  Current data
+   */
+  updateSelection(bookmarks){
+    this.setState({
+      selection: bookmarks.map((bookmark)=>(bookmark.id)).filter((bookmarkId)=>(this.state.selection.includes(bookmarkId)))
+    })
+
+  }
+
 
   /**
    * Filter bookmark list by given filter
@@ -184,8 +199,25 @@ class BookmarkView extends React.PureComponent {
    * Delete bookmark
    * @param {Object} bookmark Bookmark to be removed
    */
-  deleteBookmark(bookmark){
-    alert('Todo: Implement delete');
+  deleteBookmark(bookmark){    
+    // always ask before deleting
+    if (!confirm('Are you sure you want to remove this bookmark?')){
+      return;
+    }
+
+    // delete the bookmark
+    AnnotationAPI.deleteAnnotation(bookmark, (data)=>{
+      if (data && data.status){
+        if (data.status == 'success'){
+          this.loadBookmarks();
+        } else{
+          alert(data.message ? data.message : 'An unknown error has occured while deleting the bookmark');
+        } 
+      } else{
+        alert('An error has occured while deleting the bookmark.');
+      }
+      
+    });
   }
 
 
@@ -225,12 +257,13 @@ class BookmarkView extends React.PureComponent {
   selectAllChange(items, e){
     if (e.target.checked){
       let newSelection = this.state.selection.slice();
-      items.forEach((item)=>{ if(!newSelection.includes(item)){ newSelection.push(item)}});
+      items.forEach((item)=>{ if(!newSelection.includes(item.id)){ newSelection.push(item.id)}});
       // set
       this.setState({
         selection: newSelection
       });
     } else{
+      items = items.map((item)=>(item.id))
       // unset
       this.setState({
         selection: this.state.selection.filter((item)=>(!items.includes(item)))
@@ -242,13 +275,14 @@ class BookmarkView extends React.PureComponent {
   /**
    * Select bookmark
    */
-  selectBookmark(bookmark, select){
+  selectItem(item, select){
+    
     if (select){
 
-      if(!this.state.selection.includes(bookmark)){
+      if(!this.state.selection.includes(item.id)){
         // add to selection
         this.setState({
-          selection: [...this.state.selection, bookmark]
+          selection: [...this.state.selection, item.id]
         });
       }
       return;
@@ -257,11 +291,11 @@ class BookmarkView extends React.PureComponent {
     // remove from selection
     if (!select){
       this.setState({
-        selection: this.state.selection.filter((selected)=>(selected!== bookmark))
+        selection: this.state.selection.filter((selected)=>(selected!== item.id))
       });
     }
   }
-  
+
   /**
    * Close itemDetails view, and refresh the data (assuming changes have been made)
    */
@@ -283,7 +317,7 @@ class BookmarkView extends React.PureComponent {
       <div>
         <h2>
           <input type="checkbox"
-                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item))) }
+                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item.id))) }
                  onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
                 />
           Bookmarks: <span className="count">{renderState.visibleItems.length || 0}</span>
@@ -294,8 +328,8 @@ class BookmarkView extends React.PureComponent {
                          bookmark={bookmark}
                          onDelete={this.deleteBookmark}
                          onView={this.viewBookmark}
-                         selected={this.state.selection.includes(bookmark)}
-                         onSelect={this.selectBookmark}
+                         selected={this.state.selection.includes(bookmark.id)}
+                         onSelect={this.selectItem}
                          />
             ))}
         </div>
@@ -307,7 +341,8 @@ class BookmarkView extends React.PureComponent {
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
         <BookmarkTable
-          items={this.state.bookmarks}          
+          items={this.state.bookmarks} 
+          selection={this.state.selection}         
           sortItems={this.sortBookmarks}
           orders={this.orders}
           filterItems={this.filterBookmarks}
