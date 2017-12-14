@@ -9,7 +9,6 @@ import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
 import { exportDataAsJSON } from '../helpers/Export';
 
-
 class ProjectTable extends React.PureComponent {
 
   constructor(props){
@@ -357,6 +356,7 @@ class ProjectTable extends React.PureComponent {
             loading={this.state.loading}
             bulkActions={this.bulkActions}
            />
+
       </div>
     );
   }
