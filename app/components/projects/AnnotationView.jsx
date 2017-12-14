@@ -200,35 +200,71 @@ class AnnotationView extends React.PureComponent {
       return;
     }
 
-    // For saving annotations, store the whole bookmark with its annotations, 
-    // without the item to be deleted
-
-    // AnnotationAPI.saveAnnotation(annotation)
-
-  
-
-    // delete the bookmark
-    // AnnotationAPI.deleteAnnotation(annotation, (data)=>{
-    //   if (data && data.status){
-    //     if (data.status == 'success'){
-    //       this.loadBookmarks();
-    //     } else{
-    //       alert(data.message ? data.message : 'An unknown error has occured while deleting the annotation');
-    //     } 
-    //   } else{
-    //     alert('An error has occured while deleting the annotation.');
-    //   }
-      
-    // });
+    this.deleteAnnotationsAction([annotation]);
   } 
+
 
   /**
    * Delete annotations
    * @param {Object} annotation Annotation to be removed
    */
-  deleteAnnotations(annotations){
-    alert('Todo: Implement delete multiple');
+  deleteAnnotations(annotationIds){
+    
+    // always ask before deleting
+    if (!confirm('Are you sure you want to remove the selected annotations?')){
+      return;
+    }
+
+    this.deleteAnnotationsAction(this.state.annotations.filter((a)=>(annotationIds.includes(a.id))));
   }
+
+  /**
+   * Delete annotations using the AnnotationAPI
+   * For saving annotations, store the whole bookmark with its annotations, 
+   * without the item to be deleted
+   * AnnotationAPI.saveAnnotation(annotation, callback)
+   * 
+   * @param {array} annotations Annotations to be removed
+   */
+  deleteAnnotationsAction(annotations){
+    // get the unique bookmarks, as we are deleting per-bookmark
+    let uniqueBookmarks = Array.from(new Set(annotations.map((a)=>(a.bookmarkAnnotation))));
+
+    var hits = uniqueBookmarks.length;
+
+    uniqueBookmarks.forEach((uniqueBookmark)=>{
+      // 1. get a copy of the bookmarkAnnotation from the annotation object
+      var bookmark = Object.assign({},uniqueBookmark);
+      
+      // 2A. remove the given annotation from the body
+      // 2B. and remove the link to the bookmarkAnnotation and bookmarks from the annotations
+      //     to prevent circular structure
+      // (Todo: check if not unnecessary fields are saved accidently)
+      bookmark.body = bookmark.body.filter((a)=>(!annotations.includes(a))).map((a)=>{
+        let b = Object.assign({},a);
+        delete b.bookmarkAnnotation;
+        delete b.bookmarks;
+        return b;
+      });
+
+      // Finally. save 
+      AnnotationAPI.saveAnnotation(bookmark, (data)=>{
+        hits--;
+
+        // only give a message for the last action
+        if (hits ==0 && data && data.status){
+          if (data.status == 'success'){
+            this.loadAnnotations();
+          } else{
+            alert(data.message ? data.message : 'An unknown error has occured while deleting the annotation');
+          } 
+        } else{
+          alert('An error has occured while deleting the annotation.');
+        }
+      });
+    });
+  }
+
 
   /**
    * Export annotations
@@ -380,6 +416,7 @@ class AnnotationView extends React.PureComponent {
       <div className={IDUtil.cssClassName('annotation-view')}>
         <BookmarkTable 
           items={this.state.annotations}
+          selection={this.state.selection}
           sortItems={this.sortAnnotations}
           orders={this.orders}
           filterItems={this.filterAnnotations}
