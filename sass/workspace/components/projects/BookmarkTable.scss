@@ -32,8 +32,12 @@
       table{
         width: 100%;
         td{
-          padding: 10px;
+          padding: 5px 10px 0 10px;
           height: 80px;
+          min-width: 150px;
+          .bold{
+            font-weight: bold;
+          }
         }
       }
     }

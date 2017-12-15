@@ -1,3 +1,6 @@
+import SearchAPI from '../api/SearchAPI';
+import CollectionUtil from '../util/CollectionUtil';
+
 const AnnotationUtil = {
 
 	/*************************************************************************************
@@ -5,8 +8,11 @@ const AnnotationUtil = {
 	*************************************************************************************/
 
 	//extracts all contained targets/resources into a list for the bookmark-centric view
-	nestedAnnotationListToResourceList(annotations) {
-		return annotations.map((na, index) => {
+	nestedAnnotationListToResourceList(annotations, callback) {
+		const resourceList = annotations.map((na, index) => {
+			const resourceInfo = AnnotationUtil.getStructuralElementFromSelector(na.target.selector, 'Resource')
+			const collectionInfo = AnnotationUtil.getStructuralElementFromSelector(na.target.selector, 'Collection')
+			//console.debug(resourceInfo, collectionInfo)
 			return {
 				// unique bookmark id, used for referencing
 				id: na.id,
@@ -15,19 +21,19 @@ const AnnotationUtil = {
 				object: {
 
 					// unique object id
-					id: na.target.source,
+					id: resourceInfo ? resourceInfo.id : null,
 
 					// object type: "Video", Video-Fragment", "Image", "Audio", "Entity", ...
 					type: na.target.type,
 
 					// short object title
-					title: "NEED TO FETCH (DEPENDS ON RESOURCE)",
+					title: na.id,
 
 					// (Creation) date of the object (nice to have)
 					date: "NEED TO FETCH (DEPENDS ON RESOURCE)",
 
 					// dataset the object originates from
-					dataset: AnnotationUtil.getStructuralElementFromSelector(na.target.selector, 'Collection'),
+					dataset: collectionInfo ? collectionInfo.id : null,
 
 					// placeholder image if available
 					placeholderImage: "http://localhost:5304/static/images/placeholder.2b77091b.svg"
@@ -45,24 +51,93 @@ const AnnotationUtil = {
 				annotations: na.body,
 			}
 		});
+		if(callback && resourceList.length > 0) {
+			return AnnotationUtil.reconsileResourceList(resourceList, callback)
+		}
+		return resourceList;
+	},
+
+	//TODO do a mget to fetch all the resource data from the search API.
+	reconsileResourceList(resourceList, callback) {
+		const temp = resourceList.map((na) => {
+			return {
+				resourceId : na.object.id,
+				collectionId : na.object.dataset
+			}
+		})
+		const resourceIds = temp.reduce((acc, cur) => {
+			//the first accumulator is the same as the current object...
+			if(acc.resourceId) {
+				let temp = {}
+				temp[acc.collectionId] = [acc.resourceId];
+				acc = temp;
+			} else {
+				acc[cur.collectionId] ? acc[cur.collectionId].push(cur.resourceId) : acc[cur.collectionId] = [cur.resourceId]
+			}
+			return acc
+		}, temp[0]); //initial value needed in case of one element!
+
+		//now loop through the clustered (by collectionId) resourceIdLists and call the searchAPI
+		const accumulatedData = {}
+		Object.keys(resourceIds).forEach((key) => {
+			SearchAPI.getItemDetailsMultiple(
+				key, //input
+				resourceIds[key], //input
+				(collectionId, idList, resourceData) => {
+					//reconsile and callback the "client"
+					const configClass = CollectionUtil.getCollectionClass(collectionId, true);
+					const collectionConfig = new configClass(collectionId);
+					const mappedResourceData = resourceData.map((doc) => {
+						return doc.found ? collectionConfig.getItemDetailData(doc) : null;
+					})
+					accumulatedData[collectionId] = mappedResourceData;
+					if(Object.keys(resourceIds).length == Object.keys(accumulatedData).length) {
+						callback(AnnotationUtil.reconsileAll(resourceList, accumulatedData));
+					}
+				}
+			)
+		});
+	},
+
+	//TODO FINISH THIS AND WE'RE ALL DONE!
+	reconsileAll(resourceList, resourceData) {
+		resourceList.forEach((x) => {
+			let temp = resourceData[x.object.dataset].filter((doc) => {
+				return doc && doc.resourceId == x.object.id
+			});
+			x.object.title = 'Resource not found';
+			x.object.date = 'N/A';
+			if(temp.length == 1) {
+				x.object.title = temp[0].title;
+				x.object.date = temp[0].date;
+				if(temp[0].posterURL) {
+					x.object.placeholderImage = temp[0].posterURL
+				}
+			}
+		})
+		return resourceList
 	},
 
 	//extracts all contained annotations into a list for the annotation-centric view
 	nestedAnnotationListToAnnotationList(annotations) {
+
 		// check for empty: can't reduce an empty array
 		if (annotations.length === 0){
 			return [];
 		}
 
 		return annotations.filter(an => an.body).map((an) => {
+			// store bookmark to the annotation for later use
+			an.body.forEach((b)=>{b.bookmarkAnnotation = an});
 			return an.body
 		}).reduce((acc, cur) => {
 			return acc.concat(cur);
 		});
 	},
 
+	//the Collection & Resource should always be part of the annotation target
 	getStructuralElementFromSelector(selector, resourceType) {
-		const tmp = selector.value.filter(rt => rt.type === resourceType);
+		const tmp = selector.value.filter(rt => rt.type == resourceType);
 		return tmp.length > 0 ? tmp[0] : null;
 	},
 

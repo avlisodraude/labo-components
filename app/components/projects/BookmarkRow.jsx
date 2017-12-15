@@ -63,7 +63,9 @@ class BookmarkRow extends React.PureComponent {
           <div className="selector">
             <input type="checkbox" 
                    checked={this.props.selected} 
-                   onChange={this.onSelectChange.bind(this)}/>
+                   onChange={this.onSelectChange.bind(this)}
+                   title={"Select this bookmark with id:\n" + bookmark.id}
+                   />
           </div>
 
           <div className="image" style={{backgroundImage: 'url('+bookmark.object.placeholderImage+')'}}/>
@@ -74,13 +76,13 @@ class BookmarkRow extends React.PureComponent {
               <tr>
                 <td>
                   <h4 className="label">Title</h4>
-                  <p>{bookmark.object.title}</p>
+                  <p className="bold">{bookmark.object.title}</p>
                 </td><td>
                   <h4 className="label">Date</h4>
-                  <p>{bookmark.object.date ? bookmark.object.date.substring(0,10) : ''}</p>
+                  <p>{bookmark.object.date ? (bookmark.object.date.match(/^\d/) ? bookmark.object.date.substring(0,10) : bookmark.object.date ): '' }</p>
                 </td>
               </tr>
-              <tr>
+              <tr className="subcol">
                 <td>         
                   <h4 className="label">Type</h4>
                   <p>{bookmark.object.type}</p>
@@ -96,7 +98,7 @@ class BookmarkRow extends React.PureComponent {
           <div className="actions">
             <div className="btn blank warning" 
                  onClick={this.onDelete}>Delete</div>
-            <div className="btn"
+            <div className="btn primary"
                  onClick={this.onView}>View</div>
           </div>
 

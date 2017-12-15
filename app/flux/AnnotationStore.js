@@ -10,7 +10,7 @@ class AnnotationStore {
 
 	/* --------------- FOR FETCHING ANNOTATIONS ------------------- */
 
-	getDirectResourceAnnotations(resourceId, user, project, callback) {
+	getDirectResourceAnnotations(resourceId, user, project, callback, offset = 0, size = 10, sort = null, dateRange = null) {
 		let filter = {
 			'target.type' : 'Resource', //indicates this annotations target is the resource
 			'target.selector.value.id' : resourceId,
@@ -19,10 +19,10 @@ class AnnotationStore {
 		if(project && project.id) {
 			filter['project'] = project.id
 		}
-		AnnotationAPI.getFilteredAnnotations(filter, callback);
+		AnnotationAPI.getFilteredAnnotations(filter, callback, offset, size, sort, dateRange);
 	}
 
-	getAllAnnotationsOfResource(resourceId, user, project, callback) {
+	getAllAnnotationsOfResource(resourceId, user, project, callback, offset = 0, size = 10, sort = null, dateRange = null) {
 		let filter = {
 			'target.selector.value.id' : resourceId,
 			'user.keyword' : user.id
@@ -30,11 +30,11 @@ class AnnotationStore {
 		if(project && project.id) {
 			filter['project'] = project.id
 		}
-		AnnotationAPI.getFilteredAnnotations(filter, callback);
+		AnnotationAPI.getFilteredAnnotations(filter, callback, offset, size, sort, dateRange);
 	}
 
 	//TODO rename later getDirectMediaObjectAnnotations
-	getMediaObjectAnnotations(mediaObjectURI, user, project, callback) {
+	getMediaObjectAnnotations(mediaObjectURI, user, project, callback, offset = 0, size = 10, sort = null, dateRange = null) {
 		let filter = {
 			'target.source' : AnnotationUtil.removeSourceUrlParams(mediaObjectURI),
 			'user.keyword' : user.id
@@ -42,15 +42,15 @@ class AnnotationStore {
 		if(project && project.id) {
 			filter['project'] = project.id
 		}
-		AnnotationAPI.getFilteredAnnotations(filter, callback);
+		AnnotationAPI.getFilteredAnnotations(filter, callback, offset, size, sort, dateRange);
 	}
 
-	getUserProjectAnnotations(user, project, callback) {
+	getUserProjectAnnotations(user, project, callback, offset = 0, size = 10, sort = null, dateRange = null) {
 		let filter = {
 			'user.keyword' : user.id,
 			'project' : project.id
 		}
-		AnnotationAPI.getFilteredAnnotations(filter, callback);
+		AnnotationAPI.getFilteredAnnotations(filter, callback, offset, size, sort, dateRange);
 	}
 
 	/* --------------- FOR TRIGGERS LISTENERS ------------------- */

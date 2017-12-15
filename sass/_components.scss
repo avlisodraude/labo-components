@@ -51,8 +51,33 @@
 	font-size: 100% !important;
 	display: inline-block !important;
 	margin: 0px 5px 5px 0px;
+	&.ms_custom {
+		color: $subdued-bg;
+	}
 }
 
+.react-autosuggest__suggestion {
+	>  * .label {
+		color: #fff;
+		display: inline;
+		float: right;
+		margin-bottom: 0;
+		padding:  2px 8px 3px;
+
+		&.label-info {
+			background-color: #5bc0de;
+		}
+		&.label-warning {
+			background-color: #f0ad4e;
+		}
+		&.label-success {
+			background-color: #5cb85c;
+		}
+		&.label-danger {
+			background-color: #d9534f;
+		}
+	}
+}
 .bg__classify-form {}  /* ClassifyingForm.jsx */
 
 .bg__comment-form {}  /* CommentingForm.jsx */

@@ -191,13 +191,19 @@ class ItemDetailsRecipe extends React.Component {
 	------------------------------------------------------------------------------- */
 
 	onSaveAnnotation(annotation) {
-		console.debug('just saved an annotation, closing the modal');
 		ComponentUtil.hideModal(this, 'showModal' , 'annotation__modal', true);
+		//finally update the resource annotations (the "bookmark")
+		if(annotation && annotation.target && annotation.target.type == 'Resource') {
+			this.refreshResourceAnnotations();
+		}
 	}
 
 	onDeleteAnnotation(annotation) {
-		console.debug('just deleted an annotation, closing the modal');
 		ComponentUtil.hideModal(this, 'showModal', 'annotation__modal', true);
+		//finally update the resource annotations (the "bookmark")
+		if(annotation && annotation.target && annotation.target.type == 'Resource') {
+			this.refreshResourceAnnotations();
+		}
 	}
 
 	//TODO currently this is only called via the ugly componentDidUpdate() function
@@ -450,13 +456,8 @@ class ItemDetailsRecipe extends React.Component {
 		ComponentUtil.storeJSONInLocalStorage('activeProject', project)
 		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true);
 		AnnotationActions.changeProject(project);
-		//finally load the resource annotation with motivation bookmarking
-		AnnotationStore.getDirectResourceAnnotations(
-			this.state.itemData.resourceId,
-			this.props.user,
-			this.state.activeProject,
-			this.onLoadResourceAnnotations.bind(this)
-		)
+		//finally load the resource annotation
+		this.refreshResourceAnnotations()
 	}
 
 	triggerProjectSelector() {
@@ -464,6 +465,15 @@ class ItemDetailsRecipe extends React.Component {
 		this.setState({
 			showProjectModal : !showProjectModal
 		});
+	}
+
+	refreshResourceAnnotations() {
+		AnnotationStore.getDirectResourceAnnotations(
+			this.state.itemData.resourceId,
+			this.props.user,
+			this.state.activeProject,
+			this.onLoadResourceAnnotations.bind(this)
+		)
 	}
 
 	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)

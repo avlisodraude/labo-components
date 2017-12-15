@@ -1,28 +1,45 @@
-import ProjectAPI from '../../api/ProjectAPI';
-import IDUtil from '../../util/IDUtil';
-import ProjectWrapper from './ProjectWrapper';
-
+import AnnotationAPI from '../../api/AnnotationAPI';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
-
 import BookmarkRow from './BookmarkRow';
-import { exportDataAsJSON } from '../helpers/Export';
-import ItemDetailsRecipe from '../../ItemDetailsRecipe';
-
 import BookmarkTable from './BookmarkTable';
+import ComponentUtil from '../../util/ComponentUtil';
+import IDUtil from '../../util/IDUtil';
+import ItemDetailsModal from './ItemDetailsModal';
+import ProjectAPI from '../../api/ProjectAPI';
+import ProjectWrapper from './ProjectWrapper';
+import PropTypes from 'prop-types';
+import { exportDataAsJSON } from '../helpers/Export';
+import BulkActions from '../helpers/BulkActions';
 
 class BookmarkView extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    
+
     this.bookmarkTypes = ["Video", "Video-Fragment", "Image", "Audio", "Entity"];
 
+    this.orders = [
+      {value:"created", name:"Bookmark created"},
+      {value:"newest", name:"Newest objects first"},
+      {value:"oldest", name:"Oldest objects first"},
+      {value:"name-az", name:"Title A-Z"},
+      {value:"name-za", name:"Title Z-A"},
+      {value:"type", name:"Type"},
+      {value:"dataset", name:"Dataset"},
+      {value:"manual", name:"Manual"},
+    ];
+
+    this.bulkActions = [
+      {title: 'Delete', onApply: this.deleteBookmarks.bind(this) },
+      {title: 'Export', onApply: this.exportBookmarks.bind(this) }
+    ];
+
     this.state = {
-      bookmarks: [],  
-      selection: [],    
+      bookmarks: [],
+      selection: [],
       loading : true,
-      viewObject: null,
+      detailBookmark: null,
       filters: []
     }
 
@@ -35,12 +52,15 @@ class BookmarkView extends React.PureComponent {
     this.renderResults = this.renderResults.bind(this);
 
     this.selectAllChange = this.selectAllChange.bind(this);
-    this.selectBookmark = this.selectBookmark.bind(this);
+    this.selectItem = this.selectItem.bind(this);
+
+    this.closeItemDetails = this.closeItemDetails.bind(this);
   }
 
   componentWillMount() {
     this.loadBookmarks();
   }
+
 
   /**
    * Load Annotation from Store
@@ -59,11 +79,11 @@ class BookmarkView extends React.PureComponent {
    * @return {array}       List of filters
    */
   getFilters(items){
-   
+
     let result = [];
     let hits = {};
 
-    items.forEach((item)=>{ 
+    items.forEach((item)=>{
       var t = item.object.type;
       if (!(t in hits)){
         result.push( {value: t, name: t.charAt(0).toUpperCase() + t.slice(1)},);
@@ -73,24 +93,43 @@ class BookmarkView extends React.PureComponent {
     return result.sort();
   }
 
- 
+
   /**
    * Annotation load callback: set data to state
    * @param  {Object} data Response object with annotation list
    */
   onLoadBookmarks(data) {
-    const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
-      data.annotations || []
+    AnnotationUtil.nestedAnnotationListToResourceList(
+      data.annotations || [],
+      this.onLoadResourceList.bind(this)
     )
+  }
 
+  /**
+   * The resource list now also contains the data of the resources
+   * @param  {array} bookmarks Full bookmark data
+   */
+  onLoadResourceList(bookmarks) {
     this.setState({
-      bookmarks: bookmarks, 
+      bookmarks: bookmarks,
       loading : false,
-      selection: [],
       filters: this.getFilters(bookmarks),
     });
+
+    this.updateSelection(bookmarks);
   }
- 
+
+  /** 
+   * Update Selection list, based on available items
+   * @param  {array} items  Current data
+   */
+  updateSelection(items){
+    this.setState({
+      selection: items.map((item)=>(item.id)).filter((itemId)=>(this.state.selection.includes(itemId)))
+    })
+  }
+
+
   /**
    * Filter bookmark list by given filter
    * @param  {array} bookmarks  Bookmarks array
@@ -118,10 +157,10 @@ class BookmarkView extends React.PureComponent {
     return bookmarks;
   }
 
-  /** 
-   * Sort bookmarks 
+  /**
+   * Sort bookmarks
    * @param {Array} bookmarks List of bookmarks to be sorted
-   * @param {string} sort Sort field   
+   * @param {string} sort Sort field
    * @return {Array} Sorted bookmarks
    */
   sortBookmarks(bookmarks, field){
@@ -134,7 +173,7 @@ class BookmarkView extends React.PureComponent {
       sorted.sort((a,b) => (a.object.date < b.object.date));
     break;
     case 'oldest':
-      sorted.sort((a,b) => (a.object.date > b.object.date));      
+      sorted.sort((a,b) => (a.object.date > b.object.date));
     break;
     case 'name-az':
       sorted.sort((a,b) => (a.object.title > b.object.title));
@@ -150,7 +189,7 @@ class BookmarkView extends React.PureComponent {
     break;
     case 'manual':
       sorted.sort((a,b) => (a.sort > b.sort));
-    break;    
+    break;
     default:
       // no sorting,just return
       return sorted;
@@ -165,18 +204,91 @@ class BookmarkView extends React.PureComponent {
    * Delete bookmark
    * @param {Object} bookmark Bookmark to be removed
    */
-  deleteBookmark(bookmark){
-    alert('Todo: Implement delete');
+  deleteBookmark(bookmark){    
+    // always ask before deleting
+    if (!confirm('Are you sure you want to remove this bookmark?')){
+      return;
+    }
+
+    // delete the bookmark
+    AnnotationAPI.deleteAnnotation(bookmark, (data)=>{
+      if (data && data.status){
+        if (data.status == 'success'){
+          this.loadBookmarks();
+        } else{
+          alert(data.message ? data.message : 'An unknown error has occured while deleting the bookmark');
+        } 
+      } else{
+        alert('An error has occured while deleting the bookmark.');
+      }
+      
+    });
   }
 
+ /**
+  * Delete multiple bookmarks
+  * @param {array} selection List of bookmark ids to be deleted
+  */
+  deleteBookmarks(selection){
+    // always ask before deleting
+    if (!confirm('Are you sure you want to remove the selected bookmarks?')){
+      return;
+    }
+
+    let data = this.state.bookmarks.filter((item)=>(selection.includes(item.id)));
+
+    // counts number of hits
+    var hits = data.length;
+
+    // delete the bookmark
+    data.forEach((item)=>{
+      AnnotationAPI.deleteAnnotation(item, (data)=>{
+        hits--;
+
+        // only on last callback, check the status and reload the data
+        if (hits == 0){
+          if (data && data.status){
+            if (data.status == 'success'){
+              this.loadBookmarks();
+            } else{
+              alert(data.message ? data.message : 'An unknown error has occured while deleting the bookmark');
+            } 
+          } else{
+            alert('An error has occured while deleting the bookmark.');
+          }      
+        }
+      });
+    });
+  }
+
+   /**
+   * Export bookmarks
+   * @param {Object} annotations Annotations to be exported
+   */
+  exportBookmarks(selection){
+    let data = this.state.bookmarks.filter((item)=>(selection.includes(item.id)));
+    exportDataAsJSON(data)
+  }
+
+
+  /**
+   * Make current project active
+   */
+  makeActiveProject(){
+    ComponentUtil.storeJSONInLocalStorage('activeProject', this.props.project);  
+  }
 
   /**
    * View bookmark
    * @param {Object} bookmark Bookmark to be viewed
    */
   viewBookmark(bookmark){
+    // make current project active
+    if (bookmark){    
+      this.makeActiveProject();
+    }    
     this.setState({
-      viewObject: bookmark
+      detailBookmark: bookmark
     })
   }
 
@@ -195,30 +307,32 @@ class BookmarkView extends React.PureComponent {
   selectAllChange(items, e){
     if (e.target.checked){
       let newSelection = this.state.selection.slice();
-      items.forEach((item)=>{ if(!newSelection.includes(item)){ newSelection.push(item)}});
+      items.forEach((item)=>{ if(!newSelection.includes(item.id)){ newSelection.push(item.id)}});
       // set
       this.setState({
         selection: newSelection
-      });  
+      });
     } else{
+      items = items.map((item)=>(item.id))
       // unset
       this.setState({
         selection: this.state.selection.filter((item)=>(!items.includes(item)))
-      });  
+      });
     }
-    
+
   }
 
   /**
-   * Select bookmark   
+   * Select bookmark
    */
-  selectBookmark(bookmark, select){ 
-    if (select){  
+  selectItem(item, select){
+    
+    if (select){
 
-      if(!this.state.selection.includes(bookmark)){
+      if(!this.state.selection.includes(item.id)){
         // add to selection
         this.setState({
-          selection: [...this.state.selection, bookmark]
+          selection: [...this.state.selection, item.id]
         });
       }
       return;
@@ -227,9 +341,20 @@ class BookmarkView extends React.PureComponent {
     // remove from selection
     if (!select){
       this.setState({
-        selection: this.state.selection.filter((selected)=>(selected!== bookmark))
+        selection: this.state.selection.filter((selected)=>(selected!== item.id))
       });
     }
+  }
+
+  /**
+   * Close itemDetails view, and refresh the data (assuming changes have been made)
+   */
+  closeItemDetails(){
+    // set viewbookmark to null
+    this.viewBookmark(null);
+
+    // refresh data
+    this.loadBookmarks();
   }
 
   /**
@@ -241,22 +366,22 @@ class BookmarkView extends React.PureComponent {
     return (
       <div>
         <h2>
-          <input type="checkbox" 
-                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item))) }
+          <input type="checkbox"
+                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item.id))) }
                  onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
                 />
           Bookmarks: <span className="count">{renderState.visibleItems.length || 0}</span>
         </h2>
         <div className="bookmark-table">
           {renderState.visibleItems.map((bookmark, index)=>(
-            <BookmarkRow key={index} 
-                         bookmark={bookmark} 
+            <BookmarkRow key={index}
+                         bookmark={bookmark}
                          onDelete={this.deleteBookmark}
                          onView={this.viewBookmark}
-                         selected={this.state.selection.includes(bookmark)}
-                         onSelect={this.selectBookmark}                         
+                         selected={this.state.selection.includes(bookmark.id)}
+                         onSelect={this.selectItem}
                          />
-            ))}           
+            ))}
         </div>
       </div>
       );
@@ -265,49 +390,36 @@ class BookmarkView extends React.PureComponent {
   render(){
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
-        <BookmarkTable 
-          items={this.state.bookmarks}
+        <BookmarkTable
+          items={this.state.bookmarks} 
+          selection={this.state.selection}
           sortItems={this.sortBookmarks}
-          orders={[
-            {value:"created", name:"Bookmark created"},
-            {value:"newest", name:"Newest objects first"},
-            {value:"oldest", name:"Oldest objects first"},
-            {value:"name-az", name:"Title A-Z"},
-            {value:"name-za", name:"Title Z-A"},
-            {value:"type", name:"Type"},
-            {value:"dataset", name:"Dataset"},
-            {value:"manual", name:"Manual"},
-            ]}
+          orders={this.orders}
           filterItems={this.filterBookmarks}
-          filters={this.state.filters}          
+          filters={this.state.filters}
           renderResults={this.renderResults}
-          onExport={exportDataAsJSON}
+          onExport={exportDataAsJSON}          
           />
 
-        {this.state.viewObject ? 
-        /* todo: display item details recipe in overlay */
-        <div className="modal">
-          <div className="close" onClick={()=>{this.viewBookmark(null);}} />
-          <div className="container">
-              
-            Todo: viewObjectsRecipe here: this requires the ID and Collection ID from the object (or rather a single unique ID)<br/><br/>
-            {"<ItemDetailsRecipe id=\"\" cid=\"\" />"} 
-            
-            {/* 
+        <BulkActions bulkActions={this.bulkActions} 
+                     selection={this.state.selection} />
 
-            Params from url: id=5180841@program&cid=nisv-catalogue-aggr
-            <itemDetailsRecipe id={this.state.viewObject.object.id} cid="nisv-catalogue-aggr" />
-
-            */}
-            
-            <br/><br/>
-          </div>
-        </div>
-        : null
-      }
+        {this.state.detailBookmark ?
+          <ItemDetailsModal object={this.state.detailBookmark.object}
+                            onClose={this.closeItemDetails} />
+        
+        : null}
   </div>
   )
   }
 }
+
+
+BookmarkView.propTypes = {
+  user: PropTypes.object.isRequired,
+  project: PropTypes.object.isRequired
+}
+
+
 
 export default BookmarkView;

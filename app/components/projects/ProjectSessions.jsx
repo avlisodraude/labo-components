@@ -20,13 +20,10 @@ class ProjectSessions extends React.PureComponent {
     super(props);
 
     // Add dummy data
+    var exampleUrl = "/tool/exploratory-search?path=/browser/session%3Fid=an-1acf4520-f414-4198-a61f-a91a44fd7408";
     if (!props.project.sessions){
       props.project.sessions = [
-        {id: "abcd12349", name: 'Watersnoodramp', tool: 'MS: DIVE+', data: {url:"http://openbeelden.diveplus.frontwise.com/browser/session?id=an-face71e3-a06a-44c4-a1fc-d92ae00438b8"}, created: '2017-12-08T18:31:47Z'},
-        {id: "abcd12345", name: 'My session #1', tool: 'MS: DIVE+', data: {url:"http://openbeelden.diveplus.frontwise.com/browser/session?id=an-face71e3-a06a-44c4-a1fc-d92ae00438b8"}, created: '2017-12-04T18:31:47Z'},
-        {id: "abcd12346", name: 'Test', tool: 'MS: DIVE+', data: {url:"http://openbeelden.diveplus.frontwise.com/browser/session?id=an-face71e3-a06a-44c4-a1fc-d92ae00438b8"}, created: '2017-12-05T18:31:47Z'},
-        {id: "abcd12347", name: 'Koningin Juliana I', tool: 'MS:Collection Inspector', data: {url:"http://openbeelden.diveplus.frontwise.com/browser/session?id=an-face71e3-a06a-44c4-a1fc-d92ae00438b8"}, created: '2017-12-06T18:31:47Z'},
-        {id: "abcd12348", name: 'Koninging Juliana II', tool: 'MS: Comparative Search', data: {url:"http://openbeelden.diveplus.frontwise.com/browser/session?id=an-face71e3-a06a-44c4-a1fc-d92ae00438b8"}, created: '2017-12-07T18:31:47Z'},
+        {id: "abcd12349", name: 'Session example: Wereldreis', tool: 'MS: DIVE+', data: {url:exampleUrl}, created: '2017-12-08T18:31:47Z'},
       ];
     }
 
@@ -222,7 +219,7 @@ class ProjectSessions extends React.PureComponent {
                 { content: session.created.substring(0,10) },
                 { content: <a className="btn blank warning" onClick={this.deleteSession.bind(this,session)}>Delete</a>},
                 { content: <a className="btn blank" onClick={exportDataAsJSON.bind(this,session)}>Export</a>},
-                { content: <a href={session.data.url ? session.data.url : '#no-url-found'} target="_blank" rel="noopener noreferrer" className="btn">Open</a>}
+                { content: <a href={session.data.url ? session.data.url : '#no-url-found'} className="btn">Open</a>}
               ])}           
 
             sort={this.sortSessions.bind(this)}
