@@ -8,8 +8,8 @@ import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
 
 import BookmarkRow from './BookmarkRow';
-import { exportDataAsJSON } from '../helpers/Export';
 import ItemDetailsRecipe from '../../ItemDetailsRecipe';
+
 
 class BookmarkTable extends React.PureComponent {
 
@@ -75,7 +75,14 @@ class BookmarkTable extends React.PureComponent {
    /**
    * Listen for update, request new data if filter has been changed
    */
-  componentDidUpdate(){
+  componentDidUpdate(prevProps, prevState){
+    //listen for items change
+    if(prevProps.items != this.props.items){
+      this.reloadData();
+      return;
+    }
+
+    // listen for filter change
     if (this.lastFilter !== this.state.filter){
       this.lastFilter = this.state.filter;
 
@@ -88,6 +95,9 @@ class BookmarkTable extends React.PureComponent {
         this.reloadData();  
       }      
     }
+
+
+
   }
 
   /**
@@ -122,11 +132,13 @@ class BookmarkTable extends React.PureComponent {
     this.setSort(e.target.value);
   }
 
+
+
   render(){
     return (
       <div className={IDUtil.cssClassName('bookmark-table')}>
         <div className="tools">
-          <div className="export-button btn primary" onClick={this.props.onExport.bind(this,this.state.visibleItems)}>Export</div>
+          <div className="export-button btn primary" onClick={this.props.onExport.bind(this,this.state.visibleItems)}>Export all</div>
 
           <div className="filters">
             <div className="left">
@@ -164,12 +176,14 @@ class BookmarkTable extends React.PureComponent {
         <div className="results">
           {this.props.renderResults(this.state)}
         </div>
+         
     </div>
   )}
 }
 
 BookmarkTable.propTypes = {
   items: PropTypes.array.isRequired,
+  selection: PropTypes.array,
   orders:[],
   sortItems: PropTypes.func.isRequired,
   filters:[],

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
 import Pagination from '../helpers/Pagination'
+import BulkActions from '../helpers/BulkActions';
 
 class SortTable extends React.PureComponent {
   constructor(props){
@@ -104,31 +105,6 @@ class SortTable extends React.PureComponent {
     this.setState({currentPage});
   }
 
-  /**
-  * Set bulk action
-  * @param  {SyntheticEvent} e    Event
-  */
-  setBulkAction(e){
-    this.setState({bulkAction: this.bulkActionSelect.value });
-  }
-
-
-  /**
-  * Apply bulk action
-  * @param  {SyntheticEvent} e    Event
-  */
-  applyCurrentBulkAction(e){
-    this.state.bulkAction;
-    this.props.bulkActions.every((action)=>{
-      if (action.title == this.state.bulkAction){        
-        action.onApply(this.state.selection);
-        // stop
-        return false;
-      }
-      // continue
-      return true;
-    }); 
-  }
 
   render() {
     // pagination
@@ -173,23 +149,8 @@ class SortTable extends React.PureComponent {
                     onClick={this.setPage.bind(this)} 
                     />
 
-        {this.props.bulkActions ? 
-        
-          <div className="bulk-actions">
-            <span>With {this.state.selection.length} selected:</span>
-
-            <select value={this.state.bulkAction} 
-                    onChange={this.setBulkAction.bind(this)}
-                    ref={(c)=>{this.bulkActionSelect = c;}}                    
-                    >
-              <option key="empty" value=""></option>
-              {this.props.bulkActions.map((action, index)=>(<option key={index} value={action.title}>{action.title}</option>))}
-            </select>
-
-            {this.state.bulkAction && this.state.selection.length ? <div onClick={this.applyCurrentBulkAction.bind(this)} className="btn primary">Apply</div> : null }
-          </div>
-
-        : null }
+         <BulkActions bulkActions={this.props.bulkActions} 
+                      selection={this.state.selection} />
       </div>
     );
   }
@@ -197,12 +158,12 @@ class SortTable extends React.PureComponent {
 
 SortTable.propTypes = {
   items: PropTypes.array.isRequired,
+  bulkActions: PropTypes.array.isRequired,
   head: PropTypes.array.isRequired,
   row: PropTypes.func.isRequired,
   sort: PropTypes.func.isRequired,
   perPage: PropTypes.number,
   currentPage: PropTypes.number,
-  bulkActions: PropTypes.array
 }
 
 SortTable.defaultProps = {

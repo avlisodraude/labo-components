@@ -9,13 +9,28 @@ import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
 import { exportDataAsJSON } from '../helpers/Export';
 
-
 class ProjectTable extends React.PureComponent {
 
   constructor(props){
     super(props);
 
-    this.state={
+    this.head = [
+      {field: 'name', content: 'Name', sortable: true},
+      {field: 'bookmarks', content: <i className="bookmark-icon"/>, sortable: true},
+      {field: 'owner', content: 'Owner', sortable: true},
+      {field: 'access', content: 'Access', sortable: true},
+      {field: 'created', content: 'Created', sortable: true},
+      {field: '', content: '', sortable: false},
+      {field: '', content: '', sortable: false},
+      {field: '', content: '', sortable: false},
+    ];
+
+    this.bulkActions = [
+      {title: 'Delete', onApply: this.deleteProjects.bind(this) },
+      {title: 'Export', onApply: exportDataAsJSON.bind(this) }
+    ];
+
+    this.state = {
       projects: [],
       loading: true,
       filter:{
@@ -23,11 +38,15 @@ class ProjectTable extends React.PureComponent {
         currentUser: false,
       },
       bookmarkCount:{}
-    }
+    };
+
 
     this.requestedBookmark={};
 
     this.requestDataTimeout = -1;
+
+    this.sortProjects = this.sortProjects.bind(this);
+    this.getProjectRow = this.getProjectRow.bind(this);
   }
 
   /**
@@ -288,11 +307,27 @@ class ProjectTable extends React.PureComponent {
     return '...';
   }
 
-  render() {
-    let projects = this.state.projects;
-    let currentUser = this.props.user;
-    let currentUserId = currentUser.id;
 
+  /**
+   * Get project row for given project
+   * @param {object} project Project data to render
+   */
+  getProjectRow(project){
+    let currentUserId = this.props.user.id;
+
+    return [
+        { props:{className:"primary"}, content: <Link to={"/workspace/projects/" + project.id}>{project.name}</Link> },
+        { props:{className:"number"}, content: this.getBookmarkCount(project.id)},
+        { content: <span>{project.owner.name} {project.getCollaboratorCount() ? <span className="collaborators">{project.getCollaboratorCount()} Collaborator{project.getCollaboratorCount() !== 1 ? 's' : ''}</span> : ''}</span> },
+        { props: { className: "access"}, content: project.getAccess(currentUserId) },
+        { props: {className: "smaller"}, content: project.created.substring(0,10) },
+        { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
+        { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={exportDataAsJSON.bind(this,project)}>Export</a> : ''},
+        { content: project.canOpen(currentUserId) ? <Link to={"/workspace/projects/" + project.id} className="btn">Open</Link> : ''}
+    ];
+  }
+
+  render() {
     return (
       <div className={IDUtil.cssClassName('project-table')}>
         <div className="tools">
@@ -314,35 +349,14 @@ class ProjectTable extends React.PureComponent {
         </div>
 
         <SortTable
-            items={projects}
-            head={[
-                {field: 'name', content: 'Name', sortable: true},
-                {field: 'bookmarks', content: <i className="bookmark-icon"/>, sortable: true},
-                {field: 'owner', content: 'Owner', sortable: true},
-                {field: 'access', content: 'Access', sortable: true},
-                {field: 'created', content: 'Created', sortable: true},
-                {field: '', content: '', sortable: false},
-                {field: '', content: '', sortable: false},
-                {field: '', content: '', sortable: false},
-              ]}
-            row={(project) =>([
-                { props:{className:"primary"}, content: <Link to={"/workspace/projects/" + project.id}>{project.name}</Link> },
-                { props:{className:"number"}, content: this.getBookmarkCount(project.id)},
-                { content: <span>{project.owner.name} {project.getCollaboratorCount() ? <span className="collaborators">{project.getCollaboratorCount()} Collaborator{project.getCollaboratorCount() !== 1 ? 's' : ''}</span> : ''}</span> },
-                { props: { className: "access"}, content: project.getAccess(currentUserId) },
-                { props: {className: "smaller"}, content: project.created.substring(0,10) },
-                { content: project.canDelete(currentUserId) ? <a className="btn blank warning" onClick={this.deleteProject.bind(this,project)}>Delete</a> : ''},
-                { content: project.canExport(currentUserId) ? <a className="btn blank" onClick={exportDataAsJSON.bind(this,project)}>Export</a> : ''},
-                { content: project.canOpen(currentUserId) ? <Link to={"/workspace/projects/" + project.id} className="btn">Open</Link> : ''}
-              ])}
-
-            sort={this.sortProjects.bind(this)}
+            items={this.state.projects}
+            head={this.head}
+            row={this.getProjectRow}
+            sort={this.sortProjects} 
             loading={this.state.loading}
-            bulkActions={[
-              {title: 'Delete', onApply: this.deleteProjects.bind(this) },
-              {title: 'Export', onApply: exportDataAsJSON.bind(this) }
-              ]}
+            bulkActions={this.bulkActions}
            />
+
       </div>
     );
   }

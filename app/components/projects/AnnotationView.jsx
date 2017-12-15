@@ -1,21 +1,21 @@
-import ProjectAPI from '../../api/ProjectAPI';
-import IDUtil from '../../util/IDUtil';
-import ProjectWrapper from './ProjectWrapper';
-
+import AnnotationAPI from '../../api/AnnotationAPI';
+import AnnotationRow from './AnnotationRow';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
-
-import AnnotationRow from './AnnotationRow';
-import { exportDataAsJSON } from '../helpers/Export';
-import ItemDetailsRecipe from '../../ItemDetailsRecipe';
-
 import BookmarkTable from './BookmarkTable';
+import ComponentUtil from '../../util/ComponentUtil';
+import IDUtil from '../../util/IDUtil';
+import ItemDetailsModal from './ItemDetailsModal';
+import ProjectAPI from '../../api/ProjectAPI';
+import ProjectWrapper from './ProjectWrapper';
+import { exportDataAsJSON } from '../helpers/Export';
+import BulkActions from '../helpers/BulkActions';
 
 class AnnotationView extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    
+
     this.annotationTypes = [
       {value: "classification", name: "Classification"},
       {value: "comment", name: "Comment"},
@@ -23,24 +23,34 @@ class AnnotationView extends React.PureComponent {
       {value: "metadata", name: "Metadata"},
     ];
 
+    this.orders = [
+      {value:"created", name:"Annotation created"},
+    ];
+
+    this.bulkActions = [
+      {title: 'Delete', onApply: this.deleteAnnotations.bind(this) },
+      {title: 'Export', onApply: this.exportAnnotationsByIds.bind(this) }
+    ];
+
+
     this.state = {
-      annotations: [],  
-      selection: [],    
+      annotations: [],
+      selection: [],
       loading : true,
-      viewObject: null,
+      detailBookmark: null,
       filters: []
     }
 
     // bind functions
-    this.viewAnnotation = this.viewAnnotation.bind(this);
+    this.closeItemDetails = this.closeItemDetails.bind(this);
     this.deleteAnnotation = this.deleteAnnotation.bind(this);
-
+    this.exportAnnotations = this.exportAnnotations.bind(this);
     this.filterAnnotations = this.filterAnnotations.bind(this);
-    this.sortAnnotations = this.sortAnnotations.bind(this);
     this.renderResults = this.renderResults.bind(this);
-
     this.selectAllChange = this.selectAllChange.bind(this);
-    this.selectAnnotation = this.selectAnnotation.bind(this);
+    this.selectItem = this.selectItem.bind(this);
+    this.sortAnnotations = this.sortAnnotations.bind(this);
+    this.viewBookmark = this.viewBookmark.bind(this);
   }
 
   componentWillMount() {
@@ -80,21 +90,51 @@ class AnnotationView extends React.PureComponent {
    * @param  {Object} data Response object with annotation list
    */
   onLoadAnnotations(data) {
-    
-    const annotations = AnnotationUtil.nestedAnnotationListToAnnotationList(
+    var annotations = AnnotationUtil.nestedAnnotationListToAnnotationList(
       data.annotations || []
     )
 
-    
+    // get unique bookmarks from annotations
+    let uniqueBookmarks = Array.from(new Set(annotations.map((a)=>(a.bookmarkAnnotation))));
 
-    this.setState({
-      annotations: annotations,
-      loading : false,
-      selection: [],
-      filters: this.getFilters(annotations),
-    });
+    // populate the unique bookmarks with object data
+    AnnotationUtil.nestedAnnotationListToResourceList(
+      uniqueBookmarks,
+      (bookmarks)=>{
+        // lookup table for bookmark id
+        let lookup = {};
+        bookmarks.forEach((b, index)=>{lookup[b.annotationId] = index;})
+
+        // populate annotations with bookmark data
+        annotations = annotations.map((a)=>{
+          a.bookmarks = [ bookmarks[ lookup[a.bookmarkAnnotation.annotationId] ] ];
+          return a;
+        });
+
+        // update state with populated annotations
+        this.setState({
+          annotations: annotations,
+          loading : false,
+          filters: this.getFilters(annotations),
+        });
+
+        this.updateSelection(annotations);
+      }
+    )
+
   }
- 
+
+
+ /**
+   * Update Selection list, based on available items
+   * @param  {array} items  Current data
+   */
+  updateSelection(items){
+    this.setState({
+      selection: items.map((item)=>(item.annotationId)).filter((itemId)=>(this.state.selection.includes(itemId)))
+    })
+  }
+
   /**
    * Filter annotation list by given filter
    * @param  {array} annotations  Annotations array
@@ -102,19 +142,21 @@ class AnnotationView extends React.PureComponent {
    * @return {array}            Filtered annotations array
    */
   filterAnnotations(annotations, filter){
-    
+
     // filter on keywords in title, dataset or type
     if (filter.keywords){
       let keywords = filter.keywords.split(" ");
       keywords.forEach((k)=>{
         k = k.toLowerCase();
-        annotations = annotations.filter((annotation)=>(annotation.text && annotation.text.toLowerCase().includes(k)
-                                                  || (annotation.vocabulary && annotation.vocabulary.toLowerCase().includes(k))
-                                                  || (annotation.label && annotation.label.toLowerCase().includes(k))
-                                                  || (annotation.template && annotation.template.toLowerCase().includes(k))
+        annotations = annotations.filter(
+            (annotation)=>(
+              annotation.text && annotation.text.toLowerCase().includes(k)
+              || (annotation.vocabulary && annotation.vocabulary.toLowerCase().includes(k))
+              || (annotation.label && annotation.label.toLowerCase().includes(k))
+              || (annotation.template && annotation.template.toLowerCase().includes(k))
 
-                                                  // search the properties of a metadata annotation; both key/value fields
-                                                  || (annotation.properties && annotation.properties.some((property)=>( (property.key && property.key.toLowerCase().includes(k)) || (property.value && property.value.toLowerCase().includes(k)))) )
+              // search the properties of a metadata annotation; both key/value fields
+              || (annotation.properties && annotation.properties.some((property)=>( (property.key && property.key.toLowerCase().includes(k)) || (property.value && property.value.toLowerCase().includes(k)))) )
         ));
       });
     }
@@ -127,18 +169,18 @@ class AnnotationView extends React.PureComponent {
     return annotations;
   }
 
-  /** 
-   * Sort annotations 
+  /**
+   * Sort annotations
    * @param {Array} annotations List of annotations to be sorted
    * @param {string} sort Sort field
-   * @return {Array} Sorted annotations 
+   * @return {Array} Sorted annotations
    */
   sortAnnotations(annotations, field){
    let sorted = annotations;
    switch(field){
     case 'created':
       sorted.sort((a,b) => (a.created > b.created));
-    break;    
+    break;
     default:
       // no sorting,just return
       return sorted;
@@ -154,18 +196,123 @@ class AnnotationView extends React.PureComponent {
    * @param {Object} annotation Annotation to be removed
    */
   deleteAnnotation(annotation){
-    alert('Todo: Implement delete');
+    // always ask before deleting
+    if (!confirm('Are you sure you want to remove this annotation?')){
+      return;
+    }
+
+    this.deleteAnnotationsAction([annotation]);
   }
 
 
   /**
-   * View annotation
-   * @param {Object} annotation Annotation to be viewed
+   * Delete annotations
+   * @param {Object} annotation Annotation to be removed
    */
-  viewAnnotation(annotation){
+  deleteAnnotations(annotationIds){
+
+    // always ask before deleting
+    if (!confirm('Are you sure you want to remove the selected annotations?')){
+      return;
+    }
+
+    this.deleteAnnotationsAction(this.state.annotations.filter((a)=>(annotationIds.includes(a.annotationId))));
+  }
+
+  /**
+   * Delete annotations using the AnnotationAPI
+   * For saving annotations, store the whole bookmark with its annotations,
+   * without the item to be deleted
+   * AnnotationAPI.saveAnnotation(annotation, callback)
+   *
+   * @param {array} annotations Annotations to be removed
+   */
+  deleteAnnotationsAction(annotations){
+    // get the unique bookmarks, as we are deleting per-bookmark
+    let uniqueBookmarks = Array.from(new Set(annotations.map((a)=>(a.bookmarkAnnotation))));
+
+    var hits = uniqueBookmarks.length;
+
+    uniqueBookmarks.forEach((uniqueBookmark)=>{
+      // 1. get a copy of the bookmarkAnnotation from the annotation object
+      var bookmark = Object.assign({},uniqueBookmark);
+
+      // 2A. remove the given annotation from the body
+      // 2B. and remove the link to the bookmarkAnnotation and bookmarks from the annotations
+      //     to prevent circular structure
+      // (Todo: check if not unnecessary fields are saved accidently)
+      bookmark.body = bookmark.body.filter((a)=>(!annotations.includes(a))).map((a)=>{
+        let b = Object.assign({},a);
+        delete b.bookmarkAnnotation;
+        delete b.bookmarks;
+        return b;
+      });
+
+      // Finally. save
+      AnnotationAPI.saveAnnotation(bookmark, (data)=>{
+        hits--;
+
+        // only give a message for the last action
+        if (hits ==0 && data && data.status){
+          if (data.status == 'success'){
+            this.loadAnnotations();
+          } else{
+            alert(data.message ? data.message : 'An unknown error has occured while deleting the annotation');
+          }
+        } else{
+          alert('An error has occured while deleting the annotation.');
+        }
+      });
+    });
+  }
+
+
+  /**
+   * Export annotations
+   * @param {Object} annotations Annotations to be exported
+   */
+  exportAnnotationsByIds(annotationIds){
+    let data = this.state.annotations.filter((item)=>(annotationIds.includes(item.annotationId)));
+    this.exportAnnotations(data);
+  }
+
+  /**
+   * Export annotations
+   * @param {Object} annotations Annotations to be exported
+   */
+  exportAnnotations(annotations){
+    let data = this.state.annotations.filter((item)=>(annotations.includes(item)));
+
+    // remove cyclic structures
+    data = data.map((d)=>{
+      delete d.bookmarkAnnotation;
+      delete d.bookmarks;
+      return d;
+    });
+
+    exportDataAsJSON(data);
+  }
+
+
+  /**
+   * View bookmark
+   * @param {Object} bookmark Bookmark (object) to be viewed
+   */
+  viewBookmark(bookmark){
     this.setState({
-      viewObject: annotation
+      detailBookmark: bookmark
     })
+  }
+
+  /**
+   * Close itemDetails view, and refresh the data (assuming changes have been made)
+   */
+  closeItemDetails(){
+    // set viewbookmark to null
+    this.viewBookmark(null);
+
+    // refresh data
+    this.loadAnnotations();
   }
 
   /**
@@ -176,37 +323,40 @@ class AnnotationView extends React.PureComponent {
     this.setSort(e.target.value);
   }
 
-
   /**
    * Select all items
+   * @param {array} items Items to be selected
+   * @param {SyntheticEvent} e Event
    */
   selectAllChange(items, e){
     if (e.target.checked){
       let newSelection = this.state.selection.slice();
-      items.forEach((item)=>{ if(!newSelection.includes(item)){ newSelection.push(item)}});
+      items.forEach((item)=>{ if(!newSelection.includes(item.annotationId)){ newSelection.push(item.annotationId)}});
       // set
       this.setState({
         selection: newSelection
-      });  
+      });
     } else{
+      items = items.map((item)=>(item.annotationId))
       // unset
       this.setState({
         selection: this.state.selection.filter((item)=>(!items.includes(item)))
-      });  
+      });
     }
-    
+
   }
 
   /**
-   * Select annotation   
+   * Select bookmark
    */
-  selectAnnotation(annotation, select){ 
-    if (select){  
+  selectItem(item, select){
 
-      if(!this.state.selection.includes(annotation)){
+    if (select){
+
+      if(!this.state.selection.includes(item.annotationId)){
         // add to selection
         this.setState({
-          selection: [...this.state.selection, annotation]
+          selection: [...this.state.selection, item.annotationId]
         });
       }
       return;
@@ -215,7 +365,7 @@ class AnnotationView extends React.PureComponent {
     // remove from selection
     if (!select){
       this.setState({
-        selection: this.state.selection.filter((selected)=>(selected!== annotation))
+        selection: this.state.selection.filter((selected)=>(selected!== item.annotationId))
       });
     }
   }
@@ -234,23 +384,23 @@ class AnnotationView extends React.PureComponent {
     return(
       <div className="type-list">
         <h3>
-          <input type="checkbox" 
-                 checked={items.length > 0 && items.every((item)=>(this.state.selection.includes(item))) }
+          <input type="checkbox"
+                 checked={items.length > 0 && items.every((item)=>(this.state.selection.includes(item.annotationId))) }
                  onChange={this.selectAllChange.bind(this, items)}
                 />
           {type}: <span className="count">{items.length || 0}</span>
         </h3>
-        <div className="bookmark-table">          
+        <div className="bookmark-table">
             {items.map((annotation, index)=>(
-            <AnnotationRow key={index} 
-                         annotation={annotation} 
+            <AnnotationRow key={index}
+                         annotation={annotation}
                          onDelete={this.deleteAnnotation}
-                         onView={this.viewAnnotation}
-                         selected={this.state.selection.includes(annotation)}
-                         onSelect={this.selectAnnotation}                         
+                         onView={this.viewBookmark}
+                         selected={this.state.selection.includes(annotation.annotationId)}
+                         onSelect={this.selectItem}
                          />
-            ))}           
-        </div> 
+            ))}
+        </div>
       </div>
     );
   }
@@ -264,17 +414,17 @@ class AnnotationView extends React.PureComponent {
     return (
       <div>
         <h2>
-          <input type="checkbox" 
-                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item))) }
+          <input type="checkbox"
+                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item.annotationId))) }
                  onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
                 />
           Annotations: <span className="count">{renderState.visibleItems.length || 0}</span>
         </h2>
-        <div className="table">          
+        <div className="table">
           {this.annotationTypes.map((type) => (
               this.renderResultType(type.name, renderState.visibleItems.filter((item)=>(item.annotationType == type.value )))
             )) }
-        </div> 
+        </div>
       </div>
       );
   }
@@ -282,37 +432,23 @@ class AnnotationView extends React.PureComponent {
   render(){
     return (
       <div className={IDUtil.cssClassName('annotation-view')}>
-        <BookmarkTable 
+        <BookmarkTable
           items={this.state.annotations}
+          selection={this.state.selection}
           sortItems={this.sortAnnotations}
-          orders={[
-              {value:"created", name:"Annotation created"},
-            ]}
+          orders={this.orders}
           filterItems={this.filterAnnotations}
-          filters={this.state.filters}          
+          filters={this.state.filters}
           renderResults={this.renderResults}
-          onExport={exportDataAsJSON}
+          onExport={this.exportAnnotations}
           />
 
-        {this.state.viewObject ? 
-        /* todo: display item details recipe in overlay */
-        <div className="modal">
-          <div className="close" onClick={()=>{this.viewAnnotation(null);}} />
-          <div className="container">
-              
-            Todo: viewObjectsRecipe here: this requires the ID and Collection ID from the object (or rather a single unique ID)<br/><br/>
-            {"<ItemDetailsRecipe id=\"\" cid=\"\" />"} 
-            
-            {/* 
+        <BulkActions bulkActions={this.bulkActions}
+                     selection={this.state.selection} />
 
-            Params from url: id=5180841@program&cid=nisv-catalogue-aggr
-            <itemDetailsRecipe id={this.state.viewObject.object.id} cid="nisv-catalogue-aggr" />
-
-            */}
-            
-            <br/><br/>
-          </div>
-        </div>
+        {this.state.detailBookmark ?
+         <ItemDetailsModal object={this.state.detailBookmark.object}
+                           onClose={this.closeItemDetails} />
         : null
       }
   </div>
