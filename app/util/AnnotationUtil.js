@@ -72,7 +72,12 @@ const AnnotationUtil = {
 				temp[acc.collectionId] = [acc.resourceId];
 				acc = temp;
 			} else {
-				acc[cur.collectionId] ? acc[cur.collectionId].push(cur.resourceId) : acc[cur.collectionId] = [cur.resourceId]
+				//only add a resource one time for the search API to fetch
+				if(acc[cur.collectionId] && acc[cur.collectionId.indexOf(cur.resourceId) == -1]) {
+					acc[cur.collectionId].push(cur.resourceId)
+				} else {
+					acc[cur.collectionId] = [cur.resourceId]
+				}
 			}
 			return acc
 		}, temp[0]); //initial value needed in case of one element!
@@ -81,13 +86,13 @@ const AnnotationUtil = {
 		const accumulatedData = {}
 		Object.keys(resourceIds).forEach((key) => {
 			SearchAPI.getItemDetailsMultiple(
-				key, //input
-				resourceIds[key], //input
+				key, //collectionId
+				resourceIds[key], //all resourceIds for this collection
 				(collectionId, idList, resourceData) => {
 					//reconsile and callback the "client"
 					const configClass = CollectionUtil.getCollectionClass(collectionId, true);
 					const collectionConfig = new configClass(collectionId);
-					const mappedResourceData = resourceData.map((doc) => {
+					const mappedResourceData = resourceData['docs'].map((doc) => {
 						return doc.found ? collectionConfig.getItemDetailData(doc) : null;
 					})
 					accumulatedData[collectionId] = mappedResourceData;
@@ -97,6 +102,7 @@ const AnnotationUtil = {
 				}
 			)
 		});
+		//TODO merge bookmarks that target the same resource!
 	},
 
 	//TODO FINISH THIS AND WE'RE ALL DONE!
