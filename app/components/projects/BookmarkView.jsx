@@ -13,35 +13,40 @@ import { exportDataAsJSON } from '../helpers/Export';
 import BulkActions from '../helpers/BulkActions';
 
 class BookmarkView extends React.PureComponent {
-
   constructor(props) {
     super(props);
 
-    this.bookmarkTypes = ["Video", "Video-Fragment", "Image", "Audio", "Entity"];
+    this.bookmarkTypes = [
+      'Video',
+      'Video-Fragment',
+      'Image',
+      'Audio',
+      'Entity'
+    ];
 
     this.orders = [
-      {value:"created", name:"Bookmark created"},
-      {value:"newest", name:"Newest objects first"},
-      {value:"oldest", name:"Oldest objects first"},
-      {value:"name-az", name:"Title A-Z"},
-      {value:"name-za", name:"Title Z-A"},
-      {value:"type", name:"Type"},
-      {value:"dataset", name:"Dataset"},
-      {value:"manual", name:"Manual"},
+      { value: 'created', name: 'Bookmark created' },
+      { value: 'newest', name: 'Newest objects first' },
+      { value: 'oldest', name: 'Oldest objects first' },
+      { value: 'name-az', name: 'Title A-Z' },
+      { value: 'name-za', name: 'Title Z-A' },
+      { value: 'type', name: 'Type' },
+      { value: 'dataset', name: 'Dataset' },
+      { value: 'manual', name: 'Manual' }
     ];
 
     this.bulkActions = [
-      {title: 'Delete', onApply: this.deleteBookmarks.bind(this) },
-      {title: 'Export', onApply: this.exportBookmarks.bind(this) }
+      { title: 'Delete', onApply: this.deleteBookmarks.bind(this) },
+      { title: 'Export', onApply: this.exportBookmarks.bind(this) }
     ];
 
     this.state = {
       bookmarks: [],
       selection: [],
-      loading : true,
+      loading: true,
       detailBookmark: null,
       filters: []
-    }
+    };
 
     // bind functions
     this.viewBookmark = this.viewBookmark.bind(this);
@@ -61,7 +66,6 @@ class BookmarkView extends React.PureComponent {
     this.loadBookmarks();
   }
 
-
   /**
    * Load Annotation from Store
    */
@@ -70,7 +74,7 @@ class BookmarkView extends React.PureComponent {
       this.props.user,
       this.props.project,
       this.onLoadBookmarks.bind(this)
-    )
+    );
   }
 
   /**
@@ -78,21 +82,19 @@ class BookmarkView extends React.PureComponent {
    * @param  {array} items List of bookmarks
    * @return {array}       List of filters
    */
-  getFilters(items){
+  getFilters(items) {
+    const result = [];
+    const hits = {};
 
-    let result = [];
-    let hits = {};
-
-    items.forEach((item)=>{
-      var t = item.object.type;
-      if (!(t in hits)){
-        result.push( {value: t, name: t.charAt(0).toUpperCase() + t.slice(1)},);
+    items.forEach(item => {
+      const t = item.object.type;
+      if (!(t in hits)) {
+        result.push({ value: t, name: t.charAt(0).toUpperCase() + t.slice(1) });
         hits[t] = true;
       }
     });
     return result.sort();
   }
-
 
   /**
    * Annotation load callback: set data to state
@@ -102,7 +104,7 @@ class BookmarkView extends React.PureComponent {
     AnnotationUtil.nestedAnnotationListToResourceList(
       data.annotations || [],
       this.onLoadResourceList.bind(this)
-    )
+    );
   }
 
   /**
@@ -112,23 +114,24 @@ class BookmarkView extends React.PureComponent {
   onLoadResourceList(bookmarks) {
     this.setState({
       bookmarks: bookmarks,
-      loading : false,
-      filters: this.getFilters(bookmarks),
+      loading: false,
+      filters: this.getFilters(bookmarks)
     });
 
     this.updateSelection(bookmarks);
   }
 
-  /** 
+  /**
    * Update Selection list, based on available items
    * @param  {array} items  Current data
    */
-  updateSelection(items){
+  updateSelection(items) {
     this.setState({
-      selection: items.map((item)=>(item.id)).filter((itemId)=>(this.state.selection.includes(itemId)))
-    })
+      selection: items
+        .map(item => item.id)
+        .filter(itemId => this.state.selection.includes(itemId))
+    });
   }
-
 
   /**
    * Filter bookmark list by given filter
@@ -136,22 +139,28 @@ class BookmarkView extends React.PureComponent {
    * @param  {object} filter    Filter object
    * @return {array}            Filtered bookmarks array
    */
-  filterBookmarks(bookmarks, filter){
-
+  filterBookmarks(bookmarks, filter) {
     // filter on keywords in title, dataset or type
-    if (filter.keywords){
-      let keywords = filter.keywords.split(" ");
-      keywords.forEach((k)=>{
+    if (filter.keywords) {
+      const keywords = filter.keywords.split(' ');
+      keywords.forEach(k => {
         k = k.toLowerCase();
-        bookmarks = bookmarks.filter((bookmark)=>(bookmark.object.title.toLowerCase().includes(k)
-                                                  || (bookmark.object.dataset && bookmark.object.dataset.toLowerCase().includes(k))
-                                                  || (bookmark.object.type && bookmark.object.type.toLowerCase().includes(k))))
+        bookmarks = bookmarks.filter(
+          bookmark =>
+            bookmark.object.title.toLowerCase().includes(k) ||
+            (bookmark.object.dataset &&
+              bookmark.object.dataset.toLowerCase().includes(k)) ||
+            (bookmark.object.type &&
+              bookmark.object.type.toLowerCase().includes(k))
+        );
       });
     }
 
     // filter on type
-    if (filter.type){
-      bookmarks = bookmarks.filter((bookmark)=>(bookmark.object.type.toLowerCase().includes(filter.type.toLowerCase())));
+    if (filter.type) {
+      bookmarks = bookmarks.filter(bookmark =>
+        bookmark.object.type.toLowerCase().includes(filter.type.toLowerCase())
+      );
     }
 
     return bookmarks;
@@ -163,173 +172,181 @@ class BookmarkView extends React.PureComponent {
    * @param {string} sort Sort field
    * @return {Array} Sorted bookmarks
    */
-  sortBookmarks(bookmarks, field){
-   let sorted = bookmarks;
-   switch(field){
-    case 'created':
-      sorted.sort((a,b) => (a.created > b.created));
-    break;
-    case 'newest':
-      sorted.sort((a,b) => (a.object.date < b.object.date));
-    break;
-    case 'oldest':
-      sorted.sort((a,b) => (a.object.date > b.object.date));
-    break;
-    case 'name-az':
-      sorted.sort((a,b) => (a.object.title > b.object.title));
-    break;
-    case 'name-za':
-      sorted.sort((a,b) => (a.object.title < b.object.title));
-    break;
-    case 'type':
-      sorted.sort((a,b) => (a.object.type > b.object.type));
-    break;
-    case 'dataset':
-      sorted.sort((a,b) => (a.object.dataset > b.object.dataset));
-    break;
-    case 'manual':
-      sorted.sort((a,b) => (a.sort > b.sort));
-    break;
-    default:
-      // no sorting,just return
-      return sorted;
-   }
+  sortBookmarks(bookmarks, field) {
+    const sorted = bookmarks;
+    switch (field) {
+      case 'created':
+        sorted.sort((a, b) => a.created > b.created);
+        break;
+      case 'newest':
+        sorted.sort((a, b) => a.object.date < b.object.date);
+        break;
+      case 'oldest':
+        sorted.sort((a, b) => a.object.date > b.object.date);
+        break;
+      case 'name-az':
+        sorted.sort((a, b) => a.object.title > b.object.title);
+        break;
+      case 'name-za':
+        sorted.sort((a, b) => a.object.title < b.object.title);
+        break;
+      case 'type':
+        sorted.sort((a, b) => a.object.type > b.object.type);
+        break;
+      case 'dataset':
+        sorted.sort((a, b) => a.object.dataset > b.object.dataset);
+        break;
+      case 'manual':
+        sorted.sort((a, b) => a.sort > b.sort);
+        break;
+      default:
+        // no sorting,just return
+        return sorted;
+    }
 
-   return sorted;
-
+    return sorted;
   }
-
 
   /**
    * Delete bookmark
    * @param {Object} bookmark Bookmark to be removed
    */
-  deleteBookmark(bookmark){    
+  deleteBookmark(bookmark) {
     // always ask before deleting
-    if (!confirm('Are you sure you want to remove this bookmark?')){
+    if (!confirm('Are you sure you want to remove this bookmark?')) {
       return;
     }
 
     // delete the bookmark
-    AnnotationAPI.deleteAnnotation(bookmark, (data)=>{
-      if (data && data.status){
-        if (data.status == 'success'){
+    AnnotationAPI.deleteAnnotation(bookmark, data => {
+      if (data && data.status) {
+        if (data.status == 'success') {
           this.loadBookmarks();
-        } else{
-          alert(data.message ? data.message : 'An unknown error has occured while deleting the bookmark');
-        } 
-      } else{
+        } else {
+          alert(
+            data.message
+              ? data.message
+              : 'An unknown error has occured while deleting the bookmark'
+          );
+        }
+      } else {
         alert('An error has occured while deleting the bookmark.');
       }
-      
     });
   }
 
- /**
-  * Delete multiple bookmarks
-  * @param {array} selection List of bookmark ids to be deleted
-  */
-  deleteBookmarks(selection){
+  /**
+   * Delete multiple bookmarks
+   * @param {array} selection List of bookmark ids to be deleted
+   */
+  deleteBookmarks(selection) {
     // always ask before deleting
-    if (!confirm('Are you sure you want to remove the selected bookmarks?')){
+    if (!confirm('Are you sure you want to remove the selected bookmarks?')) {
       return;
     }
 
-    let data = this.state.bookmarks.filter((item)=>(selection.includes(item.id)));
+    const data = this.state.bookmarks.filter(item =>
+      selection.includes(item.id)
+    );
 
     // counts number of hits
-    var hits = data.length;
+    let hits = data.length;
 
     // delete the bookmark
-    data.forEach((item)=>{
-      AnnotationAPI.deleteAnnotation(item, (data)=>{
+    data.forEach(item => {
+      AnnotationAPI.deleteAnnotation(item, data => {
         hits--;
 
         // only on last callback, check the status and reload the data
-        if (hits == 0){
-          if (data && data.status){
-            if (data.status == 'success'){
+        if (hits == 0) {
+          if (data && data.status) {
+            if (data.status == 'success') {
               this.loadBookmarks();
-            } else{
-              alert(data.message ? data.message : 'An unknown error has occured while deleting the bookmark');
-            } 
-          } else{
+            } else {
+              alert(
+                data.message
+                  ? data.message
+                  : 'An unknown error has occured while deleting the bookmark'
+              );
+            }
+          } else {
             alert('An error has occured while deleting the bookmark.');
-          }      
+          }
         }
       });
     });
   }
 
-   /**
+  /**
    * Export bookmarks
    * @param {Object} annotations Annotations to be exported
    */
-  exportBookmarks(selection){
-    let data = this.state.bookmarks.filter((item)=>(selection.includes(item.id)));
-    exportDataAsJSON(data)
+  exportBookmarks(selection) {
+    const data = this.state.bookmarks.filter(item =>
+      selection.includes(item.id)
+    );
+    exportDataAsJSON(data);
   }
-
 
   /**
    * Make current project active
    */
-  makeActiveProject(){
-    ComponentUtil.storeJSONInLocalStorage('activeProject', this.props.project);  
+  makeActiveProject() {
+    ComponentUtil.storeJSONInLocalStorage('activeProject', this.props.project);
   }
 
   /**
    * View bookmark
    * @param {Object} bookmark Bookmark to be viewed
    */
-  viewBookmark(bookmark){
+  viewBookmark(bookmark) {
     // make current project active
-    if (bookmark){    
+    if (bookmark) {
       this.makeActiveProject();
-    }    
+    }
     this.setState({
       detailBookmark: bookmark
-    })
+    });
   }
 
   /**
    * Sort change
    * @param {string} sort Sort name
    */
-  sortChange(e){
+  sortChange(e) {
     this.setSort(e.target.value);
   }
-
 
   /**
    * Select all items
    */
-  selectAllChange(items, e){
-    if (e.target.checked){
-      let newSelection = this.state.selection.slice();
-      items.forEach((item)=>{ if(!newSelection.includes(item.id)){ newSelection.push(item.id)}});
+  selectAllChange(items, e) {
+    if (e.target.checked) {
+      const newSelection = this.state.selection.slice();
+      items.forEach(item => {
+        if (!newSelection.includes(item.id)) {
+          newSelection.push(item.id);
+        }
+      });
       // set
       this.setState({
         selection: newSelection
       });
-    } else{
-      items = items.map((item)=>(item.id))
+    } else {
+      items = items.map(item => item.id);
       // unset
       this.setState({
-        selection: this.state.selection.filter((item)=>(!items.includes(item)))
+        selection: this.state.selection.filter(item => !items.includes(item))
       });
     }
-
   }
 
   /**
    * Select bookmark
    */
-  selectItem(item, select){
-    
-    if (select){
-
-      if(!this.state.selection.includes(item.id)){
+  selectItem(item, select) {
+    if (select) {
+      if (!this.state.selection.includes(item.id)) {
         // add to selection
         this.setState({
           selection: [...this.state.selection, item.id]
@@ -339,9 +356,9 @@ class BookmarkView extends React.PureComponent {
     }
 
     // remove from selection
-    if (!select){
+    if (!select) {
       this.setState({
-        selection: this.state.selection.filter((selected)=>(selected!== item.id))
+        selection: this.state.selection.filter(selected => selected !== item.id)
       });
     }
   }
@@ -349,7 +366,7 @@ class BookmarkView extends React.PureComponent {
   /**
    * Close itemDetails view, and refresh the data (assuming changes have been made)
    */
-  closeItemDetails(){
+  closeItemDetails() {
     // set viewbookmark to null
     this.viewBookmark(null);
 
@@ -362,64 +379,72 @@ class BookmarkView extends React.PureComponent {
    * @param {object} state State of the render component
    * @return {Element} View results
    */
-  renderResults(renderState){
+  renderResults(renderState) {
     return (
       <div>
         <h2>
-          <input type="checkbox"
-                 checked={renderState.visibleItems.length > 0 && renderState.visibleItems.every((item)=>(this.state.selection.includes(item.id))) }
-                 onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
-                />
-          Bookmarks: <span className="count">{renderState.visibleItems.length || 0}</span>
+          <input
+            type="checkbox"
+            checked={
+              renderState.visibleItems.length > 0 &&
+              renderState.visibleItems.every(item =>
+                this.state.selection.includes(item.id)
+              )
+            }
+            onChange={this.selectAllChange.bind(this, renderState.visibleItems)}
+          />
+          Bookmarks:{' '}
+          <span className="count">{renderState.visibleItems.length || 0}</span>
         </h2>
         <div className="bookmark-table">
-          {renderState.visibleItems.map((bookmark, index)=>(
-            <BookmarkRow key={index}
-                         bookmark={bookmark}
-                         onDelete={this.deleteBookmark}
-                         onView={this.viewBookmark}
-                         selected={this.state.selection.includes(bookmark.id)}
-                         onSelect={this.selectItem}
-                         />
-            ))}
+          {renderState.visibleItems.map((bookmark, index) => (
+            <BookmarkRow
+              key={index}
+              bookmark={bookmark}
+              onDelete={this.deleteBookmark}
+              onView={this.viewBookmark}
+              selected={this.state.selection.includes(bookmark.id)}
+              onSelect={this.selectItem}
+            />
+          ))}
         </div>
       </div>
-      );
+    );
   }
 
-  render(){
+  render() {
     return (
       <div className={IDUtil.cssClassName('bookmark-view')}>
         <BookmarkTable
-          items={this.state.bookmarks} 
+          items={this.state.bookmarks}
           selection={this.state.selection}
           sortItems={this.sortBookmarks}
           orders={this.orders}
           filterItems={this.filterBookmarks}
           filters={this.state.filters}
           renderResults={this.renderResults}
-          onExport={exportDataAsJSON}          
+          onExport={exportDataAsJSON}
+        />
+
+        <BulkActions
+          bulkActions={this.bulkActions}
+          selection={this.state.selection}
+        />
+
+        {this.state.detailBookmark ? (
+          <ItemDetailsModal
+            object={this.state.detailBookmark.object}
+            onClose={this.closeItemDetails}
           />
-
-        <BulkActions bulkActions={this.bulkActions} 
-                     selection={this.state.selection} />
-
-        {this.state.detailBookmark ?
-          <ItemDetailsModal object={this.state.detailBookmark.object}
-                            onClose={this.closeItemDetails} />
-        
-        : null}
-  </div>
-  )
+        ) : null}
+      </div>
+    );
   }
 }
-
 
 BookmarkView.propTypes = {
   user: PropTypes.object.isRequired,
   project: PropTypes.object.isRequired
-}
-
-
+};
 
 export default BookmarkView;

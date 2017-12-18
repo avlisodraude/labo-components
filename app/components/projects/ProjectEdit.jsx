@@ -5,66 +5,72 @@ import PropTypes from 'prop-types';
 import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
 class ProjectEdit extends React.PureComponent {
-
-
-  constructor(props){
+  constructor(props) {
     super(props);
 
-    this.state={
+    this.state = {
       loading: true,
       project: null
-    }
+    };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // get project id from url
-    let projectId = this.props.match.params.id; 
+    const projectId = this.props.match.params.id;
 
     // load project data, and set state
-    ProjectAPI.get(this.props.user.id, projectId, (project) => {
+    ProjectAPI.get(this.props.user.id, projectId, project => {
       // inject project name to breadcrumbs
-      let titles = {};
-      titles[project.id]=project.name;
+      const titles = {};
+      titles[project.id] = project.name;
       // update breadcrumbs
       setBreadCrumbsFromMatch(this.props.match, titles);
 
       this.setState({
         loading: false,
         project
-      })
-    })
+      });
+    });
   }
 
-  render(){
+  render() {
     return (
       <div className={IDUtil.cssClassName('project-edit')}>
         <div className="info-bar">
           <h2>Edit User Project</h2>
-          <p>A user project contains Bookmarks & Annotations and Tool Sessions</p>
+          <p>
+            A user project contains Bookmarks & Annotations and Tool Sessions
+          </p>
         </div>
 
-        {this.state.loading ? 
+        {this.state.loading ? (
           <h3 className="loading">Loading...</h3>
-          : 
-          this.state.project ? 
-            <ProjectForm
-              submitButton="save"
-              cancelLink={"/workspace/projects/"+encodeURIComponent(this.state.project.id)+"/details"}
-              project={this.state.project}
-              projectDidSave={(projectId) => {
-                // navigate to new project page
-                this.props.history.push('/workspace/projects/' + encodeURIComponent(projectId) + "/details")
-              }}
-              user={this.props.user}
-              api={this.props.api}
-            />
-          :
+        ) : this.state.project ? (
+          <ProjectForm
+            submitButton="save"
+            cancelLink={
+              '/workspace/projects/' +
+              encodeURIComponent(this.state.project.id) +
+              '/details'
+            }
+            project={this.state.project}
+            projectDidSave={projectId => {
+              // navigate to new project page
+              this.props.history.push(
+                '/workspace/projects/' +
+                  encodeURIComponent(projectId) +
+                  '/details'
+              );
+            }}
+            user={this.props.user}
+            api={this.props.api}
+          />
+        ) : (
           <h3 className="error">Project could not be found</h3>
-         }
+        )}
       </div>
-    )
+    );
   }
-
 }
 
 export default ProjectEdit;
