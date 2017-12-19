@@ -1,11 +1,17 @@
 import AnnotationStore from '../../flux/AnnotationStore';
+import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
 import ProjectAPI from '../../api/ProjectAPI';
 import ProjectWrapper from './ProjectWrapper';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
+/**
+ * A row with annotation information and sub level bookmarks
+ */
 class AnnotationRow extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -29,6 +35,8 @@ class AnnotationRow extends React.PureComponent {
 
   /**
    * View action
+   *
+   * @param {object} bookmark Bookmark to view
    */
   onView(bookmark) {
     this.props.onView(bookmark);
@@ -36,6 +44,7 @@ class AnnotationRow extends React.PureComponent {
 
   /**
    * Select Change
+   *
    * @param  {SyntheticEvent} e    Event
    */
   onSelectChange(e) {
@@ -147,6 +156,11 @@ class AnnotationRow extends React.PureComponent {
     }
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     const annotation = this.props.annotation;
     const bookmarks = annotation.bookmarks || [];

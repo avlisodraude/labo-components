@@ -1,17 +1,31 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import IDUtil from '../../util/IDUtil';
+import PropTypes from 'prop-types';
 
 /**
- * Pagination (forked from DIVE+)
+ * Pagination element that shows page numbers around the current page
+ * and Previous and Next buttons
+ *
+ * This component was forked from DIVE+
  */
-class Pagination extends PureComponent {
-  // onclick action
+
+class Pagination extends React.PureComponent {
+  /**
+   * Pagination onClick handler
+   *
+   * @param  {int} page Page number
+   */
   onClick(page) {
     this.props.onClick(page);
   }
 
-  // get pagination boundaries
+  /**
+   * Get pagination boundaries
+   *
+   * @param  {int} currentPage Current page
+   * @param  {int} pageCount   Page count or total number of pages
+   * @param  {int} maxOffset   Maximum offset
+   * @return {object}  Object containing start and end
+   */
   getBoundaries(currentPage, pageCount, maxOffset) {
     let start = currentPage - maxOffset;
     let end = currentPage + maxOffset;
@@ -52,11 +66,14 @@ class Pagination extends PureComponent {
       start -= end - (pageCount - maxOffset + (maxOffset - 3));
     }
 
-    // console.log(start,end,pageCount);
     return { start, end };
   }
 
-  // get Pagination buttons, prev, pages, next
+  /**
+   * Get pagination buttons, prev, pages, next
+   *
+   * @return {array} Array of pagination buttons (Elements)
+   */
   getPaginationButtons() {
     // result
     const result = [];
@@ -126,7 +143,11 @@ class Pagination extends PureComponent {
     return result;
   }
 
-  // render this component
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     return (
       <ul className={IDUtil.cssClassName('pagination')}>

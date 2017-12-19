@@ -1,10 +1,18 @@
-import ProjectAPI from '../../api/ProjectAPI';
-import IDUtil from '../../util/IDUtil';
-import ProjectWrapper from './ProjectWrapper';
-import BookmarkView from './BookmarkView';
 import AnnotationView from './AnnotationView';
+import BookmarkView from './BookmarkView';
+import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
+import ProjectWrapper from './ProjectWrapper';
+import PropTypes from 'prop-types';
 
+/**
+ * Main page for a project's bookmarks and annotations. This page mainly handles
+ * the view selection: Bookmark- or Annotation centric.
+ */
 class ProjectBookmarks extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -40,8 +48,15 @@ class ProjectBookmarks extends React.PureComponent {
     });
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     let viewComponent = null;
+
+    // set viewComponent, based on the current state.view
 
     switch (this.state.view) {
       case 'bookmark-centric':
@@ -90,6 +105,11 @@ class ProjectBookmarks extends React.PureComponent {
   }
 }
 
+ProjectBookmarks.propTypes = {
+  user: PropTypes.object.isRequired,
+  project: PropTypes.object.isRequired
+};
+
 class WrappedProjectBookmarks extends React.PureComponent {
   render() {
     return (
@@ -97,5 +117,7 @@ class WrappedProjectBookmarks extends React.PureComponent {
     );
   }
 }
+
+WrappedProjectBookmarks.propTypes = ProjectBookmarks.propTypes;
 
 export default WrappedProjectBookmarks;

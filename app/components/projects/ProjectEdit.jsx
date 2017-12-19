@@ -1,10 +1,16 @@
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
+/**
+ * Edit the project as specified by the router, using the ProjectForm component
+ */
 class ProjectEdit extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -14,6 +20,9 @@ class ProjectEdit extends React.PureComponent {
     };
   }
 
+  /**
+   * React lifecycle event
+   */
   componentDidMount() {
     // get project id from url
     const projectId = this.props.match.params.id;
@@ -33,6 +42,11 @@ class ProjectEdit extends React.PureComponent {
     });
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     return (
       <div className={IDUtil.cssClassName('project-edit')}>
@@ -72,5 +86,10 @@ class ProjectEdit extends React.PureComponent {
     );
   }
 }
+
+ProjectEdit.propTypes = {
+  api: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
+};
 
 export default ProjectEdit;

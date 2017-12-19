@@ -1,11 +1,17 @@
 import AnnotationStore from '../../flux/AnnotationStore';
+import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
 import ProjectAPI from '../../api/ProjectAPI';
 import ProjectWrapper from './ProjectWrapper';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
+/**
+ * A row with bookmark information, and actions, and sub level annotations
+ */
 class BookmarkRow extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -36,6 +42,7 @@ class BookmarkRow extends React.PureComponent {
 
   /**
    * Select Change
+   *
    * @param  {SyntheticEvent} e    Event
    */
   onSelectChange(e) {
@@ -51,6 +58,11 @@ class BookmarkRow extends React.PureComponent {
     });
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     const bookmark = this.props.bookmark;
     const annotations = bookmark.annotations || [];
@@ -61,6 +73,8 @@ class BookmarkRow extends React.PureComponent {
         className={classNames(IDUtil.cssClassName('bookmark-row'), 'item-row')}
       >
         <div className="item">
+          {/* PROPERTIES  */}
+
           <div className="selector">
             <input
               type="checkbox"
@@ -130,6 +144,8 @@ class BookmarkRow extends React.PureComponent {
           </div>
         </div>
 
+        {/* SUB LEVEL PROPERTIES : ANNOTATIONS  */}
+
         {this.state.showAnnotations ? (
           <div className="sublevel">
             {!hasAnnotations ? (
@@ -177,10 +193,10 @@ class BookmarkRow extends React.PureComponent {
 BookmarkRow.propTypes = {
   bookmark: PropTypes.object.isRequired,
   onDelete: PropTypes.func.isRequired,
-  onView: PropTypes.func.isRequired,
-  selected: PropTypes.bool,
+  onExport: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
-  onExport: PropTypes.func.isRequired
+  onView: PropTypes.func.isRequired,
+  selected: PropTypes.bool
 };
 
 export default BookmarkRow;

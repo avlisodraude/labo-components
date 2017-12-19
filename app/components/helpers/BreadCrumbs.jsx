@@ -1,5 +1,6 @@
 /**
  * Set breadcrumbs in non react context
+ *
  * @param {array} path List of path urls
  * @param {object} rewrites Object with titles for path values, optional
  */
@@ -32,6 +33,7 @@ export const setBreadCrumbs = (path, titles = {}) => {
 
 /**
  * Set breadcrumbs in non react context
+ *
  * @param {object} data Data to export
  */
 export const setBreadCrumbsFromMatch = (match, titles = {}) => {

@@ -1,16 +1,19 @@
-import PropTypes from 'prop-types';
-
-import ProjectAPI from '../../api/ProjectAPI';
-import IDUtil from '../../util/IDUtil';
-import ProjectWrapper from './ProjectWrapper';
-
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
-
 import BookmarkRow from './BookmarkRow';
+import IDUtil from '../../util/IDUtil';
 import ItemDetailsRecipe from '../../ItemDetailsRecipe';
+import ProjectAPI from '../../api/ProjectAPI';
+import ProjectWrapper from './ProjectWrapper';
+import PropTypes from 'prop-types';
 
+/**
+ * Display a bookmark/annotation result list and handle the filtering and sorting
+ */
 class BookmarkTable extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -26,12 +29,18 @@ class BookmarkTable extends React.PureComponent {
     };
   }
 
+  /**
+   * React lifecycle event
+   */
   componentWillMount() {
     // instead of breaking out of the container, change the background color to a white and gray region
     document.body.style.background =
       'linear-gradient(180deg, white, white 393px, #faf6f6 393px, #faf6f6)';
   }
 
+  /**
+   * React lifecycle event
+   */
   componentWillUnmount() {
     // reset background color of body
     document.body.style.background = 'white';
@@ -59,6 +68,7 @@ class BookmarkTable extends React.PureComponent {
 
   /**
    * Sort by the given field
+   *
    * @param {string} field Unique sort field
    */
   setSort(field) {
@@ -72,6 +82,9 @@ class BookmarkTable extends React.PureComponent {
 
   /**
    * Listen for update, request new data if filter has been changed
+   *
+   * @param {object} prevProps Previous props
+   * @param {object} prevState Previous state
    */
   componentDidUpdate(prevProps, prevState) {
     //listen for items change
@@ -97,6 +110,7 @@ class BookmarkTable extends React.PureComponent {
 
   /**
    * Keywords filter changes
+   *
    * @param {SyntheticEvent} e Event
    */
   keywordsChange(e) {
@@ -109,6 +123,7 @@ class BookmarkTable extends React.PureComponent {
 
   /**
    * Type filter changes
+   *
    * @param {SyntheticEvent} e Event
    */
   typeChange(e) {
@@ -121,12 +136,18 @@ class BookmarkTable extends React.PureComponent {
 
   /**
    * Sort change
+   *
    * @param {string} sort Sort name
    */
   sortChange(e) {
     this.setSort(e.target.value);
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     return (
       <div className={IDUtil.cssClassName('bookmark-table')}>
@@ -190,14 +211,14 @@ class BookmarkTable extends React.PureComponent {
 }
 
 BookmarkTable.propTypes = {
-  items: PropTypes.array.isRequired,
-  selection: PropTypes.array,
-  orders: [],
-  sortItems: PropTypes.func.isRequired,
-  filters: [],
   filterItems: PropTypes.func.isRequired,
+  filters: PropTypes.array.isRequired,
+  items: PropTypes.array.isRequired,
+  onExport: PropTypes.func.isRequired,
+  orders: PropTypes.array.isRequired,
   renderResults: PropTypes.func.isRequired,
-  onExport: PropTypes.func.isRequired
+  selection: PropTypes.array,
+  sortItems: PropTypes.func.isRequired
 };
 
 export default BookmarkTable;

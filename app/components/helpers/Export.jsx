@@ -1,5 +1,6 @@
 /**
  * Export data
+ *
  * @param {object} data Data to export
  */
 export const exportDataAsJSON = data => {

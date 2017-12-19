@@ -1,11 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import BulkActions from '../helpers/BulkActions';
 import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
 import Pagination from '../helpers/Pagination';
-import BulkActions from '../helpers/BulkActions';
+import PropTypes from 'prop-types';
+
+/**
+ * A Table component with headers and rows that handles row selection and pagination.
+ * Its contents are provided bythe props
+ */
 
 class SortTable extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -23,6 +30,7 @@ class SortTable extends React.PureComponent {
 
   /**
    * Sort projects based on the given field
+   *
    * @param {string} field Unique sort field
    */
   sort(field) {
@@ -42,6 +50,7 @@ class SortTable extends React.PureComponent {
 
   /**
    * Get a header <th> element
+   *
    * @param  {number} index For unique key
    * @param  {string} field Unique field name for sorting
    * @param  {Symbol}
@@ -68,6 +77,7 @@ class SortTable extends React.PureComponent {
 
   /**
    * New props, update the state
+   *
    * @param  {object} nextProps
    */
   componentWillReceiveProps(nextProps) {
@@ -81,6 +91,7 @@ class SortTable extends React.PureComponent {
 
   /**
    * Select all items
+   *
    * @param  {SyntheticEvent} e Event
    */
   selectAll(e) {
@@ -91,6 +102,7 @@ class SortTable extends React.PureComponent {
 
   /**
    * Select an item
+   *
    * @param  {object} item Item
    * @param  {SyntheticEvent} e    Event
    */
@@ -108,12 +120,18 @@ class SortTable extends React.PureComponent {
 
   /**
    * Select an item
+   *
    * @param  {int} currentPage
    */
   setPage(currentPage) {
     this.setState({ currentPage });
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     // pagination
     const pageCount = Math.ceil(this.state.items.length / this.props.perPage);

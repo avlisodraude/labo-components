@@ -2,6 +2,9 @@ import IDUtil from '../../util/IDUtil';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
+/**
+ * Shows the project form and handles saving the project data using the given api.
+ */
 class ProjectForm extends React.PureComponent {
   /**
    * Handle form submit
@@ -20,6 +23,7 @@ class ProjectForm extends React.PureComponent {
 
   /**
    * Save the project using the Project API
+   *
    * @param  {object}   project  Project data
    * @param  {Function} callback Called when save is succesful
    */
@@ -41,6 +45,11 @@ class ProjectForm extends React.PureComponent {
     });
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     return (
       <form
@@ -94,21 +103,16 @@ class ProjectForm extends React.PureComponent {
 
 ProjectForm.PropTypes = {
   submitButton: PropTypes.string.isRequired,
-
   cancelLink: PropTypes.string.isRequired,
-
   project: PropTypes.shape({
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     private: PropTypes.bool.isRequired
   }).isRequired,
-
   projectDidSave: PropTypes.func.isRequired,
-
   user: PropTypes.shape({
     id: PropTypes.string.isRequired
   }),
-
   api: PropTypes.shape({
     save: PropTypes.func.isRequired
   })

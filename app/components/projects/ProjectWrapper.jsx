@@ -1,13 +1,21 @@
-import ProjectAPI from '../../api/ProjectAPI';
+import AnnotationStore from '../../flux/AnnotationStore';
+import AnnotationUtil from '../../util/AnnotationUtil';
 import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import AnnotationStore from '../../flux/AnnotationStore';
-import AnnotationUtil from '../../util/AnnotationUtil';
 import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
+/**
+ * Wrapper for pages within a single project. It provides a submenu that gives
+ * access to all the subpages (Bookmarks/Sessions/Details)
+ * It also provides the project data to the subviews.
+ */
 class ProjectWrapper extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -26,6 +34,9 @@ class ProjectWrapper extends React.PureComponent {
     };
   }
 
+  /**
+   * React lifecycle event
+   */
   componentDidMount() {
     this.loadProject();
   }
@@ -56,6 +67,8 @@ class ProjectWrapper extends React.PureComponent {
 
   /**
    * Load bookmark count from annotation store
+   *
+   * @param {object} project Project to load bookmark count for
    */
   loadBookmarkCount(project) {
     AnnotationStore.getUserProjectAnnotations(
@@ -67,6 +80,8 @@ class ProjectWrapper extends React.PureComponent {
 
   /**
    * Set bookmark count to state
+   *
+   * @param {object} data Annotation data
    */
   setBookmarkCount(data) {
     const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
@@ -81,6 +96,11 @@ class ProjectWrapper extends React.PureComponent {
     });
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     const RenderComponent = this.props.renderComponent;
     const project = this.state.project;

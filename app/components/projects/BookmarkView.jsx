@@ -12,7 +12,14 @@ import PropTypes from 'prop-types';
 import { exportDataAsJSON } from '../helpers/Export';
 import BulkActions from '../helpers/BulkActions';
 
+/**
+ * This view handles the loading, filtering and selection of data of
+ * the Bookmarks list of a project. It is displayed using the BookmarkTable component.
+ */
 class BookmarkView extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -79,6 +86,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Get filter list of unique object types
+   *
    * @param  {array} items List of bookmarks
    * @return {array}       List of filters
    */
@@ -98,6 +106,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Annotation load callback: set data to state
+   *
    * @param  {Object} data Response object with annotation list
    */
   onLoadBookmarks(data) {
@@ -109,6 +118,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * The resource list now also contains the data of the resources
+   *
    * @param  {array} bookmarks Full bookmark data
    */
   onLoadResourceList(bookmarks) {
@@ -123,6 +133,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Update Selection list, based on available items
+   *
    * @param  {array} items  Current data
    */
   updateSelection(items) {
@@ -135,6 +146,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Filter bookmark list by given filter
+   *
    * @param  {array} bookmarks  Bookmarks array
    * @param  {object} filter    Filter object
    * @return {array}            Filtered bookmarks array
@@ -168,6 +180,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Sort bookmarks
+   *
    * @param {Array} bookmarks List of bookmarks to be sorted
    * @param {string} sort Sort field
    * @return {Array} Sorted bookmarks
@@ -209,6 +222,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Delete bookmark
+   *
    * @param {Object} bookmark Bookmark to be removed
    */
   deleteBookmark(bookmark) {
@@ -237,6 +251,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Delete multiple bookmarks
+   *
    * @param {array} selection List of bookmark ids to be deleted
    */
   deleteBookmarks(selection) {
@@ -279,6 +294,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Export bookmarks
+   *
    * @param {Object} annotations Annotations to be exported
    */
   exportBookmarks(selection) {
@@ -297,6 +313,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * View bookmark
+   *
    * @param {Object} bookmark Bookmark to be viewed
    */
   viewBookmark(bookmark) {
@@ -311,6 +328,7 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Sort change
+   *
    * @param {string} sort Sort name
    */
   sortChange(e) {
@@ -342,8 +360,12 @@ class BookmarkView extends React.PureComponent {
   }
 
   /**
-   * Select bookmark
+   * Select bookmark item
+   *
+   * @param {object} item Bookmark item to handle
+   * @param {boolean} select Indicate if the items should be selected
    */
+
   selectItem(item, select) {
     if (select) {
       if (!this.state.selection.includes(item.id)) {
@@ -376,7 +398,8 @@ class BookmarkView extends React.PureComponent {
 
   /**
    * Renders the results in the BookmarkTable component
-   * @param {object} state State of the render component
+   *
+   * @param {object} renderState State of the render component
    * @return {Element} View results
    */
   renderResults(renderState) {
@@ -411,6 +434,12 @@ class BookmarkView extends React.PureComponent {
       </div>
     );
   }
+
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
 
   render() {
     return (

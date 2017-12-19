@@ -3,11 +3,22 @@ import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
+/**
+ * Create a new project, using the ProjectForm component
+ */
 class ProjectCreate extends React.PureComponent {
+  /**
+   * React lifecycle event
+   */
   componentDidMount() {
     setBreadCrumbsFromMatch(this.props.match);
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     return (
       <div className={IDUtil.cssClassName('project-create')}>
@@ -40,5 +51,10 @@ class ProjectCreate extends React.PureComponent {
     );
   }
 }
+
+ProjectCreate.propTypes = {
+  api: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
+};
 
 export default ProjectCreate;

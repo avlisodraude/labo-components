@@ -1,19 +1,25 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import IDUtil from '../../util/IDUtil';
-import SortTable from './SortTable';
-import { Link } from 'react-router-dom';
 import ProjectWrapper from './ProjectWrapper';
+import PropTypes from 'prop-types';
+import SortTable from './SortTable';
 import { exportDataAsJSON } from '../helpers/Export';
+import { Link } from 'react-router-dom';
 
 /**
- * Todo: Project sessions are currently stored on the project object
+ * Tool sessions table for a given project, that handles the loading^ and filtering of
+ * the sessions list.
+ *
+ * ^ Todo: Project sessions are currently stored on the project object
  * itself. Alternatively they could be stored in the annotation API
  * @Jaap: Decide which approach fits best.
  */
 
 class ProjectSessions extends React.PureComponent {
+
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -292,5 +298,7 @@ class WrappedProjectSessions extends React.PureComponent {
     return <ProjectWrapper {...this.props} renderComponent={ProjectSessions} />;
   }
 }
+
+WrappedProjectSessions.propTypes = ProjectSessions.propTypes;
 
 export default WrappedProjectSessions;

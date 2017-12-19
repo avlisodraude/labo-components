@@ -1,8 +1,15 @@
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
+import PropTypes from 'prop-types';
 import { PowerSelect } from 'react-power-select';
 
+/**
+ * Select a project from a list and send it to the output callback
+ */
 class ProjectSelector extends React.Component {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -12,6 +19,9 @@ class ProjectSelector extends React.Component {
     this.CLASS_PREFIX = 'prjs';
   }
 
+  /**
+   * React lifecycle event
+   */
   componentDidMount() {
     //load the projects
     ProjectAPI.list(this.props.user.id, null, projects => {
@@ -19,17 +29,33 @@ class ProjectSelector extends React.Component {
     });
   }
 
+  /**
+   * Extract project from event and select it
+   *
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
   selectProject(event) {
     if (event && event.option && event.option.index) {
       this.onOutput(this.getProjectFromList(event.option.index));
     }
   }
 
+  /**
+   * Get project from the projectList, by given project id
+   * @param  {string} projectId Id of project
+   * @return {object}           Project
+   */
   getProjectFromList(projectId) {
     const filtered = this.state.projectList.filter(p => p.id == projectId);
     return filtered.length > 0 ? filtered[0] : null;
   }
 
+  /**
+   * Call onOutput event
+   *
+   * @param {object} project Project that should be send to output
+   */
   onOutput(project) {
     if (this.props.onOutput) {
       if (project) {
@@ -37,7 +63,7 @@ class ProjectSelector extends React.Component {
           () => {
             this.props.onOutput(this.constructor.name, project);
           },
-          120 //ugly as shit, but the powerselect tries to call one more function after this
+          120 //ugly as sh*t, but the powerselect tries to call one more function after this
         );
       } else {
         console.debug('No project selected...');
@@ -45,6 +71,11 @@ class ProjectSelector extends React.Component {
     }
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     let projectSelector = null;
 
@@ -94,5 +125,10 @@ class ProjectSelector extends React.Component {
     );
   }
 }
+
+ProjectSelector.propTypes = {
+  user: PropTypes.object.isRequired,
+  onOutput: PropTypes.func.isRequired
+};
 
 export default ProjectSelector;

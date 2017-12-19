@@ -1,15 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import IDUtil from '../../util/IDUtil';
-import ComponentUtil from '../../util/ComponentUtil';
-import SortTable from './SortTable';
-import { Link } from 'react-router-dom';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
+import classNames from 'classnames';
+import ComponentUtil from '../../util/ComponentUtil';
+import IDUtil from '../../util/IDUtil';
+import PropTypes from 'prop-types';
+import SortTable from './SortTable';
 import { exportDataAsJSON } from '../helpers/Export';
+import { Link } from 'react-router-dom';
 
+/**
+ * Table that shows all the projects. It handles the loading and filtering of the projects data.
+ */
 class ProjectTable extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -68,6 +73,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Set new list of projects to state
+   *
    * @param {array} projects List of projects
    */
   setProjects(projects) {
@@ -75,7 +81,7 @@ class ProjectTable extends React.PureComponent {
     this.toDummyData(projects || []);
 
     // we filter the results now on client side
-    projects = this.filterProjects(projects);
+    projects = this.filterProjects(projects || []);
 
     //TODO this is for now the only place where this is set. Probably not good enough
     ComponentUtil.storeJSONInLocalStorage('myProjects', projects);
@@ -93,6 +99,8 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Load bookmark count async
+   *
+   * @param {array} projects List of projects
    */
   getAllBookmarkCount(projects) {
     projects.forEach(project => {
@@ -109,6 +117,8 @@ class ProjectTable extends React.PureComponent {
   /**
    * Load bookmark count from annotation store
    * Future: This can be optimized by storing the counts in the SessionStorage
+   *
+   * @param {object} project Project to load bookmark count for
    */
   loadBookmarkCount(project) {
     AnnotationStore.getUserProjectAnnotations(
@@ -120,6 +130,9 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Set bookmark count to state
+   *
+   * @param {object} project Project to set bookmark count for
+   * @param {object} data Annotation data
    */
   setBookmarkCount(project, data) {
     const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
@@ -136,6 +149,8 @@ class ProjectTable extends React.PureComponent {
   /**
    * Filter projects client side
    * This can later be performed on the server/api side
+   *
+   * @param {array} projects Projects to be filtered
    */
   filterProjects(projects) {
     const userId = this.props.user.id;
@@ -166,6 +181,8 @@ class ProjectTable extends React.PureComponent {
   /**
    * Decorate projects data with helper functions
    * (currently placeholders)
+   *
+   * @param {array} projects Projects to decorated
    */
   toDummyData(projects) {
     return projects.map(p => {
@@ -199,6 +216,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Keywords filter changes
+   *
    * @param {SyntheticEvent} e Event
    */
   keywordsChange(e) {
@@ -211,6 +229,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Keywords filter changes
+   *
    * @param {SyntheticEvent} e Event
    */
   currentUserChange(e) {
@@ -243,6 +262,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Delete project if confirmed
+   *
    * @param {object} project Project to delete
    */
   deleteProject(project) {
@@ -260,7 +280,8 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Delete *multiple* projects if confirmed
-   * @param {object} projects Projects to delete
+   *
+   * @param {array} projects Projects to delete
    */
   deleteProjects(projects) {
     if (
@@ -287,7 +308,8 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Sort projects based on sort
-   * @param {Array} projects List of bookmarks to be sorted
+   *
+   * @param {array} projects List of bookmarks to be sorted
    * @param {object} sort Sort field and order
    */
   sortProjects(projects, sort) {
@@ -323,6 +345,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Get bookmark count if available in the state
+   *
    * @param [string] id Project id
    * @return {string}   Bookmark count
    */
@@ -335,6 +358,7 @@ class ProjectTable extends React.PureComponent {
 
   /**
    * Get project row for given project
+   *
    * @param {object} project Project data to render
    */
   getProjectRow(project) {
@@ -412,6 +436,11 @@ class ProjectTable extends React.PureComponent {
     ];
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     return (
       <div className={IDUtil.cssClassName('project-table')}>

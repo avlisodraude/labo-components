@@ -1,12 +1,19 @@
-import ProjectAPI from '../../api/ProjectAPI';
-import IDUtil from '../../util/IDUtil';
-import ProjectWrapper from './ProjectWrapper';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
-//import ItemDetailsRecipe from '../../ItemDetailsRecipe';
+import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
+import ProjectWrapper from './ProjectWrapper';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
+/**
+ * Modal (popup) that shows the details of an object. Currently in an iframe.
+ */
 class ItemDetailsModal extends React.PureComponent {
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     const object = this.props.object;
     return (

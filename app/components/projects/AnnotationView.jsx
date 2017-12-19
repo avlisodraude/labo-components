@@ -3,15 +3,23 @@ import AnnotationRow from './AnnotationRow';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
 import BookmarkTable from './BookmarkTable';
+import BulkActions from '../helpers/BulkActions';
 import ComponentUtil from '../../util/ComponentUtil';
 import IDUtil from '../../util/IDUtil';
 import ItemDetailsModal from './ItemDetailsModal';
 import ProjectAPI from '../../api/ProjectAPI';
 import ProjectWrapper from './ProjectWrapper';
+import PropTypes from 'prop-types';
 import { exportDataAsJSON } from '../helpers/Export';
-import BulkActions from '../helpers/BulkActions';
 
+/**
+ * This view handles the loading, filtering and selection of data of
+ * the Annotations list of a project. It is displayed using the BookmarkTable component.
+ */
 class AnnotationView extends React.PureComponent {
+  /**
+   * Construct this component
+   */
   constructor(props) {
     super(props);
 
@@ -49,6 +57,9 @@ class AnnotationView extends React.PureComponent {
     this.viewBookmark = this.viewBookmark.bind(this);
   }
 
+  /**
+   * React lifecycle event
+   */
   componentWillMount() {
     this.loadAnnotations();
   }
@@ -66,6 +77,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Get filter list of existing annotation types
+   *
    * @param  {array} items List of annotations
    * @return {array}       List of filters
    */
@@ -82,6 +94,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Annotation load callback: set data to state
+   *
    * @param  {Object} data Response object with annotation list
    */
   onLoadAnnotations(data) {
@@ -124,6 +137,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Update Selection list, based on available items
+   *
    * @param  {array} items  Current data
    */
   updateSelection(items) {
@@ -136,6 +150,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Filter annotation list by given filter
+   *
    * @param  {array} annotations  Annotations array
    * @param  {object} filter    Filter object
    * @return {array}            Filtered annotations array
@@ -177,8 +192,9 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Sort annotations
+   *
    * @param {Array} annotations List of annotations to be sorted
-   * @param {string} sort Sort field
+   * @param {string} field Sort field
    * @return {Array} Sorted annotations
    */
   sortAnnotations(annotations, field) {
@@ -197,6 +213,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Delete annotation
+   *
    * @param {Object} annotation Annotation to be removed
    */
   deleteAnnotation(annotation) {
@@ -210,7 +227,8 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Delete annotations
-   * @param {Object} annotation Annotation to be removed
+   *
+   * @param {Object} annotationIds Ids of annotations to be removed
    */
   deleteAnnotations(annotationIds) {
     // always ask before deleting
@@ -279,8 +297,9 @@ class AnnotationView extends React.PureComponent {
   }
 
   /**
-   * Export annotations
-   * @param {Object} annotations Annotations to be exported
+   * Export annotation by their ids
+   *
+   * @param {Object} annotationIds Ids of annotations to be exported
    */
   exportAnnotationsByIds(annotationIds) {
     const data = this.state.annotations.filter(item =>
@@ -291,6 +310,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Export annotations
+   *
    * @param {Object} annotations Annotations to be exported
    */
   exportAnnotations(annotations) {
@@ -310,6 +330,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * View bookmark
+   *
    * @param {Object} bookmark Bookmark (object) to be viewed
    */
   viewBookmark(bookmark) {
@@ -331,6 +352,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Sort change
+   *
    * @param {string} sort Sort name
    */
   sortChange(e) {
@@ -339,6 +361,7 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Select all items
+   *
    * @param {array} items Items to be selected
    * @param {SyntheticEvent} e Event
    */
@@ -364,7 +387,10 @@ class AnnotationView extends React.PureComponent {
   }
 
   /**
-   * Select bookmark
+   * Select bookmark item
+   *
+   * @param {object} item Bookmark item to handle
+   * @param {boolean} select Indicate if the items should be selected
    */
   selectItem(item, select) {
     if (select) {
@@ -389,7 +415,11 @@ class AnnotationView extends React.PureComponent {
 
   /**
    * Renders the results in the AnnotationTable component
-   * @param {object} state State of the render component
+   *
+   * @param {string} type Annotation type title
+   * @param {array} items Annotations to render
+   * @return {Element} Render result for AnnotationTable, or null
+   *
    */
   renderResultType(type, items) {
     // don't render empty results
@@ -429,9 +459,10 @@ class AnnotationView extends React.PureComponent {
   }
 
   /**
-   * Renders the results in the AnnotationTable component
-   * @param {object} state State of the render component
-   * @return {Element} View results
+   * Renders callback for the BookmarkTable component
+   *
+   * @param {object} renderState State of the component
+   * @return {Element} Render result for BookmarkTable
    */
   renderResults(renderState) {
     return (
@@ -464,6 +495,12 @@ class AnnotationView extends React.PureComponent {
     );
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
+
   render() {
     return (
       <div className={IDUtil.cssClassName('annotation-view')}>
@@ -493,5 +530,10 @@ class AnnotationView extends React.PureComponent {
     );
   }
 }
+
+AnnotationView.propTypes = {
+  api: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
+};
 
 export default AnnotationView;

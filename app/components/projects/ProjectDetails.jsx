@@ -1,10 +1,18 @@
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
 import ProjectWrapper from './ProjectWrapper';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
+/**
+ * Show the details of the given project.
+ */
 class ProjectDetails extends React.PureComponent {
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     const project = this.props.project;
     return (

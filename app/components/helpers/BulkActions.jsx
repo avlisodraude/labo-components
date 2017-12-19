@@ -1,8 +1,16 @@
-import ProjectAPI from '../../api/ProjectAPI';
 import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
 import PropTypes from 'prop-types';
 
+/**
+ * A dropdown with actions, that can be applied on multiple items
+ */
+
 class BulkActions extends React.PureComponent {
+  /**
+   * Construct this component
+   */
+
   constructor(props) {
     super(props);
     this.state = {
@@ -12,6 +20,7 @@ class BulkActions extends React.PureComponent {
 
   /**
    * Set bulk action
+   *
    * @param  {SyntheticEvent} e    Event
    */
   setBulkAction(e) {
@@ -20,6 +29,7 @@ class BulkActions extends React.PureComponent {
 
   /**
    * Apply bulk action
+   *
    * @param  {SyntheticEvent} e    Event
    */
   applyCurrentBulkAction(e) {
@@ -35,6 +45,11 @@ class BulkActions extends React.PureComponent {
     });
   }
 
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
   render() {
     return (
       <div className={IDUtil.cssClassName('bulk-actions')}>
@@ -67,5 +82,10 @@ class BulkActions extends React.PureComponent {
     );
   }
 }
+
+BulkActions.propTypes = {
+  bulkActions: PropTypes.object.isRequired,
+  selection: PropTypes.array.isRequired
+};
 
 export default BulkActions;
