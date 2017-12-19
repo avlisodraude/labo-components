@@ -21,10 +21,7 @@ class SortTable extends React.PureComponent {
       bulkAction: null,
       items: props.items,
       selection: [],
-      sort: {
-        field: null,
-        order: 'asc'
-      }
+      sort: this.props.defaultSort
     };
   }
 
@@ -44,7 +41,7 @@ class SortTable extends React.PureComponent {
 
     this.setState({
       sort,
-      items: this.props.sort(this.props.items, sort)
+      items: this.props.onSort(this.props.items, sort)
     });
   }
 
@@ -83,7 +80,7 @@ class SortTable extends React.PureComponent {
   componentWillReceiveProps(nextProps) {
     if (nextProps.items !== this.state.items) {
       this.setState({
-        items: nextProps.sort(nextProps.items, this.state.sort),
+        items: this.props.onSort(nextProps.items, this.state.sort),
         selection: []
       });
     }
@@ -212,14 +209,16 @@ SortTable.propTypes = {
   bulkActions: PropTypes.array.isRequired,
   head: PropTypes.array.isRequired,
   row: PropTypes.func.isRequired,
-  sort: PropTypes.func.isRequired,
+  onSort: PropTypes.func.isRequired,
   perPage: PropTypes.number,
-  currentPage: PropTypes.number
+  currentPage: PropTypes.number,
+  defaultSort: PropTypes.object.isRequired,
 };
 
 SortTable.defaultProps = {
   perPage: 20,
-  currentPage: 0
+  currentPage: 0,
+  defaultSort: { field: null, order: 'asc' },
 };
 
 export default SortTable;

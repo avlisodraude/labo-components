@@ -38,6 +38,11 @@ class ProjectSessions extends React.PureComponent {
       ];
     }
 
+    this.defaultSort = {
+      field: 'name',
+      order: 'asc'
+    }
+
     this.state = {
       sessions: [],
       filter: {
@@ -269,12 +274,13 @@ class ProjectSessions extends React.PureComponent {
               )
             }
           ]}
-          sort={this.sortSessions.bind(this)}
+          onSort={this.sortSessions.bind(this)}
           loading={this.state.loading}
           bulkActions={[
             { title: 'Delete', onApply: this.deleteSessions.bind(this) },
             { title: 'Export', onApply: exportDataAsJSON.bind(this) }
           ]}
+          defaultSort={this.defaultSort}
         />
       </div>
     );

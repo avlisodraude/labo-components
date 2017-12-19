@@ -38,6 +38,11 @@ class ProjectTable extends React.PureComponent {
       { title: 'Export', onApply: exportDataAsJSON.bind(this) }
     ];
 
+    this.defaultSort = {
+      field: 'name',
+      order: 'asc'
+    }
+
     this.state = {
       projects: [],
       loading: true,
@@ -468,9 +473,10 @@ class ProjectTable extends React.PureComponent {
           items={this.state.projects}
           head={this.head}
           row={this.getProjectRow}
-          sort={this.sortProjects}
+          onSort={this.sortProjects}
           loading={this.state.loading}
           bulkActions={this.bulkActions}
+          defaultSort={this.defaultSort}
         />
       </div>
     );
