@@ -105,6 +105,41 @@ const CollectionUtil = {
 			}
 		}
 		return label;
+	},
+
+	highlightSearchTermInDescription(words, searchTerm=null, maxWords=35) {
+		if(words) {
+			const tmp = ('' + words).split(' ');
+			let i = 0;
+			let found = false;
+			if(searchTerm) {
+				for(const w of tmp) {
+					if(w.indexOf(searchTerm) != -1 || w.indexOf(searchTerm.toLowerCase()) != -1) {
+						words = tmp.slice(
+							i-6 >= 0 ? i-6 : 0,
+							i + maxWords < tmp.length ? i + maxWords : tmp.length
+						)
+						if(tmp.length > maxWords) {
+							words.splice(0, 0, '(...)');
+							if(i != tmp.length -1) {
+								words.splice(words.length, 0, '(...)');
+							}
+						}
+						words = words.join(' ');
+						found = true;
+						break;
+					}
+					i++;
+				}
+			}
+			if(!found && tmp.length > maxWords) {
+				words = tmp.slice(0, maxWords);
+				words.splice(words.length, 0, '(...)');
+				words = words.join(' ');
+			}
+			return words;
+		}
+		return null;
 	}
 
 }

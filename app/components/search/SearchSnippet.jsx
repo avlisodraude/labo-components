@@ -2,47 +2,13 @@
 
 import IconUtil from '../../util/IconUtil';
 import IDUtil from '../../util/IDUtil';
+import CollectionUtil from '../../util/CollectionUtil';
 import Classification from '../annotation/Classification';
 
 class SearchSnippet extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.MAX_WORDS = 35;
-	}
-
-	//this highlights the searchTerm in the snippet (TODO this should be replace by using ES highlighting)
-	highlightSearchTermInDescription(words) {
-		if(words) {
-			const tmp = ('' + words).split(' ');
-			let i = 0;
-			let found = false;
-			for(const w of tmp) {
-				if(w.indexOf(this.props.searchTerm) != -1 || w.indexOf(this.props.searchTerm.toLowerCase()) != -1) {
-					words = tmp.slice(
-						i-6 >= 0 ? i-6 : 0,
-						i + this.MAX_WORDS < tmp.length ? i + this.MAX_WORDS : tmp.length
-					)
-					if(tmp.length > this.MAX_WORDS) {
-						words.splice(0, 0, '(...)');
-						if(i != tmp.length -1) {
-							words.splice(words.length, 0, '(...)');
-						}
-					}
-					words = words.join(' ');
-					found = true;
-					break;
-				}
-				i++;
-			}
-			if(!found && tmp.length > this.MAX_WORDS) {
-				words = tmp.slice(0, this.MAX_WORDS);
-				words.splice(words.length, 0, '(...)');
-				words = words.join(' ');
-			}
-			return words;
-		}
-		return null;
 	}
 
 	//possible default fields: posterURL, title, description, tags
@@ -107,7 +73,11 @@ class SearchSnippet extends React.Component {
 						{this.props.data.date ? '(' + this.props.data.date + ')' : ''}
 						&nbsp;{mediaTypes}&nbsp;{fragmentIcon}
 					</h4>
-					{this.highlightSearchTermInDescription(this.props.data.description)}
+					{CollectionUtil.highlightSearchTermInDescription(
+						this.props.data.description,
+						this.props.searchTerm,
+						35
+					)}
 					{tags}
 				</div>
 			</div>
