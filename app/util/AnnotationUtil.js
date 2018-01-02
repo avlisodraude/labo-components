@@ -73,8 +73,10 @@ const AnnotationUtil = {
 				acc = temp;
 			} else {
 				//only add a resource one time for the search API to fetch
-				if(acc[cur.collectionId] && acc[cur.collectionId.indexOf(cur.resourceId) == -1]) {
-					acc[cur.collectionId].push(cur.resourceId)
+				if(acc[cur.collectionId]) {
+					if(acc[cur.collectionId].indexOf(cur.resourceId) == -1) {
+						acc[cur.collectionId].push(cur.resourceId)
+					}
 				} else {
 					acc[cur.collectionId] = [cur.resourceId]
 				}
@@ -92,9 +94,11 @@ const AnnotationUtil = {
 					//reconsile and callback the "client"
 					const configClass = CollectionUtil.getCollectionClass(collectionId, true);
 					const collectionConfig = new configClass(collectionId);
-					const mappedResourceData = resourceData['docs'].map((doc) => {
+					console.debug(resourceData);
+					const mappedResourceData = resourceData.map((doc) => {
 						return doc.found ? collectionConfig.getItemDetailData(doc) : null;
 					})
+
 					accumulatedData[collectionId] = mappedResourceData;
 					if(Object.keys(resourceIds).length == Object.keys(accumulatedData).length) {
 						callback(AnnotationUtil.reconsileAll(resourceList, accumulatedData));

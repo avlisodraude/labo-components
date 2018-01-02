@@ -1,46 +1,57 @@
-import ProjectAPI from '../../api/ProjectAPI';
+import AnnotationStore from '../../flux/AnnotationStore';
+import AnnotationUtil from '../../util/AnnotationUtil';
 import IDUtil from '../../util/IDUtil';
+import ProjectAPI from '../../api/ProjectAPI';
 import ProjectForm from './ProjectForm';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import AnnotationStore from '../../flux/AnnotationStore';
-import AnnotationUtil from '../../util/AnnotationUtil';
 import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
 
+/**
+ * Wrapper for pages within a single project. It provides a submenu that gives
+ * access to all the subpages (Bookmarks/Sessions/Details)
+ * It also provides the project data to the subviews.
+ */
 class ProjectWrapper extends React.PureComponent {
-
-  constructor(props){
+  /**
+   * Construct this component
+   */
+  constructor(props) {
     super(props);
 
     // unique keys used for storage
-    this.keys={
-      bookmarkCount: "bg__project-bookmarks-count"
-    }
+    this.keys = {
+      bookmarkCount: 'bg__project-bookmarks-count'
+    };
 
-    let bookmarkCount = window.sessionStorage.getItem(this.keys.bookmarkCount) || 0;
+    const bookmarkCount =
+      window.sessionStorage.getItem(this.keys.bookmarkCount) || 0;
 
-    this.state={
+    this.state = {
       loading: true,
       project: null,
       bookmarkCount: bookmarkCount
-    }
+    };
   }
 
-  componentDidMount(){
+  /**
+   * React lifecycle event
+   */
+  componentDidMount() {
     this.loadProject();
   }
 
   /**
    * Load project from url id and load it to the state
    */
-  loadProject(){
-    let projectId = this.props.match.params.id;
+  loadProject() {
+    const projectId = this.props.match.params.id;
 
     // load project data, and set state
-    ProjectAPI.get(this.props.user.id, projectId, (project) => {
+    ProjectAPI.get(this.props.user.id, projectId, project => {
       // inject project name to breadcrumbs
-      let titles = {};
-      titles[project.id]=project.name;
+      const titles = {};
+      titles[project.id] = project.name;
       // update breadcrumbs
       setBreadCrumbsFromMatch(this.props.match, titles);
 
@@ -51,24 +62,28 @@ class ProjectWrapper extends React.PureComponent {
       });
 
       this.loadBookmarkCount(project);
-    })
+    });
   }
 
   /**
    * Load bookmark count from annotation store
+   *
+   * @param {object} project Project to load bookmark count for
    */
-   loadBookmarkCount(project){
-      AnnotationStore.getUserProjectAnnotations(
-        this.props.user,
-        project,
-        this.setBookmarkCount.bind(this)
-      )
-    }
+  loadBookmarkCount(project) {
+    AnnotationStore.getUserProjectAnnotations(
+      this.props.user,
+      project,
+      this.setBookmarkCount.bind(this)
+    );
+  }
 
   /**
    * Set bookmark count to state
+   *
+   * @param {object} data Annotation data
    */
-  setBookmarkCount(data){
+  setBookmarkCount(data) {
     const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
       data.annotations || []
     );
@@ -78,45 +93,77 @@ class ProjectWrapper extends React.PureComponent {
 
     this.setState({
       bookmarkCount
-    })
+    });
   }
 
-  render(){
-    let RenderComponent = this.props.renderComponent;
-    let project = this.state.project;
+  /**
+   * React render function
+   *
+   * @return {Element}
+   */
+  render() {
+    const RenderComponent = this.props.renderComponent;
+    const project = this.state.project;
     return (
       <div className={IDUtil.cssClassName('project-wrapper')}>
-        {this.state.loading ?
+        {this.state.loading ? (
           <h3 className="loading">Loading...</h3>
-          :
-          project ?
-            <div>
-              <div className="project-header">
-
-                <div className="info-bar">
-                  <h2>{project.name || 'Unnamed project'}</h2>
-                  <p>{project.description}</p>
-                </div>
-
-                <div className="submenu">
-                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/bookmarks"}>Bookmarks & Annotations<span className="count">{this.state.bookmarkCount}</span></NavLink>
-                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/sessions"}>Tool Sessions<span className="count">{project.sessions ? project.sessions.length : 0}</span></NavLink>
-                  <NavLink activeClassName="active" to={"/workspace/projects/"+encodeURIComponent(project.id)+"/details"}>Details</NavLink>
-                </div>
+        ) : project ? (
+          <div>
+            <div className="project-header">
+              <div className="info-bar">
+                <h2>{project.name || 'Unnamed project'}</h2>
+                <p>{project.description}</p>
               </div>
 
-              <div class="component">
-                <RenderComponent {...this.props} project={this.state.project} />
+              <div className="submenu">
+                <NavLink
+                  activeClassName="active"
+                  to={
+                    '/workspace/projects/' +
+                    encodeURIComponent(project.id) +
+                    '/bookmarks'
+                  }
+                >
+                  Bookmarks & Annotations<span className="count">
+                    {this.state.bookmarkCount}
+                  </span>
+                </NavLink>
+                <NavLink
+                  activeClassName="active"
+                  to={
+                    '/workspace/projects/' +
+                    encodeURIComponent(project.id) +
+                    '/sessions'
+                  }
+                >
+                  Tool Sessions<span className="count">
+                    {project.sessions ? project.sessions.length : 0}
+                  </span>
+                </NavLink>
+                <NavLink
+                  activeClassName="active"
+                  to={
+                    '/workspace/projects/' +
+                    encodeURIComponent(project.id) +
+                    '/details'
+                  }
+                >
+                  Details
+                </NavLink>
               </div>
-
             </div>
-          :
-          <h3 className="error">Project could not be found</h3>
-         }
-      </div>
-    )
-  }
 
+            <div class="component">
+              <RenderComponent {...this.props} project={this.state.project} />
+            </div>
+          </div>
+        ) : (
+          <h3 className="error">Project could not be found</h3>
+        )}
+      </div>
+    );
+  }
 }
 
 export default ProjectWrapper;
