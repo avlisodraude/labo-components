@@ -688,7 +688,11 @@ class QueryBuilder extends React.Component {
 				)
 			} else if(this.state.searchId != null) {
 				resultBlock = (
-					<div className="alert alert-danger">No results found</div>
+					<div className="alert alert-danger">
+						No results found for search term <b>{this.refs.searchTerm.value.toUpperCase()}</b>
+						<br />
+						Between <b>{TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start)}</b> and <b>{TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end)}</b>
+						</div>
 				)
 			}
 
