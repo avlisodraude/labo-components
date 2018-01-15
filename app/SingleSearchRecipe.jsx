@@ -24,7 +24,8 @@ class SingleSearchRecipe extends React.Component {
 		this.state = {
 			collectionId : collectionId,
 			pageSize : 20,
-			collectionConfig : null
+			collectionConfig : null,
+			selectedRows : {}
 		};
 	}
 
@@ -53,6 +54,14 @@ class SingleSearchRecipe extends React.Component {
 				},
 				this.onCollectionChange(data)
 			);
+		} else if(componentClass == 'SearchHit') {
+			if(data) {
+				const selectedRows = this.state.selectedRows;
+				selectedRows[data.resourceId] = data.selected;
+				this.setState({
+					selectedRows : selectedRows
+				})
+			}
 		}
 	}
 
@@ -380,7 +389,9 @@ class SingleSearchRecipe extends React.Component {
 							searchTerm={this.state.currentOutput.params.term} //for highlighting the search term
 							dateField={this.state.currentOutput.dateField} //for displaying the right date field in the hits
 							collectionConfig={this.state.collectionConfig}
-							itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}/>
+							itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}
+							isSelected={this.state.selectedRows[result._id]} //is the result selected
+							onOutput={this.onComponentOutput.bind(this)}/>
 					)
 				}, this);
 				resultList = (
