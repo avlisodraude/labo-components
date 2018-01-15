@@ -25,8 +25,10 @@ class SingleSearchRecipe extends React.Component {
 			collectionId : collectionId,
 			pageSize : 20,
 			collectionConfig : null,
-			selectedRows : {}
+			selectedRows : {},
+			allRowsSelected : false
 		};
+		this.CLASS_PREFIX = 'rcp__ss'
 	}
 
 	componentDidMount() {
@@ -308,6 +310,14 @@ class SingleSearchRecipe extends React.Component {
 		}
 	}
 
+	/* ------------------------------------------------------------------------------
+	------------------------------- TABLE ACTION FUNCTIONS --------------------
+	------------------------------------------------------------------------------- */
+
+	selectAllRows() {
+		alert('Fuck you, fuckball');
+	}
+
 	render() {
 		let chooseCollectionBtn = null; // for changing the collection
 		let collectionModal = null; //modal that holds the collection selector
@@ -315,6 +325,7 @@ class SingleSearchRecipe extends React.Component {
 
 		//search results, paging and sorting
 		let resultList = null;
+		let tableActionControls = null;
 		let paging = null;
 		let sortButtons = null;
 
@@ -380,6 +391,24 @@ class SingleSearchRecipe extends React.Component {
 						dateField={this.state.currentOutput.dateField}/>
 				}
 
+				tableActionControls = (
+					<div className={IDUtil.cssClassName('actions', this.CLASS_PREFIX)}>
+						<div className={IDUtil.cssClassName('select', this.CLASS_PREFIX)}
+							onClick={this.selectAllRows.bind(this)}>
+							<input type="checkbox" checked={
+								this.state.allRowsSelected ? 'checked' : ''
+							} id={'cb__select-all'}/>
+							<label for={'cb__select-all'}><span></span></label>
+						</div>
+						<select>
+							<option value="1">Select all results</option>
+							<option value="2">Select entire page</option>
+							<option value="3">Save query (weird option)</option>
+							<option value="4">Clear all</option>
+						</select>
+					</div>
+				)
+
 				//populate the list of search results
 				const items = this.state.currentOutput.results.map((result, index) => {
 					return (
@@ -397,7 +426,7 @@ class SingleSearchRecipe extends React.Component {
 				resultList = (
 					<div className="row">
 						<div className="col-md-12">
-							{paging}&nbsp;{sortButtons}
+							{tableActionControls}&nbsp;{paging}&nbsp;{sortButtons}
 							{items}
 							{paging}
 						</div>
