@@ -359,11 +359,6 @@
 
 
 /* ==================== Statistics package ============================================ */
-
-.bg__histogram { /* Histogram.jsx */
-	margin:20px 0px 0px 0px;
-}
-
 .bg__query-line-chart { /* QueryComparisonLineChart.jsx */
 	.axis path,	.axis line { /* overridden d3 class */
 		fill: none;
@@ -508,5 +503,18 @@
 	&.btn-effect:hover {
 		background-color: #ddd;
 		cursor: pointer;
+	}
+}
+
+.cl_switchBtnCharts {
+	float: right;
+	position: relative;
+	right: .3rem;
+	top: .3rem;
+	z-index: 10;
+}
+.recharts-default-legend {
+	li {
+		padding-top: 2rem;
 	}
 }
