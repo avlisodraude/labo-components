@@ -13,7 +13,7 @@ import AggregationBox from './AggregationBox';
 import AggregationList from './AggregationList';
 import Histogram from '../stats/Histogram';
 import CollectionConfig from '../../collection/mappings/CollectionConfig';
-
+import QuerySingleLineChart from '../stats/QuerySingleLineChart';
 import ReactTooltip from 'react-tooltip';
 /*
 Notes about this component:
@@ -68,7 +68,8 @@ class QueryBuilder extends React.Component {
 			selectedSortParams : this.getInitialSortParams(this.props.collectionConfig),
 			currentPage : -1,
             currentCollectionHits: this.getCollectionHits(this.props.collectionConfig),
-            isSearching : false
+            isSearching : false,
+			graphType : null
         }
         this.CLASS_PREFIX = 'qb';
 	}
@@ -169,6 +170,13 @@ class QueryBuilder extends React.Component {
 		}
 		return collectionHits;
 	}
+
+    switchGraphType(typeOfGraph) {
+        this.setState({
+                graphType : typeOfGraph
+            }
+        )
+    }
 
 	/*---------------------------------- SEARCH --------------------------------------*/
 
@@ -490,7 +498,7 @@ class QueryBuilder extends React.Component {
 			if(this.state.totalHits > 0) {
 				let resultStats = null;
 				let dateStats = null;
-				let histogram = null;
+				let graph = null;
 				let aggrView = null; //either a box or list (TODO the list might not work properly anymore!)
 				let aggregationBox = null;
 				let dateRangeSelector = null;
@@ -539,23 +547,42 @@ class QueryBuilder extends React.Component {
 						)
 					}
 
-					// Display the histogram only if an option other than the default is selected
+					// Display the graph only if an option other than the default is selected
 					// and the length of the data is greater than 0.
 					if(this.state.selectedDateRange) {
 						if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
 							this.state.aggregations[this.state.selectedDateRange.field].length !== 0) {
-							histogram = (
-								<Histogram
-									queryId={this.props.queryId}
-									dateRange={this.state.selectedDateRange}
-									data={this.state.aggregations[this.state.selectedDateRange.field]}
-									title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
-									searchId={this.state.searchId}/>
-							)
+                            // Display graph based on its type. Defaults to bar chart.
+                            if (this.state.graphType === 'lineChart') {
+                                graph = (
+                                    <div className="cl_graphWrapper">
+                                        <button onClick={this.switchGraphType.bind(this, 'histogram')} type="button" className="cl_switchBtnCharts btn btn-primary btn-xs">Histogram
+                                        </button>
+
+                                            <QuerySingleLineChart
+                                                data={this.state.aggregations[this.state.selectedDateRange.field]}
+                                                comparisonId={this.state.searchId}/>
+
+                                    </div>
+                                );
+                            } else {
+                                graph = (
+                                    <div className="cl_graphWrapper">
+                                        <button onClick={this.switchGraphType.bind(this, 'lineChart')} type="button" className="cl_switchBtnCharts btn btn-primary btn-xs">Line
+                                            Chart
+                                        </button>
+                                        <Histogram
+                                            queryId={this.props.queryId}
+                                            dateRange={this.state.selectedDateRange}
+                                            data={this.state.aggregations[this.state.selectedDateRange.field]}
+                                            title={this.props.collectionConfig.toPrettyFieldName(this.state.selectedDateRange.field)}
+                                            searchId={this.state.searchId}/>
+                                    </div>
+                                );
+                            }
 						} else if (this.state.aggregations[this.state.selectedDateRange.field] !== undefined &&
 						    this.state.aggregations[this.state.selectedDateRange.field].length === 0) {
-
-						    histogram = (
+						    graph = (
 								 <div>
 									 <br/>
 									 <div className="alert alert-danger">No data found for this Date Type Field</div>
@@ -674,7 +701,7 @@ class QueryBuilder extends React.Component {
 						<div className="row">
 							<div className="col-md-12">
 								{dateRangeSelector}
-								{histogram}
+								{graph}
 							</div>
 						</div>
 						<div className="separator"></div>
