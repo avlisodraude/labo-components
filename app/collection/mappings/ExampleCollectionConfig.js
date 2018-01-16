@@ -47,7 +47,8 @@ class ExampleCollectionConfig extends CollectionConfig {
 		formattedResult.title = result.title; //OVERRIDE IF NEEDED
 		formattedResult.description = result.description; //OVERRIDE IF NEEDED
 		formattedResult.date = result.date; //OVERRIDE IF NEEDED
-		formattedResult.sourceURL = null; //IS THERE A LINK POINTING TO THE ORIGINAL SOURCE CATALOGUE?
+		//IS THERE A LINK POINTING TO THE ORIGINAL SOURCE CATALOGUE? {url : '', message : ''}
+		formattedResult.externalSourceInfo = null;
 		formattedResult.specialProperties = [] //ARE THERE PROPERTIES THAT SHOULD BE PUT FORWARD ON THE DETAIL PAGE?
 
 
