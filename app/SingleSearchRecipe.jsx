@@ -408,6 +408,7 @@ class SingleSearchRecipe extends React.Component {
 						</select>
 					</div>
 				)
+				tableActionControls = null;
 
 				//populate the list of search results
 				const items = this.state.currentOutput.results.map((result, index) => {

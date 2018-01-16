@@ -75,7 +75,7 @@ class SearchHit extends React.Component {
 		}
 
 		//draw the checkbox using the props.isSelected to determine whether it is selected or not
-		const checkBox = (
+		let checkBox = (
 			<div className={IDUtil.cssClassName('select', this.CLASS_PREFIX)} onClick={this.select.bind(this)}>
 				<input type="checkbox" checked={
 					this.props.isSelected ? 'checked' : ''
@@ -83,6 +83,7 @@ class SearchHit extends React.Component {
 				<label for={'cb__' + modalID}><span></span></label>
 			</div>
 		)
+		checkBox = null;
 
 		const classNames = [IDUtil.cssClassName('search-hit')];
 		if(snippet.type == 'media_fragment') {
