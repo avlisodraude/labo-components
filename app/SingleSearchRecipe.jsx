@@ -1,15 +1,21 @@
 import CollectionSelector from './components/collection/CollectionSelector';
+import ProjectSelector from './components/projects/ProjectSelector';
+
 import QueryBuilder from './components/search/QueryBuilder';
 import SearchHit from './components/search/SearchHit';
 import Paging from './components/search/Paging';
 import Sorting from './components/search/Sorting';
+
 import FlexBox from './components/FlexBox';
 import FlexModal from './components/FlexModal';
 import FlexRouter from './util/FlexRouter';
+
 import IDUtil from './util/IDUtil';
 import ElasticsearchDataUtil from './util/ElasticsearchDataUtil';
 import CollectionUtil from './util/CollectionUtil';
 import ComponentUtil from './util/ComponentUtil';
+import AnnotationUtil from './util/AnnotationUtil';
+
 import SearchAPI from './api/SearchAPI';
 
 class SingleSearchRecipe extends React.Component {
@@ -22,6 +28,10 @@ class SingleSearchRecipe extends React.Component {
 			collectionId = this.props.recipe.ingredients.collection;
 		}
 		this.state = {
+			showModal : false, //for the collection selector
+			showProjectModal : false, //for the project selector
+			activeProject : ComponentUtil.getJSONFromLocalStorage('activeProject'),
+			awaitingProcess : null, //which process is awaiting the output of the project selector
 			collectionId : collectionId,
 			pageSize : 20,
 			collectionConfig : null,
@@ -59,11 +69,23 @@ class SingleSearchRecipe extends React.Component {
 		} else if(componentClass == 'SearchHit') {
 			if(data) {
 				const selectedRows = this.state.selectedRows;
-				selectedRows[data.resourceId] = data.selected;
+				if(data.selected) {
+					selectedRows[data.resourceId] = true;
+				} else {
+					delete selectedRows[data.resourceId]
+				}
 				this.setState({
-					selectedRows : selectedRows
+					selectedRows : selectedRows,
+					allRowsSelected : data.selected ? this.state.allRowsSelected : false
 				})
 			}
+		} else if(componentClass == 'ProjectSelector') {
+			this.setState(
+				{activeProject : data},
+				() => {
+					this.onProjectChanged.call(this, data)
+				}
+			);
 		}
 	}
 
@@ -74,7 +96,9 @@ class SingleSearchRecipe extends React.Component {
 
 	onSearched(data) {
 		this.setState({
-			currentOutput: data
+			currentOutput: data,
+			allRowsSelected : false,
+			selectedRows : {}
 		});
 		if(data && data.params && data.updateUrl) {
 			this.setBrowserHistory(
@@ -314,13 +338,89 @@ class SingleSearchRecipe extends React.Component {
 	------------------------------- TABLE ACTION FUNCTIONS --------------------
 	------------------------------------------------------------------------------- */
 
-	selectAllRows() {
-		alert('Fuck you, fuckball');
+	toggleRows() {
+		let rows = this.state.selectedRows;
+		if(this.state.allRowsSelected) {
+			rows = {};
+		} else {
+			this.state.currentOutput.results.forEach((result) => {
+				rows[result._id] = !this.state.allRowsSelected;
+			});
+		}
+		this.setState({
+			allRowsSelected : !this.state.allRowsSelected,
+			selectedRows : rows
+		});
+	}
+
+	onProjectChanged(project) {
+		ComponentUtil.storeJSONInLocalStorage('activeProject', project)
+		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true, () => {
+			if(this.state.awaitingProcess) {
+				switch(this.state.awaitingProcess) {
+					case 'bookmark' : this.bookmarkToProject(); break;
+					case 'saveQuery' : this.saveQueryToProject(); break;
+				}
+			}
+		});
+	}
+
+	//this will first check if a project was selected. Then either bookmarks or opens the project selector first
+	bookmark() {
+		if(this.state.activeProject == null) {
+			this.setState({
+				showProjectModal : true,
+				awaitingProcess : 'bookmark'
+			});
+		} else {
+			this.bookmarkToProject();
+		}
+	}
+
+	//this will actually save the selection to the workspace API
+	bookmarkToProject() {
+		const bookmarks = this.state.currentOutput.results
+			.filter((result) => this.state.selectedRows[result._id]) //only create a bookmark for the selections
+			.map((result) => {
+				return {
+					user : this.props.user,
+					project : this.state.activeProject.id,
+					collectionId : this.state.collectionConfig.collectionId,
+					resourceId : result._id
+				}
+			}, this);
+		console.debug('THESE BOOKMARKS WILL BE SAVED', bookmarks);
+		alert('TODO: Save bookmarks to the workspace API')
+		//TODO implement saving the bookmarks in the workspace API
+
+		this.setState({
+			awaitingProcess : false
+		});
+	}
+
+	saveQuery() {
+		if(this.state.activeProject == null) {
+			this.setState({
+				showProjectModal : true,
+				awaitingProcess : 'saveQuery'
+			});
+		} else {
+			this.saveQueryToProject();
+		}
+	}
+
+	saveQueryToProject() {
+		alert('TODO: Save query to the workspace API');
+		this.setState({
+			awaitingProcess : false
+		});
 	}
 
 	render() {
 		let chooseCollectionBtn = null; // for changing the collection
+		let chooseProjectBtn = null; // for changing the active project
 		let collectionModal = null; //modal that holds the collection selector
+		let projectModal = null;
 		let searchComponent = null; //single search, comparative search or combined search
 
 		//search results, paging and sorting
@@ -328,12 +428,17 @@ class SingleSearchRecipe extends React.Component {
 		let tableActionControls = null;
 		let paging = null;
 		let sortButtons = null;
+		let actionButtons = null;
 
 		if(this.props.recipe.ingredients.collectionSelector) {
 			//show the button to open the modal
 			chooseCollectionBtn = (
 				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
-					Select collection
+					Set collection ({
+						this.state.collectionConfig ?
+							this.state.collectionConfig.collectionInfo.title || null :
+							'none selected'
+					})
 				</button>
 			)
 
@@ -345,7 +450,7 @@ class SingleSearchRecipe extends React.Component {
 						stateVariable="showModal"
 						owner={this}
 						size="large"
-						title="Select a collection">
+						title="Choose a collection">
 							<CollectionSelector
 								onOutput={this.onComponentOutput.bind(this)}
 								showSelect={true}
@@ -353,6 +458,26 @@ class SingleSearchRecipe extends React.Component {
 					</FlexModal>
 				)
 			}
+		}
+
+		chooseProjectBtn = (
+			<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showProjectModal')}>
+				Set project ({this.state.activeProject ? this.state.activeProject.name : 'none selected'})
+			</button>
+		)
+
+		//project modal
+		if(this.state.showProjectModal) {
+			projectModal = (
+				<FlexModal
+					elementId="project__modal"
+					stateVariable="showProjectModal"
+					owner={this}
+					size="large"
+					title="Set the active project">
+						<ProjectSelector onOutput={this.onComponentOutput.bind(this)} user={this.props.user}/>
+				</FlexModal>
+			)
 		}
 
 		//only draw when a collection config is properly loaded
@@ -392,23 +517,50 @@ class SingleSearchRecipe extends React.Component {
 				}
 
 				tableActionControls = (
-					<div className={IDUtil.cssClassName('actions', this.CLASS_PREFIX)}>
-						<div className={IDUtil.cssClassName('select', this.CLASS_PREFIX)}
-							onClick={this.selectAllRows.bind(this)}>
-							<input type="checkbox" checked={
-								this.state.allRowsSelected ? 'checked' : ''
-							} id={'cb__select-all'}/>
-							<label for={'cb__select-all'}><span></span></label>
-						</div>
-						<select>
-							<option value="1">Select all results</option>
-							<option value="2">Select entire page</option>
-							<option value="3">Save query (weird option)</option>
-							<option value="4">Clear all</option>
-						</select>
+					<div className={IDUtil.cssClassName('select', this.CLASS_PREFIX)}
+						onClick={this.toggleRows.bind(this)}>
+						<input type="checkbox" checked={
+							this.state.allRowsSelected ? 'checked' : ''
+						} id={'cb__select-all'}/>
+						<label for={'cb__select-all'}><span></span></label>
 					</div>
 				)
-				tableActionControls = null;
+
+				//draw the action buttons
+				const actions = [];
+
+				//always add the save query button
+				actions.push(
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={this.saveQuery.bind(this)}
+						title="Save current query to project"
+						>
+						&nbsp;
+						<i className="fa fa-save" style={{color: 'white'}}></i>
+						&nbsp;
+					</button>
+				);
+				if(Object.keys(this.state.selectedRows).length > 0) {
+					actions.push(
+						<button
+							type="button"
+							className="btn btn-primary"
+							onClick={this.bookmark.bind(this)}
+							title="Bookmark selection to project"
+							>
+							&nbsp;
+							<i className="fa fa-star" style={{color: 'white'}}></i>
+							&nbsp;
+						</button>
+					);
+				}
+				actionButtons = (
+					<div className={IDUtil.cssClassName('table-actions', this.CLASS_PREFIX)}>
+						{actions}
+					</div>
+				)
 
 				//populate the list of search results
 				const items = this.state.currentOutput.results.map((result, index) => {
@@ -427,9 +579,20 @@ class SingleSearchRecipe extends React.Component {
 				resultList = (
 					<div className="row">
 						<div className="col-md-12">
-							{tableActionControls}&nbsp;{paging}&nbsp;{sortButtons}
+							<div className={IDUtil.cssClassName('table-actions-header', this.CLASS_PREFIX)}>
+								{tableActionControls}
+								{actionButtons}
+								<div style={{textAlign : 'center'}}>
+									{paging}
+									<div style={{float: 'right'}}>
+										{sortButtons}
+									</div>
+								</div>
+							</div>
 							{items}
-							{paging}
+							<div className={IDUtil.cssClassName('table-actions-footer', this.CLASS_PREFIX)}>
+								{paging}
+							</div>
 						</div>
 					</div>
 				)
@@ -440,8 +603,9 @@ class SingleSearchRecipe extends React.Component {
 			<div className={IDUtil.cssClassName('single-search-recipe')}>
 				<div className="row">
 					<div className="col-md-12">
-						{chooseCollectionBtn}
+						{chooseCollectionBtn}&nbsp;{chooseProjectBtn}
 						{collectionModal}
+						{projectModal}
 						{searchComponent}
 					</div>
 				</div>

@@ -464,8 +464,24 @@
 .bg__single-search-recipe {
 	.bg__rcp__ss__select {
 		@include checkbox();
+		margin-top: 6px;
 	}
-
+	.bg__rcp__ss__table-actions-header {
+		min-width: 800px;
+		margin: 5px;
+		padding: 10px;
+		background-color: #2d343a;
+		.bg__rcp__ss__table-actions {
+			float:left;
+			.btn {
+				margin-right:2px;
+			}
+		}
+	}
+	.bg__rcp__ss__table-actions-footer {
+		text-align: center;
+		padding: 10px;
+	}
 } /* SingleSearchRecipe.jsx */
 
 .input-group-addon {

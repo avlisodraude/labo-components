@@ -83,7 +83,6 @@ class SearchHit extends React.Component {
 				<label for={'cb__' + modalID}><span></span></label>
 			</div>
 		)
-		checkBox = null;
 
 		const classNames = [IDUtil.cssClassName('search-hit')];
 		if(snippet.type == 'media_fragment') {
