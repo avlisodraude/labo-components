@@ -44,12 +44,20 @@ class MetadataTable extends React.Component {
 			</tr>);
 		}
 
-		//get the source URL if any
-		if(this.props.data.sourceURL) {
-			source = (<tr className={IDUtil.cssClassName('source', this.CLASS_PREFIX)}>
-				<td><label>Source</label></td>
-				<td><a href={this.props.data.sourceURL} target="_source">View in catalogue</a></td>
-			</tr>)
+		//get the external source information if any
+		if(this.props.data.externalSourceInfo) {
+			let externalSourceInfo = null;
+			if(this.props.data.externalSourceInfo.url) {
+				externalSourceInfo = (<a href={this.props.data.externalSourceInfo.url} target="_source">View in catalogue</a>)
+			} else if(this.props.data.externalSourceInfo.message) {
+				externalSourceInfo = (<span>{this.props.data.externalSourceInfo.message}</span>)
+			}
+			if(externalSourceInfo) {
+				source = (<tr className={IDUtil.cssClassName('source', this.CLASS_PREFIX)}>
+					<td><label>Source</label></td>
+					<td>{externalSourceInfo}</td>
+				</tr>)
+			}
 		}
 
 		//determine the component's main css classes

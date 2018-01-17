@@ -11,7 +11,6 @@ import ItemDetailsRecipe from './ItemDetailsRecipe';
 import WorkspaceProjectsRecipe from './WorkspaceProjectsRecipe';
 
 //other
-import UserSpaceRecipe from './UserSpaceRecipe';
 import ExampleRecipe from './ExampleRecipe';
 
 import '../sass/labo-components.scss';
@@ -21,35 +20,61 @@ import '../sass/labo-components.scss';
 //cooking function
 //TODO the user variable is now filled with the INSTANCE_NAME from settings.py
 //	Instead the user object (with id, name & attributes) will be passed and should be properly handled
-export function cookRecipe (recipe, params, user, elementId) {
+export function cookRecipe (recipe, params, user, elementId, collectionMapping) {
 	let component = null;
 
 	switch(recipe.type){
 		// tools
 		case 'item-details':
-			component = <ItemDetailsRecipe recipe={recipe} params={params} user={user}/>;
+			component = <ItemDetailsRecipe
+				recipe={recipe}
+				params={params}
+				user={user}
+				collectionMapping={collectionMapping}
+			/>;
 		break;
 		case 'single-search':
-			component = <SingleSearchRecipe recipe={recipe} params={params} user={user}/>;
+			component = <SingleSearchRecipe
+				recipe={recipe}
+				params={params}
+				user={user}
+				collectionMapping={collectionMapping}
+			/>;
 		break;
 		case 'comparative-search':
-			component = <ComparativeSearchRecipe recipe={recipe} params={params} user={user}/>;
+			component = <ComparativeSearchRecipe
+				recipe={recipe}
+				params={params}
+				user={user}
+				collectionMapping={collectionMapping}
+			/>;
 		break;
 	 	case 'collection-analysis':
-			component = <CollectionRecipe recipe={recipe} params={params} user={user}/>;
+			component = <CollectionRecipe
+				recipe={recipe}
+				params={params}
+				user={user}
+				collectionMapping={collectionMapping}
+			/>;
 		break;
 
 		// workspace
 		case 'workspace-projects':
-			component = <WorkspaceProjectsRecipe recipe={recipe} params={params} user={user}/>;
+			component = <WorkspaceProjectsRecipe
+				recipe={recipe}
+				params={params}
+				user={user}
+				collectionMapping={collectionMapping}
+			/>;
 		break;
-		
-		// other
-		case 'user-space':
-			component = <UserSpaceRecipe recipe={recipe} params={params} user={user}/>;
-		break;
+
 		case 'example':
-			component = <ExampleRecipe recipe={recipe} params={params} user={user}/>;
+			component = <ExampleRecipe
+				recipe={recipe}
+				params={params}
+				user={user}
+				collectionMapping={collectionMapping}
+			/>;
 		break;
 		default:
 			console.log(recipe);
