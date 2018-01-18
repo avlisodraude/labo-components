@@ -123,6 +123,8 @@ class AnnotationView extends React.PureComponent {
           return a;
         });
 
+        console.debug(annotations);
+
         // update state with populated annotations
         this.setState({
           annotations: annotations,

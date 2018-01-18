@@ -259,10 +259,13 @@ class CollectionConfig {
 		if(formattedResult.date == null) {
 			if(currentDateField && result[currentDateField]) {
 				formattedResult.date = result[currentDateField];//TODO nested fields can't be found in this way!! fix this
+				formattedResult.dateField = currentDateField;
 			} else if(this.dateFields != null && this.dateFields.length > 0) {
 				formattedResult.date = result[this.dateFields[0]];
+				formattedResult.dateField = this.dateFields[0];
 			} else {
-				formattedResult.date = '<No date available>'
+				formattedResult.date = '<No date available>';
+				formattedResult.dateField = '<None available>'
 			}
 		}
 

@@ -8,48 +8,57 @@ const AnnotationUtil = {
 	*************************************************************************************/
 
 	//extracts all contained targets/resources into a list for the bookmark-centric view
+	//TODO update this so it loops through multiple targets: each target is a bookmark!
 	nestedAnnotationListToResourceList(annotations, callback) {
-		const resourceList = annotations.map((na, index) => {
-			const resourceInfo = AnnotationUtil.getStructuralElementFromSelector(na.target.selector, 'Resource')
-			const collectionInfo = AnnotationUtil.getStructuralElementFromSelector(na.target.selector, 'Collection')
-			//console.debug(resourceInfo, collectionInfo)
-			return {
-				// unique bookmark id, used for referencing
-				id: na.id,
+		let resourceList = [];
 
-				// general object (document,fragment,entity) data
-				object: {
-
-					// unique object id
-					id: resourceInfo ? resourceInfo.id : null,
-
-					// object type: "Video", Video-Fragment", "Image", "Audio", "Entity", ...
-					type: na.target.type,
-
-					// short object title
-					title: na.id,
-
-					// (Creation) date of the object (nice to have)
-					date: "NEED TO FETCH (DEPENDS ON RESOURCE)",
-
-					// dataset the object originates from
-					dataset: collectionInfo ? collectionInfo.id : null,
-
-					// placeholder image if available
-					placeholderImage: "http://localhost:5304/static/images/placeholder.2b77091b.svg"
-
-				},
-
-				// Bookmark created
-				created: na.created,
-
-				// sort position
-				sort: index,
-
-				// optional list of annotations here
-				// (could also be requested in separate calls)
-				annotations: na.body,
+		annotations.forEach((na, index) => {
+			let targets = na.target;
+			if(na.target.selector) {
+				targets = [na.target]; //there is only a single target
 			}
+			resourceList = resourceList.concat(targets.map((t) => {
+				const resourceInfo = AnnotationUtil.getStructuralElementFromSelector(t.selector, 'Resource')
+				const collectionInfo = AnnotationUtil.getStructuralElementFromSelector(t.selector, 'Collection')
+				//console.debug(resourceInfo, collectionInfo)
+				return {
+					// unique bookmark id, used for referencing
+					id: na.id,
+
+					// general object (document,fragment,entity) data
+					object: {
+
+						// unique object id
+						id: resourceInfo ? resourceInfo.id : null,
+
+						// object type: "Video", Video-Fragment", "Image", "Audio", "Entity", ...
+						type: t.type,
+
+						// short object title
+						title: na.id,
+
+						// (Creation) date of the object (nice to have)
+						date: "NEED TO FETCH (DEPENDS ON RESOURCE)",
+
+						// dataset the object originates from
+						dataset: collectionInfo ? collectionInfo.id : null,
+
+						// placeholder image if available
+						placeholderImage: "http://localhost:5304/static/images/placeholder.2b77091b.svg"
+
+					},
+
+					// Bookmark created
+					created: na.created,
+
+					// sort position
+					sort: index,
+
+					// optional list of annotations here
+					// (could also be requested in separate calls)
+					annotations: na.body,
+				}
+			}))
 		});
 		if(callback && resourceList.length > 0) {
 			return AnnotationUtil.reconsileResourceList(resourceList, callback)
@@ -217,6 +226,41 @@ const AnnotationUtil = {
 			return url.substring(0, url.indexOf('?'));
 		}
 		return url
+	},
+
+	//currently only used for bookmarking lots of resources
+	generateEmptyW3CMultiTargetAnnotation : function(user, project, collectionId, resourceIds, motivation='bookmarking') {
+		let annotation = {
+			id : null,
+			user : user.id,
+			project : project ? project.id : null, //no suitable field found in W3C so far
+			motivation : motivation,
+			target : resourceIds.map((rid) => AnnotationUtil.generateSimpleResourceTarget(rid, collectionId)),
+			body : null
+		}
+		return annotation
+	},
+
+	generateSimpleResourceTarget(resourceId, collectionId) {
+		return {
+			type : 'Resource',
+			source : resourceId,
+			selector : {
+				type: 'NestedPIDSelector',
+				value: [
+					{
+						id: collectionId,
+						type: ['Collection'],
+						property: 'isPartOf'
+					},
+					{
+						id: resourceId,
+						type: ['Resource'],
+						property: 'isPartOf'
+					}
+				]
+			}
+		}
 	},
 
 	//called from components that want to create a new annotation with a proper target
