@@ -1,6 +1,7 @@
 import AnnotationAPI from '../../api/AnnotationAPI';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
+import BookmarkUtil from '../../util/BookmarkUtil';
 import BookmarkRow from './BookmarkRow';
 import BookmarkTable from './BookmarkTable';
 import ComponentUtil from '../../util/ComponentUtil';
@@ -226,13 +227,6 @@ class BookmarkView extends React.PureComponent {
     return sorted;
   }
 
-  getAnnotationTargets(bookmark) {
-    const targets = this.state.bookmarks.filter(
-      b => b.annotationId == bookmark.annotationId
-    );
-    return targets
-  }
-
   /**
    * Delete bookmark
    *
@@ -244,48 +238,14 @@ class BookmarkView extends React.PureComponent {
       return;
     }
 
-    const targets = this.getAnnotationTargets(bookmark);
-
-    //if there is only one target it means the selected bookmark was the last target of the parent annotation
-    if(targets.length == 1) {
-      //set the id to the annotationId so the API knows which actual annotation needs to be deleted
-      bookmark.id = bookmark.annotationId;
-
-      //delete the bookmark
-      AnnotationAPI.deleteAnnotation(bookmark, data => {
-        if (data && data.status) {
-          if (data.status == 'success') {
-            this.loadBookmarks();
-          } else {
-            alert(
-              data.message
-                ? data.message
-                : 'An unknown error has occured while deleting the bookmark'
-            );
-          }
-        } else {
-          alert('An error has occured while deleting the bookmark.');
+    BookmarkUtil.deleteBookmarks(
+        this.state.annotations,
+        this.state.bookmarks,
+        [bookmark],
+        (success) => {
+          this.loadBookmarks()
         }
-      });
-    } else {
-      const annotation = this.state.annotations.filter(a => a.id == bookmark.annotationId)[0];
-      annotation.target = annotation.target.filter(t => t.source != bookmark.targetId);
-      AnnotationAPI.saveAnnotation(annotation, data => {
-        if (data && data.status) {
-          if (data.status == 'success') {
-            this.loadBookmarks();
-          } else {
-            alert(
-              data.message
-                ? data.message
-                : 'An unknown error has occured while deleting the bookmark'
-            );
-          }
-        } else {
-          alert('An error has occured while deleting the bookmark.');
-        }
-      });
-    }
+      )
   }
 
   /**
@@ -299,36 +259,17 @@ class BookmarkView extends React.PureComponent {
       return;
     }
 
-    const data = this.state.bookmarks.filter(item =>
-      selection.includes(item.id)
-    );
-
-    // counts number of hits
-    let hits = data.length;
-
-    // delete the bookmark
-    data.forEach(item => {
-      AnnotationAPI.deleteAnnotation(item, data => {
-        hits--;
-
-        // only on last callback, check the status and reload the data
-        if (hits == 0) {
-          if (data && data.status) {
-            if (data.status == 'success') {
-              this.loadBookmarks();
-            } else {
-              alert(
-                data.message
-                  ? data.message
-                  : 'An unknown error has occured while deleting the bookmark'
-              );
-            }
-          } else {
-            alert('An error has occured while deleting the bookmark.');
-          }
-        }
-      });
-    });
+    // delete each bookmark
+    BookmarkUtil.deleteBookmarks(
+      this.state.annotations,
+      this.state.bookmarks,
+      this.state.bookmarks.filter(item =>
+        selection.includes(item.id)
+      ),
+      (success) => {
+        this.loadBookmarks()
+      }
+    )
   }
 
   /**

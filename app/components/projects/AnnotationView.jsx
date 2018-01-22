@@ -258,6 +258,8 @@ class AnnotationView extends React.PureComponent {
    *
    * @param {array} annotations Annotations to be removed
    */
+
+   //FIXME this never throws away the parent annotation!
   deleteAnnotationsAction(annotations) {
     // get the unique bookmarks, as we are deleting per-bookmark
     const uniqueBookmarks = Array.from(
@@ -274,7 +276,9 @@ class AnnotationView extends React.PureComponent {
       // 2B. and remove the link to the bookmarkAnnotation and bookmarks from the annotations
       //     to prevent circular structure
       // (Todo: check if not unnecessary fields are saved accidently)
-      bookmark.body = bookmark.body
+      console.debug(bookmark)
+      if(bookmark.body) {
+        bookmark.body = bookmark.body
         .filter(a => !annotations.includes(a))
         .map(a => {
           const b = Object.assign({}, a);
@@ -282,6 +286,7 @@ class AnnotationView extends React.PureComponent {
           delete b.bookmarks;
           return b;
         });
+      }
 
       // Finally. save
       AnnotationAPI.saveAnnotation(bookmark, data => {
