@@ -462,7 +462,7 @@ class BookmarkView extends React.PureComponent {
 
         {this.state.detailBookmark ? (
           <ItemDetailsModal
-            object={this.state.detailBookmark.object}
+            bookmark={this.state.detailBookmark}
             onClose={this.closeItemDetails}
           />
         ) : null}

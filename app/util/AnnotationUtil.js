@@ -54,9 +54,10 @@ const AnnotationUtil = {
 					// sort position
 					sort: index,
 
-					// optional list of annotations here
-					// (could also be requested in separate calls)
-					annotations: na.body,
+					// optional list of annotations here (leaves out bookmarks)
+					annotations: na.body ? na.body.filter(a => {
+						return a.vocabulary != 'clariahwp5-bookmark-group'
+					}) : null,
 				}
 			}))
 		});
@@ -160,7 +161,7 @@ const AnnotationUtil = {
 					resourceId : resourceInfo ? resourceInfo.id : null,
 					collectionId : collectionInfo ? collectionInfo.id : null,
 					type : t.type,
-					title : an.id
+					title : resourceInfo ? resourceInfo.id : null
 				}
 			})
 

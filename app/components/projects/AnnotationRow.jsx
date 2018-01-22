@@ -221,7 +221,7 @@ class AnnotationRow extends React.PureComponent {
                 <thead>
                   <tr>
                     <th>Type</th>
-                    <th>Title</th>
+                    <th>Resource ID</th>
                     <th>Dataset</th>
                   </tr>
                 </thead>
