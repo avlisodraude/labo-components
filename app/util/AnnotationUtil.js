@@ -1,5 +1,6 @@
 import SearchAPI from '../api/SearchAPI';
 import CollectionUtil from '../util/CollectionUtil';
+import IDUtil from '../util/IDUtil';
 
 const AnnotationUtil = {
 
@@ -22,8 +23,11 @@ const AnnotationUtil = {
 				const collectionInfo = AnnotationUtil.getStructuralElementFromSelector(t.selector, 'Collection')
 				//console.debug(resourceInfo, collectionInfo)
 				return {
-					// unique bookmark id, used for referencing
-					id: na.id,
+					id : IDUtil.guid(), // unique bookmark id, used for referencing
+
+					annotationId: na.id, //needed for deleting
+
+					targetId: t.source, //needed for deleting
 
 					// general object (document,fragment,entity) data
 					object: {
@@ -104,7 +108,6 @@ const AnnotationUtil = {
 					//reconsile and callback the "client"
 					const configClass = CollectionUtil.getCollectionClass(collectionId, true);
 					const collectionConfig = new configClass(collectionId);
-					console.debug(resourceData);
 					const mappedResourceData = resourceData.map((doc) => {
 						return doc.found ? collectionConfig.getItemDetailData(doc) : null;
 					})

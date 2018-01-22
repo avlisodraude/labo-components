@@ -655,7 +655,7 @@ class ItemDetailsRecipe extends React.Component {
 					</button>
 				)
 
-				//bookmark button
+				//bookmark button (TODO query for determining existing bookmark should be updated!!!)
 				bookmarkBtn = (
 					<button className="btn btn-primary" onClick={this.bookmark.bind(this)}>
 						Bookmark

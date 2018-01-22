@@ -48,6 +48,7 @@ class BookmarkView extends React.PureComponent {
     ];
 
     this.state = {
+      annotations : null,
       bookmarks: [],
       selection: [],
       loading: true,
@@ -110,10 +111,15 @@ class BookmarkView extends React.PureComponent {
    * @param  {Object} data Response object with annotation list
    */
   onLoadBookmarks(data) {
-    AnnotationUtil.nestedAnnotationListToResourceList(
-      data.annotations || [],
-      this.onLoadResourceList.bind(this)
-    );
+    this.setState({
+      annotations : data.annotations || null
+    }, () => {
+      AnnotationUtil.nestedAnnotationListToResourceList(
+        data.annotations || [],
+        this.onLoadResourceList.bind(this)
+      );
+    })
+
   }
 
   /**
@@ -220,6 +226,13 @@ class BookmarkView extends React.PureComponent {
     return sorted;
   }
 
+  getAnnotationTargets(bookmark) {
+    const targets = this.state.bookmarks.filter(
+      b => b.annotationId == bookmark.annotationId
+    );
+    return targets
+  }
+
   /**
    * Delete bookmark
    *
@@ -231,22 +244,48 @@ class BookmarkView extends React.PureComponent {
       return;
     }
 
-    // delete the bookmark
-    AnnotationAPI.deleteAnnotation(bookmark, data => {
-      if (data && data.status) {
-        if (data.status == 'success') {
-          this.loadBookmarks();
+    const targets = this.getAnnotationTargets(bookmark);
+
+    //if there is only one target it means the selected bookmark was the last target of the parent annotation
+    if(targets.length == 1) {
+      //set the id to the annotationId so the API knows which actual annotation needs to be deleted
+      bookmark.id = bookmark.annotationId;
+
+      //delete the bookmark
+      AnnotationAPI.deleteAnnotation(bookmark, data => {
+        if (data && data.status) {
+          if (data.status == 'success') {
+            this.loadBookmarks();
+          } else {
+            alert(
+              data.message
+                ? data.message
+                : 'An unknown error has occured while deleting the bookmark'
+            );
+          }
         } else {
-          alert(
-            data.message
-              ? data.message
-              : 'An unknown error has occured while deleting the bookmark'
-          );
+          alert('An error has occured while deleting the bookmark.');
         }
-      } else {
-        alert('An error has occured while deleting the bookmark.');
-      }
-    });
+      });
+    } else {
+      const annotation = this.state.annotations.filter(a => a.id == bookmark.annotationId)[0];
+      annotation.target = annotation.target.filter(t => t.source != bookmark.targetId);
+      AnnotationAPI.saveAnnotation(annotation, data => {
+        if (data && data.status) {
+          if (data.status == 'success') {
+            this.loadBookmarks();
+          } else {
+            alert(
+              data.message
+                ? data.message
+                : 'An unknown error has occured while deleting the bookmark'
+            );
+          }
+        } else {
+          alert('An error has occured while deleting the bookmark.');
+        }
+      });
+    }
   }
 
   /**
