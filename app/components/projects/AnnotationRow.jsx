@@ -228,9 +228,9 @@ class AnnotationRow extends React.PureComponent {
                 <tbody>
                   {bookmarks.map(bookmark => (
                     <tr>
-                      <td>{bookmark.object.type}</td>
-                      <td>{bookmark.object.title}</td>
-                      <td>{bookmark.object.dataset}</td>
+                      <td>{bookmark.type}</td>
+                      <td>{bookmark.title}</td>
+                      <td>{bookmark.collectionId}</td>
                       <td className="actions">
                         <div
                           className="btn primary"

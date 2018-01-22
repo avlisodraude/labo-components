@@ -38,7 +38,7 @@ class BookmarkSelector extends React.Component {
 		)
 		annotation.body = [{
 			"annotationType": "classification",
-			"vocabulary": "custom",
+			"vocabulary": "clariahwp5-bookmark-group",
 			"label": this.refs.bookmarkCategory.value,
 			"user": this.props.user.id
 		}]
@@ -58,7 +58,7 @@ class BookmarkSelector extends React.Component {
 			//TODO which part of the body is the name of the bookmark group?
 		 	const options = this.state.bookmarks.map((b, index) => {
 		 		return (<li key={'an__' + index} onClick={this.onOutput.bind(this, b)}>
-		 			{b.body.label}
+		 			{b.body[0].label}
 		 		</li>)
 		 	});
 		 	bookmarkList = (

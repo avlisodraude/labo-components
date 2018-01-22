@@ -8,7 +8,7 @@ const AnnotationUtil = {
 	*************************************************************************************/
 
 	//extracts all contained targets/resources into a list for the bookmark-centric view
-	//TODO update this so it loops through multiple targets: each target is a bookmark!
+	//TODO add the parentAnnotationId, so the UI knows how to do CRUD
 	nestedAnnotationListToResourceList(annotations, callback) {
 		let resourceList = [];
 
@@ -138,6 +138,7 @@ const AnnotationUtil = {
 	},
 
 	//extracts all contained annotations into a list for the annotation-centric view
+	//TODO update this so each body is an item. Use parentAnnotationId to refer to the parent
 	nestedAnnotationListToAnnotationList(annotations) {
 
 		// check for empty: can't reduce an empty array
@@ -146,8 +147,27 @@ const AnnotationUtil = {
 		}
 
 		return annotations.filter(an => an.body).map((an) => {
-			// store bookmark to the annotation for later use
-			an.body.forEach((b)=>{b.bookmarkAnnotation = an});
+
+			//create a list of bookmarks from the parent annotation's targets
+			let targets = an.target;
+			if(an.target.selector) {
+				targets = [an.target]
+			}
+			const bookmarks = targets.map((t) => {
+				const resourceInfo = AnnotationUtil.getStructuralElementFromSelector(t.selector, 'Resource')
+				const collectionInfo = AnnotationUtil.getStructuralElementFromSelector(t.selector, 'Collection')
+				return {
+					resourceId : resourceInfo ? resourceInfo.id : null,
+					collectionId : collectionInfo ? collectionInfo.id : null,
+					type : t.type,
+					title : an.id
+				}
+			})
+
+			//assign the targets as a list of bookmarks to each body/annotation
+			an.body.forEach((b) => {
+				b.bookmarks = bookmarks;
+			});
 			return an.body
 		}).reduce((acc, cur) => {
 			return acc.concat(cur);

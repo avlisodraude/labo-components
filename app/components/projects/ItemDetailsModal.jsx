@@ -15,7 +15,6 @@ class ItemDetailsModal extends React.PureComponent {
    * @return {Element}
    */
   render() {
-    const object = this.props.object;
     return (
       <div className={IDUtil.cssClassName('item-details-modal')}>
         <div className="modal">
@@ -27,18 +26,18 @@ class ItemDetailsModal extends React.PureComponent {
             <iframe
               src={
                 '/tool/default-item-details?id=' +
-                encodeURIComponent(object.id) +
+                encodeURIComponent(this.props.bookmark.resourceId) +
                 '&cid=' +
-                encodeURIComponent(object.dataset) +
+                encodeURIComponent(this.props.bookmark.collectionId) +
                 '&bodyClass=noHeader'
               }
             />
             {/* Note: displaying the ItemDetailsRecipe in an overlay doesn't work smooth (css, dependencies, js errors)
-              so, just show the page in an iframe for now. 
+              so, just show the page in an iframe for now.
               Todo: The creator/manager of ItemDetailsRecipe should be able to fix this. */}
 
-            {/* <ItemDetailsRecipe recipe={yourItemDetailsRecipeData?} 
-                                 user={this.props.user} 
+            {/* <ItemDetailsRecipe recipe={yourItemDetailsRecipeData?}
+                                 user={this.props.user}
                                  params={{id: this.state.viewObject.object.id, cid: this.state.viewObject.object.dataset}} /> */}
           </div>
         </div>
@@ -48,7 +47,10 @@ class ItemDetailsModal extends React.PureComponent {
 }
 
 ItemDetailsModal.propTypes = {
-  object: PropTypes.object.isRequired,
+  bookmark: PropTypes.shape({
+    resourceId: PropTypes.string.isRequired,
+    collectionId: PropTypes.string.isRequired
+  }).isRequired,
   onClose: PropTypes.func.isRequired
 };
 

@@ -98,43 +98,50 @@ class AnnotationView extends React.PureComponent {
    * @param  {Object} data Response object with annotation list
    */
   onLoadAnnotations(data) {
+    const parentAnnotations = data.annotations || [];
+    console.debug('SOURCE', parentAnnotations)
+
     let annotations = AnnotationUtil.nestedAnnotationListToAnnotationList(
-      data.annotations || []
+      parentAnnotations
     );
 
-    // get unique bookmarks from annotations
-    const uniqueBookmarks = Array.from(
-      new Set(annotations.map(a => a.bookmarkAnnotation))
-    );
+
+    this.setState({
+      annotations: annotations,
+      loading: false,
+      filters: this.getFilters(annotations)
+    }, () => {
+      this.updateSelection(annotations)
+    });
 
     // populate the unique bookmarks with object data
-    AnnotationUtil.nestedAnnotationListToResourceList(
-      uniqueBookmarks,
-      bookmarks => {
-        // lookup table for bookmark id
-        const lookup = {};
-        bookmarks.forEach((b, index) => {
-          lookup[b.annotationId] = index;
-        });
+    // AnnotationUtil.nestedAnnotationListToResourceList(
+    //   parentAnnotations,
+    //   bookmarks => {
+    //     // lookup table for bookmark id
+    //     const lookup = {};
+    //     bookmarks.forEach((b, index) => {
+    //       lookup[b.annotationId] = index;
+    //     });
 
-        // populate annotations with bookmark data
-        annotations = annotations.map(a => {
-          a.bookmarks = [bookmarks[lookup[a.bookmarkAnnotation.annotationId]]];
-          return a;
-        });
+    //     // populate annotations with bookmark data
+    //     annotations = annotations.map(a => {
+    //       a.bookmarks = [bookmarks[lookup[a.bookmarkAnnotation.annotationId]]];
+    //       return a;
+    //     });
 
-        console.debug(annotations);
+    //     console.debug('AFTER ADDING BOOKMARKS', annotations);
 
-        // update state with populated annotations
-        this.setState({
-          annotations: annotations,
-          loading: false,
-          filters: this.getFilters(annotations)
-        });
+    //     // update state with populated annotations
+    //     this.setState({
+    //       annotations: annotations,
+    //       loading: false,
+    //       filters: this.getFilters(annotations)
+    //     });
 
-        this.updateSelection(annotations);
-      }
-    );
+    //     this.updateSelection(annotations);
+    //   }
+    // );
   }
 
   /**
@@ -524,7 +531,7 @@ class AnnotationView extends React.PureComponent {
 
         {this.state.detailBookmark ? (
           <ItemDetailsModal
-            object={this.state.detailBookmark.object}
+            bookmark={this.state.detailBookmark}
             onClose={this.closeItemDetails}
           />
         ) : null}
