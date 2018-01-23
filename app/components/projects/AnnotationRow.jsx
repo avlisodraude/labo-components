@@ -30,7 +30,7 @@ class AnnotationRow extends React.PureComponent {
    * Delete action
    */
   onDelete() {
-    this.props.onDelete(this.props.annotation);
+    this.props.onDelete([this.props.annotation.annotationId]);
   }
 
   /**
@@ -221,16 +221,16 @@ class AnnotationRow extends React.PureComponent {
                 <thead>
                   <tr>
                     <th>Type</th>
-                    <th>Title</th>
+                    <th>Resource ID</th>
                     <th>Dataset</th>
                   </tr>
                 </thead>
                 <tbody>
                   {bookmarks.map(bookmark => (
                     <tr>
-                      <td>{bookmark.object.type}</td>
-                      <td>{bookmark.object.title}</td>
-                      <td>{bookmark.object.dataset}</td>
+                      <td>{bookmark.type}</td>
+                      <td>{bookmark.title}</td>
+                      <td>{bookmark.collectionId}</td>
                       <td className="actions">
                         <div
                           className="btn primary"

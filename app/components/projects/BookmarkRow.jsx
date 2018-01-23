@@ -30,14 +30,21 @@ class BookmarkRow extends React.PureComponent {
    * Delete action
    */
   onDelete() {
-    this.props.onDelete(this.props.bookmark);
+    this.props.onDelete([this.props.bookmark.id]);
   }
 
   /**
    * View action
    */
   onView() {
-    this.props.onView(this.props.bookmark);
+    if(this.props.bookmark.object) {
+      this.props.onView({
+        resourceId : this.props.bookmark.object.id,
+        collectionId : this.props.bookmark.object.dataset,
+        type : this.props.bookmark.object.type,
+        title : this.props.bookmark.object.title
+      });
+    }
   }
 
   /**

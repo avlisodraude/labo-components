@@ -1,5 +1,6 @@
 import CollectionSelector from './components/collection/CollectionSelector';
 import ProjectSelector from './components/projects/ProjectSelector';
+import BookmarkSelector from './components/bookmark/BookmarkSelector';
 
 import QueryBuilder from './components/search/QueryBuilder';
 import SearchHit from './components/search/SearchHit';
@@ -17,6 +18,7 @@ import ComponentUtil from './util/ComponentUtil';
 import AnnotationUtil from './util/AnnotationUtil';
 
 import SearchAPI from './api/SearchAPI';
+import AnnotationAPI from './api/AnnotationAPI';
 
 class SingleSearchRecipe extends React.Component {
 	constructor(props) {
@@ -30,6 +32,7 @@ class SingleSearchRecipe extends React.Component {
 		this.state = {
 			showModal : false, //for the collection selector
 			showProjectModal : false, //for the project selector
+			showBookmarkModal : false, //for the bookmark group selector
 			activeProject : ComponentUtil.getJSONFromLocalStorage('activeProject'),
 			awaitingProcess : null, //which process is awaiting the output of the project selector
 			collectionId : collectionId,
@@ -86,6 +89,8 @@ class SingleSearchRecipe extends React.Component {
 					this.onProjectChanged.call(this, data)
 				}
 			);
+		} else if(componentClass == 'BookmarkSelector') {
+			this.bookmarkToGroupInProject(data);
 		}
 	}
 
@@ -358,7 +363,7 @@ class SingleSearchRecipe extends React.Component {
 		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true, () => {
 			if(this.state.awaitingProcess) {
 				switch(this.state.awaitingProcess) {
-					case 'bookmark' : this.bookmarkToProject(); break;
+					case 'bookmark' : this.selectBookmarkGroup(); break;
 					case 'saveQuery' : this.saveQueryToProject(); break;
 				}
 			}
@@ -373,29 +378,53 @@ class SingleSearchRecipe extends React.Component {
 				awaitingProcess : 'bookmark'
 			});
 		} else {
-			this.bookmarkToProject();
+			this.selectBookmarkGroup();
 		}
 	}
 
 	//this will actually save the selection to the workspace API
-	bookmarkToProject() {
-		const bookmarks = this.state.currentOutput.results
-			.filter((result) => this.state.selectedRows[result._id]) //only create a bookmark for the selections
-			.map((result) => {
-				return {
-					user : this.props.user,
-					project : this.state.activeProject.id,
-					collectionId : this.state.collectionConfig.collectionId,
-					resourceId : result._id
-				}
-			}, this);
-		console.debug('THESE BOOKMARKS WILL BE SAVED', bookmarks);
-		alert('TODO: Save bookmarks to the workspace API')
-		//TODO implement saving the bookmarks in the workspace API
-
+	selectBookmarkGroup() {
 		this.setState({
-			awaitingProcess : false
+			showBookmarkModal : true,
+			awaitingProcess : null
 		});
+	}
+
+	//finally after a bookmark group is selected, save the bookmark
+	bookmarkToGroupInProject(annotation) {
+		console.debug(annotation);
+		ComponentUtil.hideModal(this, 'showBookmarkModal', 'bookmark__modal', true, () => {
+			//concatenate the
+			let targets = annotation.target.concat(this.state.currentOutput.results
+				.filter((result) => this.state.selectedRows[result._id]) //only include selected resources
+				.map((result) => AnnotationUtil.generateSimpleResourceTarget(
+					result._id, this.state.collectionConfig.collectionId
+				), this))
+
+			let temp = {};
+			let dedupedTargets = [];
+			targets.forEach((t) => {
+				if(!temp[t.source]) {
+					temp[t.source] = true;
+					dedupedTargets.push(t);
+				}
+			})
+			//set the deduped targets as the annotation target
+			annotation.target = dedupedTargets;
+			console.debug('THESE BOOKMARKS WILL BE SAVED', annotation);
+			//TODO implement saving the bookmarks in the workspace API
+			AnnotationAPI.saveAnnotation(annotation, this.onSaveBookmarks.bind(this));
+		});
+	}
+
+	onSaveBookmarks(data) {
+		console.debug('Saved bookmarks', data);
+		this.setState({
+			selectedRows : {},
+			allRowsSelected : false
+		}, () => {
+			alert('bookmarks were saved successfully I guess')
+		})
 	}
 
 	saveQuery() {
@@ -412,7 +441,7 @@ class SingleSearchRecipe extends React.Component {
 	saveQueryToProject() {
 		alert('TODO: Save query to the workspace API');
 		this.setState({
-			awaitingProcess : false
+			awaitingProcess : null
 		});
 	}
 
@@ -421,6 +450,7 @@ class SingleSearchRecipe extends React.Component {
 		let chooseProjectBtn = null; // for changing the active project
 		let collectionModal = null; //modal that holds the collection selector
 		let projectModal = null;
+		let bookmarkModal = null;
 		let searchComponent = null; //single search, comparative search or combined search
 
 		//search results, paging and sorting
@@ -476,6 +506,25 @@ class SingleSearchRecipe extends React.Component {
 					size="large"
 					title="Set the active project">
 						<ProjectSelector onOutput={this.onComponentOutput.bind(this)} user={this.props.user}/>
+				</FlexModal>
+			)
+		}
+
+		//bookmark modal
+		if(this.state.showBookmarkModal) {
+			bookmarkModal = (
+				<FlexModal
+					elementId="bookmark__modal"
+					stateVariable="showBookmarkModal"
+					owner={this}
+					size="large"
+					title="Select or enter a bookmark group">
+						<BookmarkSelector
+							onOutput={this.onComponentOutput.bind(this)}
+							user={this.props.user}
+							project={this.state.activeProject}
+							collectionId={this.state.collectionConfig.collectionId}
+							/>
 				</FlexModal>
 			)
 		}
@@ -606,6 +655,7 @@ class SingleSearchRecipe extends React.Component {
 						{chooseCollectionBtn}&nbsp;{chooseProjectBtn}
 						{collectionModal}
 						{projectModal}
+						{bookmarkModal}
 						{searchComponent}
 					</div>
 				</div>

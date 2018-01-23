@@ -2,6 +2,7 @@ import AnnotationAPI from '../../api/AnnotationAPI';
 import AnnotationRow from './AnnotationRow';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
+import BookmarkUtil from '../../util/BookmarkUtil';
 import BookmarkTable from './BookmarkTable';
 import BulkActions from '../helpers/BulkActions';
 import ComponentUtil from '../../util/ComponentUtil';
@@ -38,6 +39,7 @@ class AnnotationView extends React.PureComponent {
     ];
 
     this.state = {
+      parentAnnotations : null,
       annotations: [],
       selection: [],
       loading: true,
@@ -47,7 +49,7 @@ class AnnotationView extends React.PureComponent {
 
     // bind functions
     this.closeItemDetails = this.closeItemDetails.bind(this);
-    this.deleteAnnotation = this.deleteAnnotation.bind(this);
+    this.deleteAnnotations = this.deleteAnnotations.bind(this);
     this.exportAnnotations = this.exportAnnotations.bind(this);
     this.filterAnnotations = this.filterAnnotations.bind(this);
     this.renderResults = this.renderResults.bind(this);
@@ -98,41 +100,21 @@ class AnnotationView extends React.PureComponent {
    * @param  {Object} data Response object with annotation list
    */
   onLoadAnnotations(data) {
-    let annotations = AnnotationUtil.nestedAnnotationListToAnnotationList(
-      data.annotations || []
+    const parentAnnotations = data.annotations || [];
+
+    let annotations = AnnotationUtil.generateAnnotationCentricList(
+      parentAnnotations
     );
 
-    // get unique bookmarks from annotations
-    const uniqueBookmarks = Array.from(
-      new Set(annotations.map(a => a.bookmarkAnnotation))
-    );
+    this.setState({
+      parentAnnotations : data.annotations,
+      annotations: annotations,
+      loading: false,
+      filters: this.getFilters(annotations)
+    }, () => {
+      this.updateSelection(annotations)
+    });
 
-    // populate the unique bookmarks with object data
-    AnnotationUtil.nestedAnnotationListToResourceList(
-      uniqueBookmarks,
-      bookmarks => {
-        // lookup table for bookmark id
-        const lookup = {};
-        bookmarks.forEach((b, index) => {
-          lookup[b.annotationId] = index;
-        });
-
-        // populate annotations with bookmark data
-        annotations = annotations.map(a => {
-          a.bookmarks = [bookmarks[lookup[a.bookmarkAnnotation.annotationId]]];
-          return a;
-        });
-
-        // update state with populated annotations
-        this.setState({
-          annotations: annotations,
-          loading: false,
-          filters: this.getFilters(annotations)
-        });
-
-        this.updateSelection(annotations);
-      }
-    );
   }
 
   /**
@@ -211,89 +193,25 @@ class AnnotationView extends React.PureComponent {
     return sorted;
   }
 
-  /**
-   * Delete annotation
-   *
-   * @param {Object} annotation Annotation to be removed
-   */
-  deleteAnnotation(annotation) {
-    // always ask before deleting
-    if (!confirm('Are you sure you want to remove this annotation?')) {
-      return;
-    }
-
-    this.deleteAnnotationsAction([annotation]);
-  }
-
-  /**
-   * Delete annotations
-   *
-   * @param {Object} annotationIds Ids of annotations to be removed
-   */
   deleteAnnotations(annotationIds) {
-    // always ask before deleting
-    if (!confirm('Are you sure you want to remove the selected annotations?')) {
-      return;
-    }
+    if(annotationIds) {
+      // always ask before deleting
+      let msg = 'Are you sure you want to remove the selected annotation';
+      msg += annotationIds.length == 1 ? '?' : 's?';
+      if (!confirm(msg)) {
+        return;
+      }
 
-    this.deleteAnnotationsAction(
-      this.state.annotations.filter(a => annotationIds.includes(a.annotationId))
-    );
-  }
-
-  /**
-   * Delete annotations using the AnnotationAPI
-   * For saving annotations, store the whole bookmark with its annotations,
-   * without the item to be deleted
-   * AnnotationAPI.saveAnnotation(annotation, callback)
-   *
-   * @param {array} annotations Annotations to be removed
-   */
-  deleteAnnotationsAction(annotations) {
-    // get the unique bookmarks, as we are deleting per-bookmark
-    const uniqueBookmarks = Array.from(
-      new Set(annotations.map(a => a.bookmarkAnnotation))
-    );
-
-    let hits = uniqueBookmarks.length;
-
-    uniqueBookmarks.forEach(uniqueBookmark => {
-      // 1. get a copy of the bookmarkAnnotation from the annotation object
-      const bookmark = Object.assign({}, uniqueBookmark);
-
-      // 2A. remove the given annotation from the body
-      // 2B. and remove the link to the bookmarkAnnotation and bookmarks from the annotations
-      //     to prevent circular structure
-      // (Todo: check if not unnecessary fields are saved accidently)
-      bookmark.body = bookmark.body
-        .filter(a => !annotations.includes(a))
-        .map(a => {
-          const b = Object.assign({}, a);
-          delete b.bookmarkAnnotation;
-          delete b.bookmarks;
-          return b;
-        });
-
-      // Finally. save
-      AnnotationAPI.saveAnnotation(bookmark, data => {
-        hits--;
-
-        // only give a message for the last action
-        if (hits == 0 && data && data.status) {
-          if (data.status == 'success') {
-            this.loadAnnotations();
-          } else {
-            alert(
-              data.message
-                ? data.message
-                : 'An unknown error has occured while deleting the annotation'
-            );
-          }
-        } else {
-          alert('An error has occured while deleting the annotation.');
+      BookmarkUtil.deleteAnnotations(
+        this.state.parentAnnotations,
+        this.state.annotations,
+        annotationIds,
+        (success) => {
+          console.debug('reloading annotation-list', this)
+          this.loadAnnotations()
         }
-      });
-    });
+      )
+    }
   }
 
   /**
@@ -447,7 +365,7 @@ class AnnotationView extends React.PureComponent {
             <AnnotationRow
               key={index}
               annotation={annotation}
-              onDelete={this.deleteAnnotation}
+              onDelete={this.deleteAnnotations}
               onView={this.viewBookmark}
               selected={this.state.selection.includes(annotation.annotationId)}
               onSelect={this.selectItem}
@@ -522,7 +440,7 @@ class AnnotationView extends React.PureComponent {
 
         {this.state.detailBookmark ? (
           <ItemDetailsModal
-            object={this.state.detailBookmark.object}
+            bookmark={this.state.detailBookmark}
             onClose={this.closeItemDetails}
           />
         ) : null}

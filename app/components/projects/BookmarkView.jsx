@@ -1,6 +1,7 @@
 import AnnotationAPI from '../../api/AnnotationAPI';
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
+import BookmarkUtil from '../../util/BookmarkUtil';
 import BookmarkRow from './BookmarkRow';
 import BookmarkTable from './BookmarkTable';
 import ComponentUtil from '../../util/ComponentUtil';
@@ -48,6 +49,7 @@ class BookmarkView extends React.PureComponent {
     ];
 
     this.state = {
+      annotations : null,
       bookmarks: [],
       selection: [],
       loading: true,
@@ -57,7 +59,7 @@ class BookmarkView extends React.PureComponent {
 
     // bind functions
     this.viewBookmark = this.viewBookmark.bind(this);
-    this.deleteBookmark = this.deleteBookmark.bind(this);
+    this.deleteBookmarks = this.deleteBookmarks.bind(this);
 
     this.filterBookmarks = this.filterBookmarks.bind(this);
     this.sortBookmarks = this.sortBookmarks.bind(this);
@@ -110,10 +112,15 @@ class BookmarkView extends React.PureComponent {
    * @param  {Object} data Response object with annotation list
    */
   onLoadBookmarks(data) {
-    AnnotationUtil.nestedAnnotationListToResourceList(
-      data.annotations || [],
-      this.onLoadResourceList.bind(this)
-    );
+    this.setState({
+      annotations : data.annotations || null
+    }, () => {
+      AnnotationUtil.generateBookmarkCentricList(
+        data.annotations || [],
+        this.onLoadResourceList.bind(this)
+      );
+    })
+
   }
 
   /**
@@ -221,75 +228,29 @@ class BookmarkView extends React.PureComponent {
   }
 
   /**
-   * Delete bookmark
-   *
-   * @param {Object} bookmark Bookmark to be removed
-   */
-  deleteBookmark(bookmark) {
-    // always ask before deleting
-    if (!confirm('Are you sure you want to remove this bookmark?')) {
-      return;
-    }
-
-    // delete the bookmark
-    AnnotationAPI.deleteAnnotation(bookmark, data => {
-      if (data && data.status) {
-        if (data.status == 'success') {
-          this.loadBookmarks();
-        } else {
-          alert(
-            data.message
-              ? data.message
-              : 'An unknown error has occured while deleting the bookmark'
-          );
-        }
-      } else {
-        alert('An error has occured while deleting the bookmark.');
-      }
-    });
-  }
-
-  /**
    * Delete multiple bookmarks
    *
    * @param {array} selection List of bookmark ids to be deleted
    */
-  deleteBookmarks(selection) {
-    // always ask before deleting
-    if (!confirm('Are you sure you want to remove the selected bookmarks?')) {
-      return;
-    }
+  deleteBookmarks(bookmarkIds) {
+    if(bookmarkIds) {
+      let msg = 'Are you sure you want to remove the selected bookmark';
+      msg += bookmarkIds.length == 1 ? '?' : 's?';
+      if (!confirm(msg)) {
+        return;
+      }
 
-    const data = this.state.bookmarks.filter(item =>
-      selection.includes(item.id)
-    );
-
-    // counts number of hits
-    let hits = data.length;
-
-    // delete the bookmark
-    data.forEach(item => {
-      AnnotationAPI.deleteAnnotation(item, data => {
-        hits--;
-
-        // only on last callback, check the status and reload the data
-        if (hits == 0) {
-          if (data && data.status) {
-            if (data.status == 'success') {
-              this.loadBookmarks();
-            } else {
-              alert(
-                data.message
-                  ? data.message
-                  : 'An unknown error has occured while deleting the bookmark'
-              );
-            }
-          } else {
-            alert('An error has occured while deleting the bookmark.');
-          }
+      // delete each bookmark
+      BookmarkUtil.deleteBookmarks(
+        this.state.annotations,
+        this.state.bookmarks,
+        bookmarkIds,
+        (success) => {
+          console.debug('reloading bookmark-list', this)
+          this.loadBookmarks()
         }
-      });
-    });
+      )
+    }
   }
 
   /**
@@ -424,7 +385,7 @@ class BookmarkView extends React.PureComponent {
             <BookmarkRow
               key={index}
               bookmark={bookmark}
-              onDelete={this.deleteBookmark}
+              onDelete={this.deleteBookmarks}
               onView={this.viewBookmark}
               selected={this.state.selection.includes(bookmark.id)}
               onSelect={this.selectItem}
@@ -462,7 +423,7 @@ class BookmarkView extends React.PureComponent {
 
         {this.state.detailBookmark ? (
           <ItemDetailsModal
-            object={this.state.detailBookmark.object}
+            bookmark={this.state.detailBookmark}
             onClose={this.closeItemDetails}
           />
         ) : null}

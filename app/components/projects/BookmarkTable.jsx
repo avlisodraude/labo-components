@@ -1,6 +1,5 @@
 import AnnotationStore from '../../flux/AnnotationStore';
 import AnnotationUtil from '../../util/AnnotationUtil';
-import BookmarkRow from './BookmarkRow';
 import IDUtil from '../../util/IDUtil';
 import ItemDetailsRecipe from '../../ItemDetailsRecipe';
 import ProjectAPI from '../../api/ProjectAPI';
