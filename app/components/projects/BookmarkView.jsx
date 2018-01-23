@@ -59,7 +59,7 @@ class BookmarkView extends React.PureComponent {
 
     // bind functions
     this.viewBookmark = this.viewBookmark.bind(this);
-    this.deleteBookmark = this.deleteBookmark.bind(this);
+    this.deleteBookmarks = this.deleteBookmarks.bind(this);
 
     this.filterBookmarks = this.filterBookmarks.bind(this);
     this.sortBookmarks = this.sortBookmarks.bind(this);
@@ -228,48 +228,31 @@ class BookmarkView extends React.PureComponent {
   }
 
   /**
-   * Delete bookmark
-   *
-   * @param {Object} bookmark Bookmark to be removed
-   */
-  deleteBookmark(bookmark) {
-    // always ask before deleting
-    if (!confirm('Are you sure you want to remove this bookmark?')) {
-      return;
-    }
-
-    BookmarkUtil.deleteBookmarks(
-        this.state.annotations,
-        this.state.bookmarks,
-        [bookmark],
-        (success) => {
-          this.loadBookmarks()
-        }
-      )
-  }
-
-  /**
    * Delete multiple bookmarks
    *
    * @param {array} selection List of bookmark ids to be deleted
    */
-  deleteBookmarks(selection) {
-    // always ask before deleting
-    if (!confirm('Are you sure you want to remove the selected bookmarks?')) {
-      return;
-    }
-
-    // delete each bookmark
-    BookmarkUtil.deleteBookmarks(
-      this.state.annotations,
-      this.state.bookmarks,
-      this.state.bookmarks.filter(item =>
-        selection.includes(item.id)
-      ),
-      (success) => {
-        this.loadBookmarks()
+  deleteBookmarks(bookmarks) {
+    if(bookmarks) {
+      let msg = 'Are you sure you want to remove the selected bookmark';
+      msg += bookmarks.length == 1 ? '?' : 's?';
+      if (!confirm(msg)) {
+        return;
       }
-    )
+
+      // delete each bookmark
+      BookmarkUtil.deleteBookmarks(
+        this.state.annotations,
+        this.state.bookmarks,
+        this.state.bookmarks.filter(item =>
+          bookmarks.includes(item.id)
+        ),
+        (success) => {
+          console.debug('reloading bookmarks', this)
+          this.loadBookmarks()
+        }
+      )
+    }
   }
 
   /**
@@ -404,7 +387,7 @@ class BookmarkView extends React.PureComponent {
             <BookmarkRow
               key={index}
               bookmark={bookmark}
-              onDelete={this.deleteBookmark}
+              onDelete={this.deleteBookmarks}
               onView={this.viewBookmark}
               selected={this.state.selection.includes(bookmark.id)}
               onSelect={this.selectItem}

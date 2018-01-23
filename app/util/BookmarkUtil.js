@@ -4,10 +4,6 @@ const BookmarkUtil = {
 
 	//FIXME: sync offline annotation target, so no empty annotation (without a target) will remain!
 	deleteBookmarks : function(annotationList, bookmarkList, bookmarks, callback) {
-		console.debug(annotationList)
-		console.debug(bookmarkList)
-		console.debug(bookmarks)
-
 		let count = 0;
 
 		bookmarks.forEach((b) => {
