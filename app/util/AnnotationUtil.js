@@ -10,7 +10,7 @@ const AnnotationUtil = {
 
 	//extracts all contained targets/resources into a list for the bookmark-centric view
 	//TODO add the parentAnnotationId, so the UI knows how to do CRUD
-	nestedAnnotationListToResourceList(annotations, callback) {
+	generateBookmarkCentricList(annotations, callback) {
 		let resourceList = [];
 
 		annotations.forEach((na, index) => {
@@ -143,8 +143,7 @@ const AnnotationUtil = {
 
 	//extracts all contained annotations into a list for the annotation-centric view
 	//TODO update this so each body is an item. Use parentAnnotationId to refer to the parent
-	nestedAnnotationListToAnnotationList(annotations) {
-
+	generateAnnotationCentricList(annotations) {
 		// check for empty: can't reduce an empty array
 		if (annotations.length === 0){
 			return [];
@@ -171,9 +170,11 @@ const AnnotationUtil = {
 			//assign the targets as a list of bookmarks to each body/annotation
 			an.body.forEach((b) => {
 				b.bookmarks = bookmarks;
+				b.parentAnnotationId = an.id;
 			});
+			//assign the parent annotation ID to this (sub)annotation
 			return an.body
-		}).reduce((acc, cur) => {
+		}).reduce((acc, cur) => { //concat all annotation bodies into a single array
 			return acc.concat(cur);
 		});
 	},

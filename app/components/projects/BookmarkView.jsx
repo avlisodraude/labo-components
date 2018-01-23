@@ -115,7 +115,7 @@ class BookmarkView extends React.PureComponent {
     this.setState({
       annotations : data.annotations || null
     }, () => {
-      AnnotationUtil.nestedAnnotationListToResourceList(
+      AnnotationUtil.generateBookmarkCentricList(
         data.annotations || [],
         this.onLoadResourceList.bind(this)
       );
@@ -232,10 +232,10 @@ class BookmarkView extends React.PureComponent {
    *
    * @param {array} selection List of bookmark ids to be deleted
    */
-  deleteBookmarks(bookmarks) {
-    if(bookmarks) {
+  deleteBookmarks(bookmarkIds) {
+    if(bookmarkIds) {
       let msg = 'Are you sure you want to remove the selected bookmark';
-      msg += bookmarks.length == 1 ? '?' : 's?';
+      msg += bookmarkIds.length == 1 ? '?' : 's?';
       if (!confirm(msg)) {
         return;
       }
@@ -244,11 +244,9 @@ class BookmarkView extends React.PureComponent {
       BookmarkUtil.deleteBookmarks(
         this.state.annotations,
         this.state.bookmarks,
-        this.state.bookmarks.filter(item =>
-          bookmarks.includes(item.id)
-        ),
+        bookmarkIds,
         (success) => {
-          console.debug('reloading bookmarks', this)
+          console.debug('reloading bookmark-list', this)
           this.loadBookmarks()
         }
       )

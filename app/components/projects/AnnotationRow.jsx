@@ -30,7 +30,7 @@ class AnnotationRow extends React.PureComponent {
    * Delete action
    */
   onDelete() {
-    this.props.onDelete(this.props.annotation);
+    this.props.onDelete([this.props.annotation.annotationId]);
   }
 
   /**
