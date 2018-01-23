@@ -208,7 +208,7 @@ class AnnotationView extends React.PureComponent {
         annotationIds,
         (success) => {
           console.debug('reloading annotation-list', this)
-          this.loadAnnotations()
+          setTimeout(this.loadAnnotations.call(this), 250);
         }
       )
     }

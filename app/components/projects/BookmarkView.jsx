@@ -247,7 +247,7 @@ class BookmarkView extends React.PureComponent {
         bookmarkIds,
         (success) => {
           console.debug('reloading bookmark-list', this)
-          this.loadBookmarks()
+          setTimeout(this.loadBookmarks.call(this), 250);
         }
       )
     }

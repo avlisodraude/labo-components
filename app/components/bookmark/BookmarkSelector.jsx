@@ -23,7 +23,6 @@ class BookmarkSelector extends React.Component {
 		);
 	}
 
-	//an-00adac59-cd1e-4487-8fbf-efc4939929ea
 	onLoadBookmarkAnnotations(data) {
 		this.setState({bookmarks : data.annotations || []});
 	}
@@ -57,14 +56,14 @@ class BookmarkSelector extends React.Component {
 		if(this.state.bookmarks.length > 0) {
 			//TODO which part of the body is the name of the bookmark group?
 		 	const options = this.state.bookmarks.map((b, index) => {
-		 		return (<li key={'an__' + index} onClick={this.onOutput.bind(this, b)}>
+		 		return (<a className="list-group-item" href="#" key={'an__' + index} onClick={this.onOutput.bind(this, b)}>
 		 			{b.body[0].label}
-		 		</li>)
+		 		</a>)
 		 	});
 		 	bookmarkList = (
-		 		<ul>
+		 		<div className="list-group">
 		 			{options}
-		 		</ul>
+		 		</div>
 		 	)
 		}
 		return (

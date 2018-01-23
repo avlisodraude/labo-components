@@ -423,7 +423,7 @@ class SingleSearchRecipe extends React.Component {
 			selectedRows : {},
 			allRowsSelected : false
 		}, () => {
-			alert('bookmarks were saved successfully I guess')
+			alert('Bookmarks were saved successfully')
 		})
 	}
 
