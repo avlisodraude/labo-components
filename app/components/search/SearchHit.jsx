@@ -97,7 +97,10 @@ class SearchHit extends React.Component {
 							onClick={this.quickView.bind(this)} title="Quick view">
 						</button>
 					</div>
-					<SearchSnippet data={snippet} searchTerm={this.props.searchTerm}/>
+					<SearchSnippet
+						data={snippet}
+						collectionMediaTypes={this.props.collectionConfig.getCollectionMediaTypes()}
+						searchTerm={this.props.searchTerm}/>
 				</div>
 				{modal}
 			</div>

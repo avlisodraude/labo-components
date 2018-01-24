@@ -11,12 +11,30 @@ class SearchSnippet extends React.Component {
 		super(props);
 	}
 
+	getMediaTypes() {
+		let mediaTypes = this.props.collectionMediaTypes;
+		if(this.props.data.mediaTypes) {
+			mediaTypes = mediaTypes.concat(
+				this.props.data.mediaTypes.filter(mt => !mediaTypes.includes(mt))
+			);
+		}
+		return mediaTypes
+	}
+
 	//possible default fields: posterURL, title, description, tags
 	render() {
 		let poster = null;
 		let mediaTypes = null;
 		let tags = [];
 		let fragmentIcon = null;
+
+		//by default no access
+		let accessIcon = (
+			<span
+				className={IconUtil.getMediaObjectAccessIcon(false, false, true, true, false)}
+				title="Media object(s) not accessible">
+			</span>
+		);
 
 		//get the poster of the media object
 		if(this.props.data.posterURL) {
@@ -40,16 +58,31 @@ class SearchSnippet extends React.Component {
 
 		//show the user what content can be expected
 		if(this.props.data.mediaTypes) {
-			mediaTypes = this.props.data.mediaTypes.map((mt) => {
+			mediaTypes = this.getMediaTypes().map((mt) => {
 				if(mt == 'video') {
-					return (<span className={IconUtil.getMimeTypeIcon('video', true, true)} title="Video content"></span>);
+					return (<span className={IconUtil.getMimeTypeIcon('video', true, true, false)} title="Video content"></span>);
 				} else if(mt == 'audio') {
-					return (<span className={IconUtil.getMimeTypeIcon('audio', true, true)} title="Audio content"></span>);
+					return (<span className={IconUtil.getMimeTypeIcon('audio', true, true, false)} title="Audio content"></span>);
 				} else if(mt == 'image') {
-					return (<span className={IconUtil.getMimeTypeIcon('image', true, true)} title="Image content"></span>);
+					return (<span className={IconUtil.getMimeTypeIcon('image', true, true, false)} title="Image content"></span>);
 				}
-				return (<span className={IconUtil.getMimeTypeIcon(null, true, true)} title="Unknown content"></span>);
+				return (<span className={IconUtil.getMimeTypeIcon(null, true, true, false)} title="Unknown content"></span>);
 			});
+
+			if(mediaTypes.length == 0) {
+				mediaTypes.push(
+					<span className={IconUtil.getMimeTypeIcon(null, true, true, false)} title="Unknown content"></span>
+				)
+			}
+
+			if(this.props.data.mediaTypes.length > 0) {
+				accessIcon = (
+					<span
+						className={IconUtil.getMediaObjectAccessIcon(true, true, true, true, false)}
+						title="Media object(s) can be viewed">
+					</span>
+				);
+			}
 		}
 
 		//if this hit represents a media fragment, show an extra icon (TODO make sure this is not ugly later on)
@@ -71,7 +104,7 @@ class SearchSnippet extends React.Component {
 					<h4 className="media-heading custom-pointer" title={this.props.data.id}>
 						{this.props.data.title ? this.props.data.title + ' ' : ''}
 						{this.props.data.date ? '(' + this.props.data.date + ')' : ''}
-						&nbsp;{mediaTypes}&nbsp;{fragmentIcon}
+						&nbsp;{mediaTypes}&nbsp;{accessIcon}&nbsp;{fragmentIcon}
 					</h4>
 					{CollectionUtil.highlightSearchTermInDescription(
 						this.props.data.description,

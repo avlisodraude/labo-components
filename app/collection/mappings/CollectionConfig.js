@@ -61,6 +61,10 @@ class CollectionConfig {
 		}
 	}
 
+	getCollectionMediaTypes() {
+		return [];
+	}
+
 	//TODO see if this is necessary or we just directly access the global variable
 	getCollectionId() {
 		return this.collectionId;
