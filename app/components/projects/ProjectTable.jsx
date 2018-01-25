@@ -140,7 +140,7 @@ class ProjectTable extends React.PureComponent {
    * @param {object} data Annotation data
    */
   setBookmarkCount(project, data) {
-    const bookmarks = AnnotationUtil.nestedAnnotationListToResourceList(
+    const bookmarks = AnnotationUtil.generateBookmarkCentricList(
       data.annotations || []
     );
     const bookmarkCount = bookmarks ? bookmarks.length : 0;

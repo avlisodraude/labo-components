@@ -49,19 +49,24 @@ class ProjectWrapper extends React.PureComponent {
 
     // load project data, and set state
     ProjectAPI.get(this.props.user.id, projectId, project => {
-      // inject project name to breadcrumbs
-      const titles = {};
-      titles[project.id] = project.name;
-      // update breadcrumbs
-      setBreadCrumbsFromMatch(this.props.match, titles);
+      if(project) {
+        // inject project name to breadcrumbs
+        const titles = {};
+        titles[project.id] = project.name;
+        // update breadcrumbs
+        setBreadCrumbsFromMatch(this.props.match, titles);
 
-      // set to state
-      this.setState({
-        loading: false,
-        project
-      });
-
-      this.loadBookmarkCount(project);
+        // set to state
+        this.setState({
+          loading: false,
+          project
+        });
+        this.loadBookmarkCount(project);
+      } else {
+        this.setState({
+          loading: false
+        })
+      }
     });
   }
 
