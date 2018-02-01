@@ -129,6 +129,9 @@ class FlexPlayer extends React.Component {
 		this.setState(
 			{playerAPI : playerAPI}
 		);
+		if(this.props.onPlayerReady) {
+			this.props.onPlayerReady(playerAPI);
+		}
 	}
 
 	checkFocus(f, args) {
