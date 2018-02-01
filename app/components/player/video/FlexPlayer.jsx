@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import MouseTrap from 'mousetrap';
 
 import HTML5AudioPlayer from '../audio/HTML5AudioPlayer';
@@ -713,5 +714,50 @@ class FlexPlayer extends React.Component {
 	}
 
 }
+
+FlexPlayer.PropTypes = {
+	//this is the media object the player will try to load
+	//the mimeType & url determine which implementation (HTML5, YouTube, JW, Vimeo) will be used
+	mediaObject: PropTypes.shape({
+	    url: PropTypes.string.isRequired,
+	    mimeType: PropTypes.string.isRequired
+	}).isRequired,
+
+	//the resource & collection ID are required for saving annotations
+	resourceId: PropTypes.string.isRequired,
+	collectionId: PropTypes.string.isRequired,
+
+	//required for loading & saving media object related annotations of the current user
+	user: PropTypes.shape({
+    	id: PropTypes.string.isRequired
+  	}).isRequired,
+
+	//(optional) represents the active project, used for loading & saving annotations to the right project
+	project: PropTypes.shape({
+	    id: PropTypes.string.isRequired,
+	}),
+
+	//(optional) player callback functions the owner can register to
+	onLoadProgress: PropTypes.func,
+	onPlay: PropTypes.func,
+	onPlayProgress: PropTypes.func,
+	onPause: PropTypes.func,
+	onFinish: PropTypes.func,
+	onSeek: PropTypes.func,
+	onPlayerReady: PropTypes.func, //returns the PlayerAPI, so the owner can control the player
+
+	//whether media object annotation
+	annotationSupport: PropTypes.shape ({
+		mediaObject: PropTypes.object, //if not null, it means: "please activate annotation support for the media object"
+		mediaSegment: PropTypes.object //if not null, it means: "please activate annotation support for the media segment"
+	}),
+
+	active: PropTypes.bool, // this reflects whether this component is visible, so the keyboard controls can be activated
+
+	fragmentMode : PropTypes.bool, //not properly supported anymore, should be removed later on
+
+	annotationLayers : PropTypes.array //for future implementation
+
+};
 
 export default FlexPlayer;
