@@ -157,11 +157,17 @@ class FlexPlayer extends React.Component {
 
 	playProgress(data) {
 		this.state.playerAPI.getPosition(this.onGetPosition.bind(this));
+		if(this.props.onPlayProgress) {
+			this.props.onPlayProgress(data);
+		}
 	}
 
 	onPlay(data) {
         this.state.playerAPI.getDuration(this.onGetDuration.bind(this));
         this.setState({paused : false});
+        if(this.props.onPlay) {
+			this.props.onPlay(data);
+		}
 	}
 
 	onGetDuration(value) {
@@ -170,6 +176,9 @@ class FlexPlayer extends React.Component {
 
 	onPause(paused) {
         this.setState({paused : true});
+        if(this.props.onPause) {
+			this.props.onPause(data);
+		}
 	}
 
 	onGetPosition(value) {
@@ -177,15 +186,21 @@ class FlexPlayer extends React.Component {
 	}
 
 	loadProgress(data) {
-		//TODO do something with this?
+		if(this.props.onLoadProgress) {
+			this.props.onLoadProgress(data);
+		}
 	}
 
 	onFinish(data) {
-		//TODO do something with this?
+		if(this.props.onFinish) {
+			this.props.onFinish(data);
+		}
 	}
 
 	onSeek(data) {
-		//TODO do something with this?
+		if(this.props.onSeek) {
+			this.props.onSeek(data);
+		}
 	}
 
 	/************************************** Segmentation controls ***************************************/
