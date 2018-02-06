@@ -93,7 +93,7 @@ class SearchHit extends React.Component {
 				<div onClick={this.gotoItemDetails.bind(this, result)}>
 					{checkBox}
 					<div className={IDUtil.cssClassName('quickview', this.CLASS_PREFIX)}>
-						<button className="btn btn-default fa fa-eye"
+						<button className="btn btn-default fa fa-file-text"
 							onClick={this.quickView.bind(this)} title="Quick view">
 						</button>
 					</div>

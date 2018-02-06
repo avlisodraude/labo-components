@@ -66,12 +66,12 @@ class SearchSnippet extends React.Component {
 				} else if(mt == 'image') {
 					return (<span className={IconUtil.getMimeTypeIcon('image', true, true, false)} title="Image content"></span>);
 				}
-				return (<span className={IconUtil.getMimeTypeIcon(null, true, true, false)} title="Unknown content"></span>);
+				return (<span className={IconUtil.getMimeTypeIcon(null, true, true, false)} title="Unknown content type"></span>);
 			});
 
 			if(mediaTypes.length == 0) {
 				mediaTypes.push(
-					<span className={IconUtil.getMimeTypeIcon(null, true, true, false)} title="Unknown content"></span>
+					<span className={IconUtil.getMimeTypeIcon(null, true, true, false)} title="Unknown content type"></span>
 				)
 			}
 
