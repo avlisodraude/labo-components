@@ -78,7 +78,7 @@ const SearchAPI = {
 	__fragmentSearch :function(collectionId, term, fieldCategory, searchLayers, selectedFacets, dateRange, sortParams, desiredFacets,
 		callback, offset=0 , size=10, innerHitsSize=3, innerHitsOffset=0, fragmentPath=null, fragmentFields=null) {
 		let url = _config.SEARCH_API_BASE + '/layered_search/' + collectionId
-		url += '?cid=' + _clientId + '&at=' + _chickenStock;
+		//url += '?cid=' + _clientId + '&at=' + _chickenStock;
 		const params = {
 			term : term,
 			fieldCategory : fieldCategory,
@@ -92,7 +92,8 @@ const SearchAPI = {
 			innerHitsSize : innerHitsSize,
 			innerHitsOffset : innerHitsOffset,
 			fragmentPath : fragmentPath,
-			fragmentFields : fragmentFields
+			fragmentFields : fragmentFields,
+			includeMediaObjects : true //TODO needs to be configurable
 		}
 		const xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
@@ -108,48 +109,6 @@ const SearchAPI = {
 		xhr.timeout = 50000;
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(JSON.stringify(params));
-	},
-
-	//Primarily called by the ItemDetailsRecipe for fetching all metadata of a single collection item (ES document)
-	getItemDetails :function(collectionId, itemId, callback) {
-		const url = _config.SEARCH_API_BASE + '/document/get_doc/' + collectionId;
-		const xhr = new XMLHttpRequest();
-		const postData = {
-			id : itemId
-		}
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == XMLHttpRequest.DONE) {
-				if(xhr.status == 200) {
-					callback(collectionId, itemId, JSON.parse(xhr.responseText));
-				} else {
-					callback(null);
-				}
-			}
-		}
-		xhr.open("POST", url);
-		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		xhr.send(JSON.stringify(postData));
-	},
-
-	//Primarily called by the ItemDetailsRecipe for fetching all metadata of a single collection item (ES document)
-	getItemDetailsMultiple :function(collectionId, idList, callback) {
-		const url = _config.SEARCH_API_BASE + '/document/get_docs/' + collectionId;
-		const xhr = new XMLHttpRequest();
-		const postData = {
-			ids : idList
-		}
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == XMLHttpRequest.DONE) {
-				if(xhr.status == 200) {
-					callback(collectionId, idList, JSON.parse(xhr.responseText));
-				} else {
-					callback(null);
-				}
-			}
-		}
-		xhr.open("POST", url);
-		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		xhr.send(JSON.stringify(postData));
 	}
 
 }

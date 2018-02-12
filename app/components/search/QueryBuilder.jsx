@@ -486,7 +486,6 @@ class QueryBuilder extends React.Component {
 				//https://github.com/CLARIAH/wp5_mediasuite/issues/130
 				// it could be enabled once we have more options to provide.
 				if(layers) {
-					console.debug(layers)
 					layerOptions = (
 				 		<div className={IDUtil.cssClassName('search-layers', this.CLASS_PREFIX)}>
 				 			{layers}
@@ -715,11 +714,20 @@ class QueryBuilder extends React.Component {
 					</div>
 				)
 			} else if(this.state.searchId != null) {
+				let dateRangeMessage = null;
+				if(this.state.selectedDateRange) {
+					dateRangeMessage = (
+						<span>
+							Between <strong>{TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start)}</strong>
+								and <strong>{TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end)}</strong>
+						</span>
+					)
+				}
 				resultBlock = (
 					<div className="alert alert-danger">
 						No results found for search term <b>{this.refs.searchTerm.value.toUpperCase()}</b>
 						<br />
-						Between <b>{TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.start)}</b> and <b>{TimeUtil.UNIXTimeToPrettyDate(this.state.selectedDateRange.end)}</b>
+						{dateRangeMessage}
 						</div>
 				)
 			}

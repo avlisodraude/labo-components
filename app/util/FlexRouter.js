@@ -19,6 +19,7 @@ const FlexRouter = {
 			if(searchResult.mediaFragment.hasOwnProperty('y')) { url += '&y=' + searchResult.mediaFragment.y; }
 			if(searchResult.mediaFragment.hasOwnProperty('w')) { url += '&w=' + searchResult.mediaFragment.w; }
 			if(searchResult.mediaFragment.hasOwnProperty('h')) { url += '&h=' + searchResult.mediaFragment.h; }
+			if(searchResult.mediaFragment.hasOwnProperty('layer')) { url += '&l=' + searchResult.mediaFragment.layer; }
 		}
 		document.location.href = url;
 	},

@@ -24,6 +24,8 @@ class HTML5AudioPlayer extends React.Component {
 			vid.onseeked = this.props.eventCallbacks.onSeek.bind(this);
 			vid.oncanplay = this.onReady.bind(this, vid);
 		}
+		//needed until React will support the controlsList attribute of the video tag
+		vid.setAttribute("controlsList","nodownload");
 	}
 
 	onReady(playerAPI) {
@@ -40,8 +42,10 @@ class HTML5AudioPlayer extends React.Component {
 
 	render() {
 		return (
-			<video className={IDUtil.cssClassName('html5-audio-player')}
-				id={'audio_player__' + this.props.mediaObject.id} controls>
+			<video
+				className={IDUtil.cssClassName('html5-audio-player')}
+				id={'audio_player__' + this.props.mediaObject.id}
+				controls controlsList="nodownload" crossOrigin="use-credentials">
 				<source src={this.props.mediaObject.url}></source>
 			</video>
 		)

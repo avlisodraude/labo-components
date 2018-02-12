@@ -9,6 +9,7 @@ class SearchSnippet extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.CLASS_PREFIX = 'ss'
 	}
 
 	getMediaTypes() {
@@ -27,6 +28,7 @@ class SearchSnippet extends React.Component {
 		let mediaTypes = null;
 		let tags = [];
 		let fragmentIcon = null;
+		let fragmentInfo = null;
 
 		//by default no access
 		let accessIcon = (
@@ -90,6 +92,12 @@ class SearchSnippet extends React.Component {
 			fragmentIcon = (
 				<span className={IconUtil.getMimeTypeIcon('fragment', true, true)} title="Media fragment"></span>
 			);
+
+			if(this.props.data.mediaFragment) {
+				fragmentInfo = (<div className={IDUtil.cssClassName('fragment', this.CLASS_PREFIX)}>
+					{this.props.data.mediaFragment.snippet}
+				</div>)
+			}
 		}
 
 		//generate main classes
@@ -111,6 +119,7 @@ class SearchSnippet extends React.Component {
 						this.props.searchTerm,
 						35
 					)}
+					{fragmentInfo}
 					{tags}
 				</div>
 			</div>

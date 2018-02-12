@@ -1,3 +1,4 @@
+import CKANAPI from '../../api/CKANAPI';
 import CollectionAPI from '../../api/CollectionAPI';
 import CollectionUtil from '../../util/CollectionUtil';
 import IDUtil from '../../util/IDUtil';
@@ -24,8 +25,8 @@ class CollectionSelector extends React.Component {
 	}
 
 	componentDidMount() {
-		//load the collections
-		CollectionAPI.listCollections((collections) => {
+		//load the collections from CKAN (TODO build option to choose collection endpoint)
+		CKANAPI.listCollections((collections) => {
 			this.setState({collectionList :  collections});
 		});
 	}

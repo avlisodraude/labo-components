@@ -272,6 +272,11 @@
 	}
 	.bg__search-snippet {
 		margin: 5px;
+		.bg__ss__fragment {
+			margin-top:5px;
+			font-style:italic;
+			color: dimgray;
+		}
 	}
 	&.fragment { /* possibly change this into .bg__search-hit--fragment (BEM style) */
 		margin: 5px;

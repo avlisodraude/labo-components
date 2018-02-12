@@ -288,6 +288,7 @@ class CollectionConfig {
 			date: result.date,
 			description: result.description,
 			posterURL : result.posterURL,
+			mediaFragment : result.mediaFragment,
 			tags : result.tags ? result.tags : [],
 			mediaTypes : result.mediaTypes ? result.mediaTypes : []
 		}

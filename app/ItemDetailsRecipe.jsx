@@ -10,7 +10,7 @@ import FlexImageViewer from './components/player/image/FlexImageViewer';
 
 import MetadataTable from './components/search/MetadataTable';
 
-import SearchAPI from './api/SearchAPI';
+import DocumentAPI from './api/DocumentAPI';
 import PlayoutAPI from './api/PlayoutAPI';
 
 import AnnotationAPI from './api/AnnotationAPI';
@@ -85,8 +85,12 @@ class ItemDetailsRecipe extends React.Component {
 		AnnotationStore.bind('del-annotation', this.onDeleteAnnotation.bind(this));
 
 		if(this.props.params.id && this.props.params.cid) {
-			SearchAPI.getItemDetails(
-				this.props.params.cid,
+			let searchLayer = this.props.params.cid;
+			if(this.props.params.l) {
+				searchLayer += '__' + this.props.params.l;
+			}
+			DocumentAPI.getItemDetails(
+				searchLayer,
 				this.props.params.id,
 				this.onLoadItemData.bind(this)
 			);

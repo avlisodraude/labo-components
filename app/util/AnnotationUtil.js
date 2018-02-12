@@ -1,4 +1,4 @@
-import SearchAPI from '../api/SearchAPI';
+import DocumentAPI from '../api/DocumentAPI';
 import CollectionUtil from '../util/CollectionUtil';
 import IDUtil from '../util/IDUtil';
 
@@ -98,10 +98,10 @@ const AnnotationUtil = {
 			return acc
 		}, temp[0]); //initial value needed in case of one element!
 
-		//now loop through the clustered (by collectionId) resourceIdLists and call the searchAPI
+		//now loop through the clustered (by collectionId) resourceIdLists and call the document API
 		const accumulatedData = {}
 		Object.keys(resourceIds).forEach((key) => {
-			SearchAPI.getItemDetailsMultiple(
+			DocumentAPI.getItemDetailsMultiple(
 				key, //collectionId
 				resourceIds[key], //all resourceIds for this collection
 				(collectionId, idList, resourceData) => {

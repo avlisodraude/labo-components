@@ -13,6 +13,7 @@ In general what needs to be considered is:
 */
 
 import CollectionAPI from '../api/CollectionAPI';
+import CKANAPI from '../api/CKANAPI';
 import CollectionConfig from '../collection/mappings/CollectionConfig';
 import CollectionMapping from '../collection/mappings/CollectionMapping';
 
@@ -77,7 +78,7 @@ const CollectionUtil = {
 
 	//loads the CKAN metadata of the provided collection
 	loadCollectionInfo(collectionId, collectionStats, callback, configClass) {
-		CollectionAPI.getCollectionInfo(collectionId, function(collectionInfo) {
+		CKANAPI.getCollectionInfo(collectionId, function(collectionInfo) {
 			callback(new configClass(collectionId, collectionStats, collectionInfo));
 		});
 	},
