@@ -12,6 +12,10 @@ const FlexRouter = {
 		}
 		//check the collection config to see how the mediaFragment was added to the result object
 		if(searchResult.mediaFragment) {
+			/*
+				FIXME the URL should be a "safe" URL, so for B&G only the safe play-out link should be shown.
+				Also the resource viewer must be able to identify the right media object using this safe URL
+			*/
 			if(searchResult.mediaFragment.hasOwnProperty('url')) { url += '&fragmentUrl=' + searchResult.mediaFragment.url; }
 			if(searchResult.mediaFragment.hasOwnProperty('start')) { url += '&s=' + searchResult.mediaFragment.start; }
 			if(searchResult.mediaFragment.hasOwnProperty('end')) { url += '&e=' + searchResult.mediaFragment.end; }

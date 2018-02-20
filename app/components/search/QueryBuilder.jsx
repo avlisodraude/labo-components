@@ -375,7 +375,8 @@ class QueryBuilder extends React.Component {
 	}
 
     totalDatesOutsideOfRange() {
-    	if(this.state.aggregations && this.state.aggregations[this.state.selectedDateRange.field]) {
+    	if(this.state.aggregations && this.state.selectedDateRange &&
+    		this.state.aggregations[this.state.selectedDateRange.field]) {
     		const startMillis = this.state.selectedDateRange.start
     		const endMillis = this.state.selectedDateRange.end
     		const outOfRangeBuckets = this.state.aggregations[this.state.selectedDateRange.field].filter(x => {
