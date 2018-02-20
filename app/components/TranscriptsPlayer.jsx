@@ -10,7 +10,7 @@ import AnnotationSummary from './annotation/AnnotationSummary';
 
 function TranscriptsPlayer(WrappedComponent) {
     return class extends WrappedComponent {
-        // TODO: remove before commit !
+        // TODO: remove before commit
         componentDidMount() {
             if (super.componentDidMount) super.componentDidMount();
             // console.log(this);
@@ -37,8 +37,6 @@ function TranscriptsPlayer(WrappedComponent) {
         }
 
         selectPlayer(mediaObject) {
-             console.log(mediaObject);
-            // console.log(this);
             const playerEventCallbacks = {
                 playProgress: this.playProgress.bind(this),
                 onPlay: this.onPlay.bind(this),
@@ -96,24 +94,26 @@ function TranscriptsPlayer(WrappedComponent) {
 
         /* ---------------------------- TRANSCRIPT METHODS ------------------------- */
         getCurrentAnnotation(sec) {
-            // console.log('getCurrentAnnotation');
+             // console.log('getCurrentAnnotation');
+            // let test = Fs.readAsDataURL('./Yoshua_Bengio.srt');
+            // console.log(test);
             sec = 2;
-            if (_interview.transcript) {
-                let pos = parseInt(sec) * 1000
-                let currentAnnotation = _interview.transcript.filter((a, index) => {
-                    if (a.start <= pos && a.end >= pos) {
-                        return true;
-                    } else if (pos < a.start && pos >= a.start - 500) {//first try to fetch the closest one AHEAD
-                        return true;
-                    } else if (pos > a.end && pos <= a.end + 500) {//then try to fetch the closest one BEFORE
-                        return true;
-                    }
-                    return false;
-                });
-                if (currentAnnotation.length > 0) {
-                    return currentAnnotation[0];
-                }
-            }
+            // if (_interview.transcript) {
+            //     let pos = parseInt(sec) * 1000
+            //     let currentAnnotation = _interview.transcript.filter((a, index) => {
+            //         if (a.start <= pos && a.end >= pos) {
+            //             return true;
+            //         } else if (pos < a.start && pos >= a.start - 500) {//first try to fetch the closest one AHEAD
+            //             return true;
+            //         } else if (pos > a.end && pos <= a.end + 500) {//then try to fetch the closest one BEFORE
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     if (currentAnnotation.length > 0) {
+            //         return currentAnnotation[0];
+            //     }
+            // }
             return null;
         }
 
@@ -157,14 +157,14 @@ function TranscriptsPlayer(WrappedComponent) {
         }
 
         gotoLine(index) {
-            // console.log(jw);
-            _clickedLine = _interview.transcript[index];
-            if (_clickedLine) {
-                jw.seek(_clickedLine.start / 1000);
-            }
-            // change history to resemble navigating the transcripts
-            this.updateHistory(_clickedLine.start, _clickedLine.end);
-
+             console.log('clicking line: ',index);
+            // _clickedLine = _interview.transcript[index];
+            // if (_clickedLine) {
+            //     jw.seek(_clickedLine.start / 1000);
+            // }
+            // // change history to resemble navigating the transcripts
+            // this.updateHistory(_clickedLine.start, _clickedLine.end);
+            return false;
 
         }
 
@@ -211,17 +211,15 @@ function TranscriptsPlayer(WrappedComponent) {
             // this.highlight(this.getCurrentSegment(jw.getPosition()), 'segment');
         }
 
-        // render() {
-        //     console.log(this);
-        //     return (
-        //         <WrappedComponent {...this.props} />
-        //     )
-        //     // console.log(super.render());
-        //     // return super.render();
-        // }
+        loadTranscripts(transcripts){
+             console.log(transcripts);
+            return transcripts.map((obj) =>{
+                return  <div id={obj.sequenceNr} className="sub " onClick={this.gotoLine.bind(this, obj.sequenceNr)}>
+                    <span class="data line-start-time">{obj.start}</span>&nbsp; {obj.words} </div>;
+            })
+        }
         /* ----------------- Rendering --------------------- */
         render() {
-            console.log(this.state);
             //update the activeSegment in the playerAPI
             if (this.state.start != -1 && this.state.end != -1 && this.state.playerAPI) {
                 this.state.playerAPI.setActiveSegment({
@@ -237,13 +235,11 @@ function TranscriptsPlayer(WrappedComponent) {
             let annotationSummary = null;
 
             // transcript vars
-            let transcript = null;
-            let _clickedLine = null;
+            let transcript = this.props.transcript || null;
+            let _clickedLine = this.getCurrentAnnotation(1234);
             let _clickedSegment = null;
-
+            let transcriptContainer = null;
             //only draw segmentation controls if configured
-
-
             if (this.state.playerAPI) {
                 if (this.props.annotationSupport.mediaSegment) {
                     const controls = {
@@ -301,29 +297,18 @@ function TranscriptsPlayer(WrappedComponent) {
             }
             // check if there is a transcript for the current media and if so display it.
             if (transcript) {
+                console.log('there is a transcript to display !');
+
+                transcriptContainer = this.loadTranscripts(transcript);
 
                 // return false;
             } else {
-                // console.log('no transcript to show');
+                 console.log('no transcript to show');
             }
 
             let player = this.selectPlayer(this.props.mediaObject) || null;
             return (
                 <div className={IDUtil.cssClassName('flex-player')}>
-                    {/*<div class="row">*/}
-                        {/*<div class="col-md-12 top-buffer">*/}
-                            {/*<div class="data transcript-heading">automatically generated captions</div>*/}
-                            {/*<div id="transcript-controls">*/}
-                                {/*<span id="{{line.number}}" class="sub" onclick="gotoLine({{loop.index -1}})">*/}
-								{/*<span class="data line-start-time">{{line.prettystart}}</span>&nbsp;{{line.content}}*/}
-							{/*</span><br/>*/}
-                            {/*</div>*/}
-                        {/*</div>*/}
-                    {/*</div>*/}
-                    {/*<div class="row top-buffer">                        */}
-                    {/*</div>*/}
-                    {/* enf of transcripts section*/}
-
                     <div className="row">
                         <div className="col-md-7" style={{overflowX: 'auto'}}>
                             <div>
@@ -370,6 +355,17 @@ function TranscriptsPlayer(WrappedComponent) {
                             {annotationSummary}
                         </div>
                     </div>
+                    <div class="row" id="trascripts">
+                        <div class="col-md-12 top-buffer">
+                            <div class="data transcript-heading">automatically generated captions</div>
+                            <div id="transcript-controls">
+                                    <span id="{{line.number}}" class="sub" onclick="gotoLine({{loop.index -1}})">
+								<span class="data line-start-time">line prettystart</span>&nbsp; line content
+							</span><br />
+                            </div>
+                        </div>
+                    </div>
+                    {transcriptContainer}
                     {/*{annotationControls}*/}
                 </div>
             )
