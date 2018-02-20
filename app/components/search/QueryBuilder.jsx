@@ -765,7 +765,7 @@ class QueryBuilder extends React.Component {
 							</form>
 						</div>
 					</div>
-					{layerOptions}
+					{/*layerOptions*/}
 					<div className="separator"></div>
 					{resultBlock}
 				</div>
