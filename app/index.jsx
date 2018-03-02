@@ -9,6 +9,7 @@ import ItemDetailsRecipe from './ItemDetailsRecipe';
 
 // workspace
 import WorkspaceProjectsRecipe from './WorkspaceProjectsRecipe';
+import WorkspaceCollectionsRecipe from './WorkspaceCollectionsRecipe';
 
 //other
 import ExampleRecipe from './ExampleRecipe';
@@ -67,6 +68,14 @@ export function cookRecipe (recipe, params, user, elementId, collectionMapping) 
 				collectionMapping={collectionMapping}
 			/>;
 		break;
+		case 'workspace-collections':
+            component = <WorkspaceCollectionsRecipe
+                recipe={recipe}
+                params={params}
+                user={user}
+                collectionMapping={collectionMapping}
+            />;
+        break;
 
 		case 'example':
 			component = <ExampleRecipe
