@@ -1,0 +1,22 @@
+#player_translation {
+  border: 1px solid $subdued-hover-color;
+  margin-bottom: 2rem;
+  margin-top: 10px;
+  max-height: 220px;
+  overflow: scroll;
+  padding: 1.6rem;
+}
+
+.currentLine {
+  color: crimson;
+  font-weight: bold;
+}
+
+.line-start-time {
+  color: $subdued-color;
+  display: inline-block;
+  font-size: 1.4rem;
+  font-weight: normal;
+  margin: 0 12px 0 0;
+  min-width: 60px;
+}
