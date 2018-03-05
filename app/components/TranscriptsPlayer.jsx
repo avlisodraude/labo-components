@@ -124,7 +124,6 @@ function TranscriptsPlayer(WrappedComponent) {
 
         /* ----------------- Rendering --------------------- */
         render() {
-            // const transcript = this.state.transcript || null,
             const playerEventCallbacks = {
                 playProgress: this.playProgress.bind(this),
                 onPlay: super.onPlay.bind(this),
