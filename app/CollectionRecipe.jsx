@@ -27,7 +27,11 @@ class CollectionRecipe extends React.Component {
 
 	componentDidMount() {
 		if(this.props.params.cids) {
-			CollectionUtil.generateCollectionConfigs(this.props.params.cids.split(','), this.onConfigsLoaded.bind(this));
+			CollectionUtil.generateCollectionConfigs(
+				this.props.user,
+				this.props.params.cids.split(','),
+				this.onConfigsLoaded.bind(this)
+			);
 		}
 	}
 

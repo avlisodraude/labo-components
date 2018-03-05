@@ -77,12 +77,15 @@ const CollectionAPI = {
 		xhr.open("POST", url);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(JSON.stringify(postData));
-	}
+	},
 
-	/*
-	//THIS ONE FETCHES THE COLLECTIONS VIA THE SEARCH_API (check if other projects, like motu/arttube still need this)
-	,listCollections: function(callback) {
+
+	//THIS ONE FETCHES THE COLLECTIONS VIA THE SEARCH_API
+	listCollections: function(collectionPrefix, callback) {
 	    var url = _config.COLLECTION_API_BASE  + "/list_collections";
+	    if(collectionPrefix) {
+	    	url += '/' + collectionPrefix
+	    }
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -93,10 +96,10 @@ const CollectionAPI = {
 				}
 			}
 		}
-		xhr.open("GET", url);
+		xhr.open("POST", url);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send();
-	}*/
+	}
 }
 
 export default CollectionAPI;

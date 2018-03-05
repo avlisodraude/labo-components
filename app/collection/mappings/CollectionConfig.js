@@ -18,7 +18,7 @@ class CollectionConfig {
 	constructor(collectionId, collectionStats, collectionInfo) {
 		this.collectionId = collectionId; //based on the ES index name
 		this.collectionStats = collectionStats; //ES stats (mostly about field types)
-		this.collectionInfo = collectionInfo; //CKAN metadata
+		this.collectionInfo = collectionInfo; //CKAN metadata (null for personal collections or outside of CLARIAH)
 
 		this.docType = null;
 		this.stringFields = null;
@@ -70,6 +70,14 @@ class CollectionConfig {
 		return this.collectionId;
 	}
 
+	//checks if there is a proper title / name from CKAN / workspace API, otherwise just returns the ID
+	getCollectionTitle() {
+		if(this.collectionInfo) {
+			return this.collectionInfo.title || this.collectionInfo.name;
+		}
+		return this.collectionId;
+	}
+
 	getCollectionStats() {
 		return this.collectionStats;
 	}
@@ -79,11 +87,16 @@ class CollectionConfig {
 	}
 
 	//TODO this will become a much more important function later on
+	//FIXME make the difference between CKAN / workspace API versions of the collectionInfo less weird
 	getSearchIndex() {
+		let searchIndex = this.collectionId;
 		if(this.collectionInfo) {
-			return this.collectionInfo.index;
+			searchIndex = this.collectionInfo.index
+			if(!searchIndex && this.collectionInfo.user && this.collectionInfo.id) {
+				searchIndex = 'personalcollection__' + this.collectionInfo.user + '__' + this.collectionInfo.id
+			}
 		}
-		return this.collectionId;
+		return searchIndex
 	}
 
 	getImageBaseUrl() {

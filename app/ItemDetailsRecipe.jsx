@@ -140,7 +140,7 @@ class ItemDetailsRecipe extends React.Component {
 	onLoadItemData(collectionId, resourceId, data) {
 		let found = data ? data.found : false;
 		if(collectionId && found != false) {
-			CollectionUtil.generateCollectionConfig(collectionId, function(config) {
+			CollectionUtil.generateCollectionConfig(this.props.user, collectionId, function(config) {
 				const itemDetailData = config.getItemDetailData(data);
 				found = itemDetailData == null ? false : true;
 				if(found) {

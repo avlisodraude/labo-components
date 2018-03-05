@@ -33,7 +33,11 @@ class QueryFactory extends React.Component {
 	//TODO probably move this to the comparative search recipe, components should not load data. Recipes should
 	componentDidMount() {
 		if(this.props.initialCollections) {
-			CollectionUtil.generateCollectionConfigs(this.props.initialCollections, this.onConfigsLoaded.bind(this));
+			CollectionUtil.generateCollectionConfigs(
+				this.props.user,
+				this.props.initialCollections,
+				this.onConfigsLoaded.bind(this)
+			);
 		}
 	}
 

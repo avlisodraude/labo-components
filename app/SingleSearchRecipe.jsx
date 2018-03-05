@@ -46,7 +46,12 @@ class SingleSearchRecipe extends React.Component {
 
 	componentDidMount() {
 		if(this.state.collectionId) {
-			CollectionUtil.generateCollectionConfig(this.state.collectionId, this.onLoadCollectionConfig.bind(this), true);
+			CollectionUtil.generateCollectionConfig(
+				this.props.user,
+				this.state.collectionId,
+				this.onLoadCollectionConfig.bind(this),
+				true
+			);
 		}
 	}
 
@@ -466,7 +471,7 @@ class SingleSearchRecipe extends React.Component {
 				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
 					Set collection ({
 						this.state.collectionConfig ?
-							this.state.collectionConfig.collectionInfo.title || null :
+							this.state.collectionConfig.getCollectionTitle() :
 							'none selected'
 					})
 				</button>

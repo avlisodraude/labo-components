@@ -12,6 +12,7 @@ In general what needs to be considered is:
 
 */
 
+import PersonalCollectionAPI from '../api/PersonalCollectionAPI';
 import CollectionAPI from '../api/CollectionAPI';
 import CKANAPI from '../api/CKANAPI';
 import CollectionConfig from '../collection/mappings/CollectionConfig';
@@ -22,7 +23,7 @@ import TimeUtil from '../util/TimeUtil';
 const CollectionUtil = {
 
 	//returns the correct CollectionConfig instance based on the collectionId
-	getCollectionClass(collectionId, lookupMapping = true) {
+	getCollectionClass(collectionId, lookupMapping = true, user = null) {
 		let configClass = null;
 		if(lookupMapping) {
 			configClass = CollectionMapping[collectionId];
@@ -43,16 +44,16 @@ const CollectionUtil = {
 	},
 
 	//called by the CollectionSelector
-	createCollectionConfig : function(collectionId, collectionStats, collectionInfo) {
-		const configClass = CollectionUtil.getCollectionClass(collectionId, true);
+	createCollectionConfig : function(user, collectionId, collectionStats, collectionInfo) {
+		const configClass = CollectionUtil.getCollectionClass(collectionId, true, user);
 		return new configClass(collectionId, collectionStats, collectionInfo)
 	},
 
 
-	generateCollectionConfigs : function(collectionIds, callback, lookupMapping = true) {
+	generateCollectionConfigs : function(user, collectionIds, callback, lookupMapping = true) {
 		const configs = [];
 		collectionIds.forEach((cid) => {
-			CollectionUtil.generateCollectionConfig(cid, (config) => {
+			CollectionUtil.generateCollectionConfig(user, cid, (config) => {
 				configs.push(config);
 				if(configs.length == collectionIds.length) {
 					callback(configs);
@@ -62,25 +63,53 @@ const CollectionUtil = {
 	},
 
 	//make sure this works also by passing the stats
-	generateCollectionConfig : function(collectionId, callback, lookupMapping = true) {
-		const configClass = CollectionUtil.getCollectionClass(collectionId, lookupMapping);
+	generateCollectionConfig : function(user, collectionId, callback, lookupMapping = true) {
+		const configClass = CollectionUtil.getCollectionClass(collectionId, lookupMapping, user);
 
 		//load the stats & information asynchronously TODO (rewrite to promise is nicer)
-		CollectionUtil.loadCollectionStats(collectionId, callback, configClass)
+		CollectionUtil.loadCollectionStats(user, collectionId, callback, configClass)
 	},
 
 	//loads the Elasticsearch stats of the provided collection
-	loadCollectionStats(collectionId, callback, configClass) {
+	loadCollectionStats(user, collectionId, callback, configClass) {
 		CollectionAPI.getCollectionStats(collectionId, function(collectionStats) {
-			CollectionUtil.loadCollectionInfo(collectionId, collectionStats, callback, configClass);
+			CollectionUtil.loadCollectionInfo(user, collectionId, collectionStats, callback, configClass);
 		});
 	},
 
+	//checks first whether the collection is a personal collection or not,
+	//then either asks CKAN or the workspace API for info
+	loadCollectionInfo(user, collectionId, collectionStats, callback, configClass) {
+		if(collectionId.startsWith('personalcollection')) {
+			CollectionUtil.loadPersonalCollectionInfo(user, collectionId, collectionStats, callback, configClass);
+		} else if(user){
+			CollectionUtil.loadCKANInfo(user, collectionId, collectionStats, callback, configClass);
+		} else {
+			callback(new configClass(collectionId, collectionStats, null));
+		}
+	},
+
 	//loads the CKAN metadata of the provided collection
-	loadCollectionInfo(collectionId, collectionStats, callback, configClass) {
+	loadCKANInfo(user, collectionId, collectionStats, callback, configClass) {
 		CKANAPI.getCollectionInfo(collectionId, function(collectionInfo) {
 			callback(new configClass(collectionId, collectionStats, collectionInfo));
 		});
+	},
+
+	//loads the (personal) collection metadata from the workspace API
+	loadPersonalCollectionInfo(user, collectionId, collectionStats, callback, configClass) {
+		//extract the workspace collection ID from the collectionID (by stripping off the user id + prefix)
+		const cid = CollectionUtil.toWorkspaceAPICollectionId(user, collectionId);
+		PersonalCollectionAPI.get(user.id, cid, function(collectionInfo) {
+			callback(new configClass(collectionId, collectionStats, collectionInfo));
+		});
+	},
+
+	toWorkspaceAPICollectionId(user, collectionId) {
+		if(collectionId.indexOf('personalcollection') != -1 && user) {
+			return collectionId.substring('personalcollection__'.length + user.id.length + 2);
+		}
+		return collectionId
 	},
 
 	SEARCH_LAYER_MAPPING : {

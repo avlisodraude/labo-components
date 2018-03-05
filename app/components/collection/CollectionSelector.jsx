@@ -29,6 +29,11 @@ class CollectionSelector extends React.Component {
 		CKANAPI.listCollections((collections) => {
 			this.setState({collectionList :  collections});
 		});
+		//TODO add collections to the list!!
+		CollectionAPI.listCollections('personalcollection__clariah_test', (collections) => {
+			console.debug('got my personal collections back!')
+			console.debug(collections);
+		})
 	}
 
 	//only works if a collection has been properly indexed!
@@ -63,7 +68,7 @@ class CollectionSelector extends React.Component {
 	------------------------------------------------------------------------------- */
 
 	onOutput(collectionId, collectionStats, collectionInfo) {
-		const collectionConfig = CollectionUtil.createCollectionConfig(collectionId, collectionStats, collectionInfo);
+		const collectionConfig = CollectionUtil.createCollectionConfig(this.props.user, collectionId, collectionStats, collectionInfo);
 		if(this.props.onOutput) {
 			if(collectionId) {
 				this.props.onOutput(this.constructor.name, collectionConfig);
