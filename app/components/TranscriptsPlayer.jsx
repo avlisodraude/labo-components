@@ -15,9 +15,9 @@ function TranscriptsPlayer(WrappedComponent) {
             super(props);
             this.state = {
                 ...props,
-                start: this.__getQueryParams()['s'] || -1,
+                start: this.__getQueryParams()['s'] || 0,
                 end: -1,
-                sequenceNr: this.__getQueryParams()['sn'] || -1
+                sequenceNr: this.__getQueryParams()['sn'] || 0
             }
         }
 
@@ -112,15 +112,19 @@ function TranscriptsPlayer(WrappedComponent) {
                         const st = (index === 1) ? prev.start : prev;
                         return (Math.abs(curr.start - goal) < Math.abs(st - goal) ? curr.start : st);
                     });
-                this.highlightLine(this.state.sequenceNr, this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"]);
-                this.setState({
-                    start: this.__getTranscriptByStartTime(transcript, closest)[0]["start"],
-                    sequenceNr: this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"] || null
-                }, () => {
-                    this.updateHistory(this.state);
-                });
+
+                if(Math.trunc(currentTime*1000) >= closest){
+                    this.highlightLine(this.state.sequenceNr, this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"]);
+                    this.setState({
+                        start: this.__getTranscriptByStartTime(transcript, closest)[0]["start"],
+                        sequenceNr: this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"] || null
+                    }, () => {
+                        this.updateHistory(this.state);
+                    });
+                }
             }
         }
+
 
         /* ----------------- Rendering --------------------- */
         render() {
