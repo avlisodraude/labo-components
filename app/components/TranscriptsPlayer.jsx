@@ -91,7 +91,7 @@ function TranscriptsPlayer(WrappedComponent) {
             const previousSequence = previousSequenceNr || 0,
                 previous = document.getElementById(previousSequence),
                 clickedLineID = document.getElementById(clickedLine || 0);
-            clickedLineID.parentNode.scrollTop = clickedLineID.offsetTop;
+            clickedLineID.parentNode.scrollTop = clickedLineID.offsetTop - 20;
             previous.classList.remove("currentLine");
             if (clickedLineID) {
                 clickedLineID.classList.add('currentLine')
