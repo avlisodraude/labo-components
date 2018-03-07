@@ -1,0 +1,38 @@
+@import url("https://fonts.googleapis.com/css?family=BenchNine");
+//@import url("https://fonts.googleapis.com/css?family=Overlock");
+
+#player_translation {
+  background-color: $timeline-bg;
+  border: 1px solid $image-overlay-bg;
+  color: #9493a1;
+  font-family: "BenchNine";
+  font-size: 1.5rem;
+  letter-spacing: .3px;
+  margin-bottom: 2rem;
+  margin-top: 10px;
+  max-height: 220px;
+  overflow: scroll;
+  padding: 1rem;
+  position: relative;
+
+  .currentLine {
+    color: white;
+  }
+
+  .line-start-time {
+    background-color: $fill-color;
+    border-radius: 4px;
+    color: white;
+    display: inline-block;
+    font-family: Curier;
+    font-size: 1rem;
+    margin: 0 10px 0 0;
+    min-width: 40px;
+    padding: 1px 6px;
+  }
+
+  .sub {
+    margin-bottom: 0.6rem;
+  }
+}
+
