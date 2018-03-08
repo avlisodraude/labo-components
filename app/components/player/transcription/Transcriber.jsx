@@ -41,20 +41,26 @@ class Transcriber extends React.PureComponent {
     }
 
     getSegmentByStartTime(time) {
-        return this.state.transcript.filter(function (obj) {
+        const lines = this.state.transcript.filter(function (obj) {
             return obj.start === time;
         });
+        if(lines.length > 0) {
+            return lines[0]
+        }
+        return null;
     }
 
     findClosestSegment(currentTime) {
-        let closest = 0;
-        this.state.transcript.some(function (a) {
-            if (a.start >= currentTime) {
-                return true;
-            }
-            closest = a.start;
+        let closest = this.state.transcript.find(function (a) {
+            return a.start >= currentTime;
         });
-        return this.getSegmentByStartTime(closest)[0]["sequenceNr"];
+        if(closest) {
+            const segment = this.getSegmentByStartTime(closest.start);
+            if(segment) {
+                return segment.sequenceNr || 0
+            }
+        }
+        return 0
     }
 
     componentDidUpdate() {

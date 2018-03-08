@@ -324,7 +324,7 @@ class ItemDetailsRecipe extends React.Component {
 			return content.mimeType.indexOf('video') !== -1;
 		})
 		if(videos.length > 0) {
-			const transcript = this.state.itemData.rawData.layer__asr || null;
+			const transcript = this.state.itemData.rawData.layer__asr || _transcript;
 			const content = videos.map((mediaObject, index) => {
 				mediaObject.id = 'video__' + index;
 				if(!isActive) {
