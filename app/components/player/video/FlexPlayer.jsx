@@ -11,6 +11,8 @@ import YouTubePlayer from './YouTubePlayer';
 import VideoTimeBar from '../segmentation/SegmentationTimeline';
 import SegmentationControls from '../segmentation/SegmentationControls';
 
+import Transcriber from '../transcription/Transcriber';
+
 import AnnotationTimeline from '../annotation/AnnotationTimeline';
 import AnnotationSummary from '../../annotation/AnnotationSummary';
 
@@ -54,8 +56,8 @@ class FlexPlayer extends React.Component {
 			playerAPI : null,
 			curPosition : 0,
 			duration : 0,
-			start : -1,
-			end : -1,
+			segmentStart : -1, //start point of the active ANNOTATION
+			segmentEnd : -1, //end point of the active ANNOTATION
 			paused : true,//FIXME call the player API instead (isPaused)?
 			fragmentMode : false, //only play the current fragment
 			annotations : [], //populated in onLoadAnnotations()
@@ -152,8 +154,8 @@ class FlexPlayer extends React.Component {
 	update() {
 		const activeSegment = this.state.playerAPI.getActiveSegment();
 		this.setState({
-			start : activeSegment.start,
-			end : activeSegment.end
+			segmentStart : activeSegment.start,
+			segmentEnd : activeSegment.end
 		})
 	}
 
@@ -211,22 +213,22 @@ class FlexPlayer extends React.Component {
 
 	setManualStart(start) {
 		if(start > 0 && start <= this.state.duration) {
-		    this.setState({start : start}, this.state.playerAPI.seek(start));
+		    this.setState({segmentStart : start}, this.state.playerAPI.seek(start));
 		}
 	}
 
 	setManualEnd(end) {
 		if(end > 0 && end <= this.state.duration) {
-		    this.setState({end : end}, this.state.playerAPI.seek(end));
+		    this.setState({segmentEnd : end}, this.state.playerAPI.seek(end));
 		}
 	}
 
 	playStart() {
-    	this.state.playerAPI.seek(this.state.start);
+    	this.state.playerAPI.seek(this.state.segmentStart);
 	}
 
 	playEnd() {
-    	this.state.playerAPI.seek(this.state.end);
+    	this.state.playerAPI.seek(this.state.segmentEnd);
 	}
 
 	setStart(start) {
@@ -241,7 +243,7 @@ class FlexPlayer extends React.Component {
 	    	ac = null;
 	    }
 		this.setState({
-			start : temp,
+			segmentStart : temp,
 			activeAnnotation : ac
 		});
 	}
@@ -258,7 +260,7 @@ class FlexPlayer extends React.Component {
 	    	ac = null;
 	    }
         this.setState({
-        	end : temp,
+        	segmentEnd : temp,
         	activeAnnotation : ac
         });
         if(skipPause == undefined) {
@@ -277,7 +279,7 @@ class FlexPlayer extends React.Component {
 	//Note: for now the fragment mode only enables the user to inspect the current
 	//fragment in isolation (only the VideoTimeBar is changed to show only the active segment)
 	switchMode() {
-		if(this.state.start != -1 && this.state.end != -1) {
+		if(this.state.segmentStart != -1 && this.state.segmentEnd != -1) {
 			if(this.state.fragmentMode === false) {
 				this.playStart();
 				//TODO make it play after switching!
@@ -483,19 +485,19 @@ class FlexPlayer extends React.Component {
 	newSegment() {
 		this.setState({
 			activeAnnotation : null,
-			start : -1,
-			end : -1
+			segmentStart : -1,
+			segmentEnd : -1
 		})
 	}
 
 	newSegmentFromLast() {
-		if(this.state.end > 0) {
+		if(this.state.segmentEnd > 0) {
 			this.setState({
 				activeAnnotation : null,
-				start : this.state.end,
-				end : -1
+				segmentStart : this.state.segmentEnd,
+				segmentEnd : -1
 			},
-			this.state.playerAPI.seek(this.state.end))
+			this.state.playerAPI.seek(this.state.segmentEnd))
 		} else {
 			this.newSegment();
 		}
@@ -510,8 +512,8 @@ class FlexPlayer extends React.Component {
 				this.props.resourceId,
 				this.props.mediaObject,
 				{
-					start : this.state.start,
-					end : this.state.end
+					start : this.state.segmentStart,
+					end : this.state.segmentEnd
 				},
 				this.state.activeAnnotation
 			)
@@ -536,10 +538,10 @@ class FlexPlayer extends React.Component {
 
 	render() {
 		//update the activeSegment in the playerAPI
-		if(this.state.start != -1 && this.state.end != -1 && this.state.playerAPI) {
+		if(this.state.segmentStart != -1 && this.state.segmentEnd != -1 && this.state.playerAPI) {
 			this.state.playerAPI.setActiveSegment({
-				start : this.state.start,
-				end : this.state.end
+				segmentStart : this.state.segmentStart,
+				segmentEnd : this.state.segmentEnd
 			});
 		}
 
@@ -548,6 +550,7 @@ class FlexPlayer extends React.Component {
 		let annotationBar = null;
 		let annotationControls = null;
 		let annotationSummary = null;
+		let transcriber = null;
 
 		//only draw segmentation controls if configured
 
@@ -562,16 +565,16 @@ class FlexPlayer extends React.Component {
 					<SegmentationControls
 						controls={controls}
 						annotation={this.state.activeAnnotation}
-						start={this.state.start}
-						end={this.state.end}/>
+						start={this.state.segmentStart}
+						end={this.state.segmentEnd}/>
 				);
 				segmentationBar = (
 					<VideoTimeBar
 						mediaObject={this.props.mediaObject}
 						duration={this.state.duration}
 						curPosition={this.state.curPosition}
-						start={this.state.start}
-						end={this.state.end}
+						start={this.state.segmentStart}
+						end={this.state.segmentEnd}
 						playerAPI={this.state.playerAPI}
 						fragmentMode={this.state.fragmentMode}/>
 				);
@@ -583,8 +586,8 @@ class FlexPlayer extends React.Component {
 						annotationLayers={this.props.annotationLayers}
 						duration={this.state.duration}
 						curPosition={this.state.curPosition}
-						start={this.state.start}
-						end={this.state.end}
+						start={this.state.segmentStart}
+						end={this.state.segmentEnd}
 						playerAPI={this.state.playerAPI}
 						fragmentMode={this.state.fragmentMode}/>
 				)
@@ -658,6 +661,16 @@ class FlexPlayer extends React.Component {
 					onPlayerReady={this.onPlayerReady.bind(this)}/>
 				);
 			}
+
+			if(this.props.transcript) {
+				transcriber = (
+					<Transcriber
+						transcript={this.props.transcript}
+						curPosition={this.state.curPosition}
+						playerAPI={this.state.playerAPI}
+					/>
+				)
+			}
 		}
 
 		return (
@@ -666,6 +679,7 @@ class FlexPlayer extends React.Component {
 					<div className="col-md-7" style={{overflowX : 'auto'}}>
 						<div>
 							{player}
+							{transcriber}
 						</div>
 						<div className="btn-toolbar" role="toolbar">
 							<div className="btn-group" role="group">
@@ -755,6 +769,8 @@ FlexPlayer.PropTypes = {
 	active: PropTypes.bool, // this reflects whether this component is visible, so the keyboard controls can be activated
 
 	fragmentMode : PropTypes.bool, //not properly supported anymore, should be removed later on
+
+	transcript : PropTypes.array, //audio transcript
 
 	annotationLayers : PropTypes.array //for future implementation
 

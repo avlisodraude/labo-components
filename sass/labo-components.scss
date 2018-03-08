@@ -1,3 +1,6 @@
+/* import fonts */
+@import url("https://fonts.googleapis.com/css?family=BenchNine");
+
 /* then import the default bootstrap overrides made for this component library */
 @import "./_bootstrap-overrides.scss";
 
@@ -35,7 +38,3 @@
   /* Note: There is a reset in on workspace to disable bootstrap for its components */
   @import './workspace/index.scss';
 }
-
-
-/* Custom stylings for the Transcripts player */
-@import './trancript_player';

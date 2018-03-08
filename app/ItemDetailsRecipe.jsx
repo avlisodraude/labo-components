@@ -25,7 +25,6 @@ import CollectionUtil from './util/CollectionUtil';
 
 import ProjectSelector from './components/projects/ProjectSelector';
 import BookmarkSelector from './components/bookmark/BookmarkSelector';
-import TranscriptsPlayer from './components/TranscriptsPlayer';
 
 /*
 	1. The ItemDetailsRecipe takes care of tying the components together according to the recipe
@@ -332,7 +331,7 @@ class ItemDetailsRecipe extends React.Component {
 					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
 				}
 				return (
-					<TranscriptsPlayer
+					<FlexPlayer
 						user={this.props.user} //current user
 						project={this.state.activeProject} //selected via the ProjectSelector
 						resourceId={this.state.itemData.resourceId}
@@ -365,7 +364,7 @@ class ItemDetailsRecipe extends React.Component {
 					isActive = this.checkMediaObjectIsSelected.call(this, mediaObject);
 				}
 				return (
-					<TranscriptsPlayer
+					<FlexPlayer
 						user={this.props.user} //current user
 						project={this.state.activeProject} //selected via the ProjectSelector
 						resourceId={this.state.itemData.resourceId}
