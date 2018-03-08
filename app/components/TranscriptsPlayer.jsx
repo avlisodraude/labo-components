@@ -51,6 +51,20 @@ function TranscriptsPlayer(WrappedComponent) {
             }
         }
 
+        loadTranscripts(transcript) {
+            return transcript.map((obj) => {
+                return (
+                    <div
+                        id={obj.sequenceNr} className="sub "
+                        onClick={this.gotoLine.bind(this, obj.sequenceNr)}>
+                        <span className="data line-start-time">
+                            {TimeUtil.formatMillisToTime(obj.start)}
+                            </span>&nbsp; {obj.words}
+                    </div>
+                );
+            })
+        }
+
         __getClosestLine(transcript, currentTime) {
             let closest = 0;
             transcript.some(function (a) {
@@ -60,6 +74,36 @@ function TranscriptsPlayer(WrappedComponent) {
                 closest = a.start;
             });
             return closest;
+        }
+
+        __getQueryParams() {
+            const qs = document.location.search.split('+').join(' '),
+                params = {},
+                re = /[?&]?([^=]+)=([^&]*)/g;
+            let tokens;
+            while (tokens = re.exec(qs)) {
+                params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+            }
+            return params;
+        }
+
+        // Helper method to update url params
+        updateHistory(clickedLine) {
+            const query = this.__getQueryParams(),
+                url = '?id=' + query.id + '&cid=' + query.cid + '&st=' + query.st +
+                    '&s=' + clickedLine.start + '&sn=' + (clickedLine.sequenceNr || 0);
+            window.history.pushState('play', 'Play', url);
+        }
+
+        highlightLine(previousSequenceNr, clickedLine) {
+            clickedLine = (clickedLine !== -1 ? clickedLine : 0);
+
+            const clickedLineID = document.getElementById(clickedLine || 0);
+            clickedLineID.parentNode.scrollTop = clickedLineID.offsetTop - 20;
+            $("#player_translation> div").removeClass("currentLine");
+            if (clickedLineID) {
+                clickedLineID.classList.add('currentLine')
+            }
         }
 
         __getTranscriptByStartTime(transcript, time) {
@@ -97,51 +141,6 @@ function TranscriptsPlayer(WrappedComponent) {
                 this.highlightLine(this.state.sequenceNr, transcriptByStartTime[0]['sequenceNr']);
             }
         }
-
-        loadTranscripts(transcript) {
-            return transcript.map((obj) => {
-                return (
-                    <div
-                        id={obj.sequenceNr} className="sub "
-                        onClick={this.gotoLine.bind(this, obj.sequenceNr)}>
-                        <span className="data line-start-time">
-                            {TimeUtil.formatMillisToTime(obj.start)}
-                            </span>&nbsp; {obj.words}
-                    </div>
-                );
-            })
-        }
-
-        __getQueryParams() {
-            const qs = document.location.search.split('+').join(' '),
-                params = {},
-                re = /[?&]?([^=]+)=([^&]*)/g;
-            let tokens;
-            while (tokens = re.exec(qs)) {
-                params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
-            }
-            return params;
-        }
-
-        // Helper method to update url params
-        updateHistory(clickedLine) {
-            const query = this.__getQueryParams(),
-                url = '?id=' + query.id + '&cid=' + query.cid + '&st=' + query.st +
-                    '&s=' + clickedLine.start + '&sn=' + (clickedLine.sequenceNr || 0);
-            window.history.pushState('play', 'Play', url);
-        }
-
-        highlightLine(previousSequenceNr, clickedLine) {
-            clickedLine = (clickedLine !== -1 ? clickedLine : 0);
-
-            const clickedLineID = document.getElementById(clickedLine || 0);
-            clickedLineID.parentNode.scrollTop = clickedLineID.offsetTop - 20;
-            $("#player_translation> div").removeClass("currentLine");
-            if (clickedLineID) {
-                clickedLineID.classList.add('currentLine')
-            }
-        }
-
 
         /* ----------------- Rendering --------------------- */
         render() {
