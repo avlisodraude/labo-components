@@ -51,6 +51,53 @@ function TranscriptsPlayer(WrappedComponent) {
             }
         }
 
+        __getClosestLine(transcript, currentTime) {
+            let closest = 0;
+            transcript.some(function (a) {
+                if (a.start >= currentTime) {
+                    return true;
+                }
+                closest = a.start;
+            });
+            return closest;
+        }
+
+        __getTranscriptByStartTime(transcript, time) {
+            return transcript.filter(function (obj) {
+                return obj.start === time;
+            });
+        }
+
+        findClosestSegment(currentTime) {
+            if (this) {
+                const transcript = this.state.transcript,
+                    goal = currentTime * 1000,
+                    closest = transcript.reduce(function (prev, curr, index) {
+                        const st = (index === 1) ? prev.start : prev;
+                        return (Math.abs(curr.start - goal) < Math.abs(st - goal) ? curr.start : st);
+                    });
+
+                if (Math.trunc(currentTime * 1000) >= closest) {
+                    this.setState({
+                        start: this.__getTranscriptByStartTime(transcript, closest)[0]["start"],
+                        sequenceNr: this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"] || null
+                    }, () => {
+                        this.updateHistory(this.state);
+                        this.highlightLine(this.state.sequenceNr, this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"]);
+                    });
+                }
+            }
+        }
+
+        onSeek(data) {
+            if (data.type === 'seeked' && this.state.transcript) {
+                const currTime = data.target.currentTime,
+                    closestLine = this.__getClosestLine(this.state.transcript, Math.trunc(currTime * 1000)),
+                    transcriptByStartTime = this.__getTranscriptByStartTime(this.state.transcript, closestLine);
+                this.highlightLine(this.state.sequenceNr, transcriptByStartTime[0]['sequenceNr']);
+            }
+        }
+
         loadTranscripts(transcript) {
             return transcript.map((obj) => {
                 return (
@@ -86,42 +133,12 @@ function TranscriptsPlayer(WrappedComponent) {
 
         highlightLine(previousSequenceNr, clickedLine) {
             clickedLine = (clickedLine !== -1 ? clickedLine : 0);
-            previousSequenceNr = (previousSequenceNr !== -1) ? previousSequenceNr : 0;
 
-            const previousSequence = previousSequenceNr || 0,
-                previous = document.getElementById(previousSequence),
-                clickedLineID = document.getElementById(clickedLine || 0);
+            const clickedLineID = document.getElementById(clickedLine || 0);
             clickedLineID.parentNode.scrollTop = clickedLineID.offsetTop - 20;
-            previous.classList.remove("currentLine");
+            $("#player_translation> div").removeClass("currentLine");
             if (clickedLineID) {
                 clickedLineID.classList.add('currentLine')
-            }
-        }
-
-        __getTranscriptByStartTime(transcript, time) {
-            return transcript.filter(function (obj) {
-                return obj.start === time;
-            });
-        }
-
-        findClosestSegment(currentTime) {
-            if (this) {
-                const transcript = this.state.transcript,
-                    goal = currentTime * 1000,
-                    closest = transcript.reduce(function (prev, curr, index) {
-                        const st = (index === 1) ? prev.start : prev;
-                        return (Math.abs(curr.start - goal) < Math.abs(st - goal) ? curr.start : st);
-                    });
-
-                if(Math.trunc(currentTime*1000) >= closest){
-                    this.highlightLine(this.state.sequenceNr, this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"]);
-                    this.setState({
-                        start: this.__getTranscriptByStartTime(transcript, closest)[0]["start"],
-                        sequenceNr: this.__getTranscriptByStartTime(transcript, closest)[0]["sequenceNr"] || null
-                    }, () => {
-                        this.updateHistory(this.state);
-                    });
-                }
             }
         }
 
@@ -134,7 +151,7 @@ function TranscriptsPlayer(WrappedComponent) {
                 onPause: super.onPause.bind(this),
                 onFinish: super.onFinish.bind(this),
                 loadProgress: super.loadProgress.bind(this),
-                onSeek: super.onSeek.bind(this)
+                onSeek: this.onSeek.bind(this)
             };
             let transcriptContainer = null,
                 player = null;
@@ -142,7 +159,7 @@ function TranscriptsPlayer(WrappedComponent) {
             if (this.state.transcript) {
                 transcriptContainer = this.loadTranscripts(this.state.transcript);
             } else {
-                console.log('No transcript, then render the parent ...');
+                console.log('No transcript to render, then render the parent ...');
                 return super.render();
             }
 
