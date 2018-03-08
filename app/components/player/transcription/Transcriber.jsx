@@ -52,14 +52,14 @@ class Transcriber extends React.PureComponent {
 
     //FIXME make this one faster
     findClosestSegment(currentTime) {
-        let closest = this.state.transcript.find(function (a) {
+        let index = this.state.transcript.findIndex(function (a) {
             return a.start >= currentTime;
         });
-        if(closest) {
-            const segment = this.getSegmentByStartTime(closest.start);
-            if(segment) {
-                return segment.sequenceNr || 0
-            }
+        index = index <= 0 ? 0 : index -1;
+        const closest = this.state.transcript[index];
+        const segment = this.getSegmentByStartTime(closest.start);
+        if(segment) {
+            return segment.sequenceNr || 0
         }
         return 0
     }
