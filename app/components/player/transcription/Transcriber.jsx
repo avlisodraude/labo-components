@@ -12,11 +12,12 @@ class Transcriber extends React.PureComponent {
         }
         this.userHasScrolled = false;
         this.alertTimerId = null;
+        this.GUID = IDUtil.guid();
     }
 
     componentDidMount() {
         //make sure the user can still scroll through the transcript
-        const transcriptWindow = document.getElementById('transcriber');
+        const transcriptWindow = document.getElementById(this.GUID);
         if(transcriptWindow) {
             transcriptWindow.onscroll = (e) => {
                 if(this.alertTimerId == null) {
@@ -82,7 +83,7 @@ class Transcriber extends React.PureComponent {
 
         //FIXME currently there can only be one transcriber on the screen...
         return (
-            <div id="transcriber" className={IDUtil.cssClassName('transcriber')}>
+            <div id={this.GUID} className={IDUtil.cssClassName('transcriber')}>
                 {transcriptContainer}
             </div>
         )
