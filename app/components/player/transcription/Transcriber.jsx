@@ -50,6 +50,7 @@ class Transcriber extends React.PureComponent {
         return null;
     }
 
+    //FIXME make this one faster
     findClosestSegment(currentTime) {
         let closest = this.state.transcript.find(function (a) {
             return a.start >= currentTime;
