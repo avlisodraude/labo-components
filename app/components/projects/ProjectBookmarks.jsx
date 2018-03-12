@@ -6,116 +6,102 @@ import ProjectWrapper from './ProjectWrapper';
 import PropTypes from 'prop-types';
 
 /**
- * Main page for a project's bookmarks and annotations. This page mainly handles
- * the view selection: Bookmark- or Annotation centric.
- */
+* Main page for a project's bookmarks and annotations. This page mainly handles
+* the view selection: Bookmark- or Annotation centric.
+*/
 class ProjectBookmarks extends React.PureComponent {
-  /**
-   * Construct this component
-   */
-  constructor(props) {
-    super(props);
 
-    // unique keys used for storage
-    this.keys = {
-      view: 'bg__project-bookmarks-view'
-    };
+    constructor(props) {
+        super(props);
 
-    // get view from session storage
-    const view =
-      window.sessionStorage.getItem(this.keys.view) || 'bookmark-centric'; // bookmark-centric, annotation-centric
-    this.state = {
-      annotations: [],
-      loading: true,
-      view: view
-    };
+        // unique keys used for storage
+        this.keys = {
+            view: 'bg__project-bookmarks-view'
+        };
 
-    this.viewChange = this.viewChange.bind(this);
-  }
+        // get view from session storage (bookmark-centric OR annotation-centric)
+        const view = window.sessionStorage.getItem(this.keys.view) || 'bookmark-centric';
+        this.state = {
+            annotations: [],
+            loading: true,
+            view: view
+        };
 
-  /**
-   * View changes
-   * @param {SyntheticEvent} e Event
-   */
-  viewChange(e) {
-    const view = e.target.value;
-
-    // store view to session storage
-    window.sessionStorage.setItem(this.keys.view, view);
-
-    this.setState({
-      view
-    });
-  }
-
-  /**
-   * React render function
-   *
-   * @return {Element}
-   */
-  render() {
-    let viewComponent = null;
-
-    // set viewComponent, based on the current state.view
-
-    switch (this.state.view) {
-      case 'bookmark-centric':
-        viewComponent = (
-          <BookmarkView user={this.props.user} project={this.props.project} />
-        );
-        break;
-      case 'annotation-centric':
-        viewComponent = (
-          <AnnotationView user={this.props.user} project={this.props.project} />
-        );
-        break;
+        this.viewChange = this.viewChange.bind(this);
     }
 
-    return (
-      <div className={IDUtil.cssClassName('project-bookmarks')}>
-        <div className="tools">
-          <div className="view">
-            <h3>View</h3>
-            <div className="radiogroup">
-              <input
-                type="radio"
-                name="view"
-                value="bookmark-centric"
-                id="view-bookmark"
-                checked={this.state.view === 'bookmark-centric'}
-                onChange={this.viewChange}
-              />
-              <label htmlFor="view-bookmark">Bookmark-centric</label>
+    viewChange(e) {
+        const view = e.target.value;
 
-              <input
-                type="radio"
-                name="view"
-                value="annotation-centric"
-                id="view-annotation"
-                checked={this.state.view === 'annotation-centric'}
-                onChange={this.viewChange}
-              />
-              <label htmlFor="view-annotation">Annotation-centric</label>
+        // store view to session storage
+        window.sessionStorage.setItem(this.keys.view, view);
+
+        this.setState({
+            view
+        });
+    }
+
+    render() {
+        let viewComponent = null;
+
+        // set viewComponent, based on the current state.view
+
+        switch (this.state.view) {
+            case 'bookmark-centric': viewComponent = (
+                    <BookmarkView user={this.props.user} project={this.props.project} />
+                );
+                break;
+            case 'annotation-centric': viewComponent = (
+                <AnnotationView user={this.props.user} project={this.props.project} />
+                );
+                break;
+        }
+
+    return (
+        <div className={IDUtil.cssClassName('project-bookmarks')}>
+            <div className="tools">
+                <div className="view">
+                    <h3>View</h3>
+                    <div className="radiogroup">
+                        <input
+                            type="radio"
+                            name="view"
+                            value="bookmark-centric"
+                            id="view-bookmark"
+                            checked={this.state.view === 'bookmark-centric'}
+                            onChange={this.viewChange}/>
+
+                        <label htmlFor="view-bookmark">Bookmark-centric</label>
+
+                        <input
+                            type="radio"
+                            name="view"
+                            value="annotation-centric"
+                            id="view-annotation"
+                            checked={this.state.view === 'annotation-centric'}
+                            onChange={this.viewChange}/>
+
+                        <label htmlFor="view-annotation">Annotation-centric</label>
+                    </div>
+                </div>
             </div>
-          </div>
+            {viewComponent}
         </div>
-        {viewComponent}
-      </div>
-    );
-  }
+        );
+    }
 }
 
 ProjectBookmarks.propTypes = {
-  user: PropTypes.object.isRequired,
-  project: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired,
+    project: PropTypes.object.isRequired
 };
 
 class WrappedProjectBookmarks extends React.PureComponent {
-  render() {
-    return (
-      <ProjectWrapper renderComponent={ProjectBookmarks} {...this.props} />
-    );
-  }
+    render() {
+        return (
+            <ProjectWrapper renderComponent={ProjectBookmarks} {...this.props} />
+            );
+    }
 }
 
 WrappedProjectBookmarks.propTypes = ProjectBookmarks.propTypes;

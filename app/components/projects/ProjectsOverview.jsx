@@ -9,52 +9,42 @@ import { setBreadCrumbsFromMatch } from '../helpers/BreadCrumbs';
  * The data handling is done in the ProjectTable component.
  */
 class ProjectsOverview extends React.PureComponent {
-  /**
-   * Construct this component
-   */
-  constructor(props) {
-    super(props);
-  }
 
-  /**
-   * React lifecycle event
-   */
-  componentDidMount() {
-    setBreadCrumbsFromMatch(this.props.match);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  /**
-   * React render function
-   *
-   * @return {Element}
-   */
-  render() {
-    return (
-      <div className={IDUtil.cssClassName('projects-overview')}>
-        <div className="info-bar">
-          <Link to="/workspace/projects/create" className="btn primary add">
-            Create User Project
-          </Link>
-          <h2>User Projects</h2>
-          <p>Store and share Bookmarks & Annotations and Tool Sessions</p>
-        </div>
+    componentDidMount() {
+        setBreadCrumbsFromMatch(this.props.match);
+    }
 
-        <ProjectTable api={this.props.api} user={this.props.user} />
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className={IDUtil.cssClassName('projects-overview')}>
+                <div className="info-bar">
+                    <Link to="/workspace/projects/create" className="btn primary add">
+                        Create User Project
+                    </Link>
+                    <h2>User Projects</h2>
+                    <p>Store and share Bookmarks & Annotations and Tool Sessions</p>
+                </div>
+
+                <ProjectTable api={this.props.api} user={this.props.user} />
+            </div>
+        );
+    }
 }
 
 ProjectsOverview.propTypes = {
-  // project api
-  api: PropTypes.shape({
-    list: PropTypes.func.isRequired
-  }),
+    // project api
+    api: PropTypes.shape({
+        list: PropTypes.func.isRequired
+    }),
 
-  // current user object used for defining access roles per project
-  user: PropTypes.shape({
-    id: PropTypes.number.isRequired
-  }).isRequired
+    // current user object used for defining access roles per project
+    user: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    }).isRequired
 };
 
 export default ProjectsOverview;
