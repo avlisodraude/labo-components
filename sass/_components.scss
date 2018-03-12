@@ -380,7 +380,12 @@
 	}
 }
 
-.bg__segmentation-controls {} /* SegmentationControls.jsx */
+.bg__segmentation-controls { /* SegmentationControls.jsx */
+	input[type=text] {
+		min-width: 60px;
+	}
+
+}
 
 .bg__segmentation-timeline { /* SegmentationTimeline.jsx */
 	width:100%;
@@ -405,37 +410,35 @@
 /* ==================== transcription ============================================ */
 
 .bg__transcriber { /* Transcriber.jsx */
-	background-color: $timeline-bg;
-	border: 1px solid $image-overlay-bg;
-	color: #9493a1;
-	font-family: "BenchNine";
-	font-size: 1.5rem;
-	letter-spacing: .3px;
-	margin-bottom: 2rem;
+	background-color: white;
+	font-size: 80%;
+	color: black;
+	margin-bottom: 10px;
 	margin-top: 10px;
 	max-height: 220px;
-	overflow: scroll;
-	padding: 1rem;
+	overflow-y: scroll;
+	padding: 5px;
 	position: relative;
 
 	.currentLine {
-		color: white;
+		color: $highlight-color;
 	}
 
 	.line-start-time {
-		background-color: $fill-color;
-		border-radius: 4px;
+		background-color: black;
 		color: white;
 		display: inline-block;
-		font-family: Curier;
-		font-size: 1rem;
+		font-size: 80%;
 		margin: 0 10px 0 0;
 		min-width: 40px;
-		padding: 1px 6px;
+		padding: 2px 3px;
 	}
 
 	.sub {
-		margin-bottom: 0.6rem;
+		margin-bottom: 3px;
+		&:hover {
+			color: $highlight-color;
+		}
 	}
 }
 

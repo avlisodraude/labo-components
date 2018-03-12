@@ -679,7 +679,6 @@ class FlexPlayer extends React.Component {
 					<div className="col-md-7" style={{overflowX : 'auto'}}>
 						<div>
 							{player}
-							{transcriber}
 						</div>
 						<div className="btn-toolbar" role="toolbar">
 							<div className="btn-group" role="group">
@@ -723,6 +722,7 @@ class FlexPlayer extends React.Component {
 					</div>
 				</div>
 				{annotationControls}
+				{transcriber}
 			</div>
 		)
 	}
