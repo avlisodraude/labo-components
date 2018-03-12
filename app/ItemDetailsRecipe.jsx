@@ -26,6 +26,8 @@ import CollectionUtil from './util/CollectionUtil';
 import ProjectSelector from './components/projects/ProjectSelector';
 import BookmarkSelector from './components/bookmark/BookmarkSelector';
 
+//import TranscriptExample from './components/transcript.json';
+
 /*
 	1. The ItemDetailsRecipe takes care of tying the components together according to the recipe
 	2. Each media player (and any other annotation target) in the recipe takes care of loading its own annotations
@@ -324,7 +326,7 @@ class ItemDetailsRecipe extends React.Component {
 			return content.mimeType.indexOf('video') !== -1;
 		})
 		if(videos.length > 0) {
-			const transcript = this.state.itemData.rawData.layer__asr || _transcript;
+			const transcript = this.state.itemData.rawData.layer__asr || null; //TranscriptExample;
 			const content = videos.map((mediaObject, index) => {
 				mediaObject.id = 'video__' + index;
 				if(!isActive) {
