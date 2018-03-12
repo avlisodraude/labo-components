@@ -1,5 +1,5 @@
 import CollectionSelector from './components/collection/CollectionSelector';
-import ProjectSelector from './components/projects/ProjectSelector';
+import ProjectSelector from './components/workspace/projects/ProjectSelector';
 import BookmarkSelector from './components/bookmark/BookmarkSelector';
 
 import QueryBuilder from './components/search/QueryBuilder';

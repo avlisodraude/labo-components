@@ -2,11 +2,11 @@ import classNames from 'classnames';
 import IDUtil from './util/IDUtil';
 
 import PersonalCollectionAPI from './api/PersonalCollectionAPI';
-import CollectionOverview from './components/personalcollections/CollectionsOverview';
-import CollectionCreate from './components/personalcollections/CollectionCreate';
-import CollectionDetails from './components/personalcollections/CollectionDetails';
-import CollectionEdit from './components/personalcollections/CollectionEdit';
-import DataEntryEdit from './components/personalcollections/DataEntryEdit';
+import CollectionOverview from './components/workspace/personalcollections/CollectionsOverview';
+import CollectionCreate from './components/workspace/personalcollections/CollectionCreate';
+import CollectionDetails from './components/workspace/personalcollections/CollectionDetails';
+import CollectionEdit from './components/workspace/personalcollections/CollectionEdit';
+import DataEntryEdit from './components/workspace/personalcollections/DataEntryEdit';
 
 //Import others
 

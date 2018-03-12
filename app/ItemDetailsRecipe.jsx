@@ -23,7 +23,7 @@ import AnnotationStore from './flux/AnnotationStore';
 
 import CollectionUtil from './util/CollectionUtil';
 
-import ProjectSelector from './components/projects/ProjectSelector';
+import ProjectSelector from './components/workspace/projects/ProjectSelector';
 import BookmarkSelector from './components/bookmark/BookmarkSelector';
 
 //import TranscriptExample from './components/transcript.json';
@@ -326,7 +326,7 @@ class ItemDetailsRecipe extends React.Component {
 			return content.mimeType.indexOf('video') !== -1;
 		})
 		if(videos.length > 0) {
-			const transcript = this.state.itemData.rawData.layer__asr || null; //TranscriptExample;
+			const transcript = this.state.itemData.rawData.layer__asr || null;//TranscriptExample;
 			const content = videos.map((mediaObject, index) => {
 				mediaObject.id = 'video__' + index;
 				if(!isActive) {

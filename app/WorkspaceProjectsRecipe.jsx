@@ -1,12 +1,20 @@
-import classNames from 'classnames';
-import IDUtil from './util/IDUtil';
 import ProjectAPI from './api/ProjectAPI';
-import ProjectBookmarks from './components/projects/ProjectBookmarks';
-import ProjectCreate from './components/projects/ProjectCreate';
-import ProjectDetails from './components/projects/ProjectDetails';
-import ProjectEdit from './components/projects/ProjectEdit';
-import ProjectSessions from './components/projects/ProjectSessions';
-import ProjectsOverview from './components/projects/ProjectsOverview';
+
+import IDUtil from './util/IDUtil';
+
+//bookmark related view
+import ProjectAnnotationView from './components/workspace/projects/annotation/ProjectAnnotationView';
+
+//basic crud views
+import ProjectListView from './components/workspace/projects/crud/ProjectListView';
+import ProjectCreateView from './components/workspace/projects/crud/ProjectCreateView';
+import ProjectDetailsView from './components/workspace/projects/crud/ProjectDetailsView';
+import ProjectEditView from './components/workspace/projects/crud/ProjectEditView';
+
+//session view
+import ProjectSessionView from './components/workspace/projects/session/ProjectSessionView';
+
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
@@ -35,22 +43,22 @@ class WorkspaceProjects extends Component {
             <Router>
                 <Switch>
                     <Route exact path="/workspace/projects"
-                        render={this.getPropsRenderer(ProjectsOverview, this.props, {api: ProjectAPI} )} />
+                        render={this.getPropsRenderer(ProjectListView, this.props, {api: ProjectAPI} )} />
                     <Route exact path="/workspace/projects/create"
-                        render={this.getPropsRenderer(ProjectCreate, this.props, {api: ProjectAPI} )} />
+                        render={this.getPropsRenderer(ProjectCreateView, this.props, {api: ProjectAPI} )} />
 
                     <Route exact path="/workspace/projects/:id" render={({ match }) => (
                         <Redirect to={`/workspace/projects/${match.params.id}/bookmarks`} />
                     )} />
 
                     <Route path="/workspace/projects/:id/bookmarks"
-                        render={this.getPropsRenderer(ProjectBookmarks, this.props, {api: ProjectAPI})} />
+                        render={this.getPropsRenderer(ProjectAnnotationView, this.props, {api: ProjectAPI})} />
                     <Route path="/workspace/projects/:id/sessions"
-                        render={this.getPropsRenderer(ProjectSessions, this.props, {api: ProjectAPI})} />
+                        render={this.getPropsRenderer(ProjectSessionView, this.props, {api: ProjectAPI})} />
                     <Route path="/workspace/projects/:id/details"
-                        render={this.getPropsRenderer(ProjectDetails, this.props, {api: ProjectAPI})} />
+                        render={this.getPropsRenderer(ProjectDetailsView, this.props, {api: ProjectAPI})} />
                     <Route path="/workspace/projects/:id/edit"
-                        render={this.getPropsRenderer(ProjectEdit, this.props, {api: ProjectAPI})} />
+                        render={this.getPropsRenderer(ProjectEditView, this.props, {api: ProjectAPI})} />
                 </Switch>
             </Router>
         );
