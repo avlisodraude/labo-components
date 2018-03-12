@@ -55,9 +55,11 @@ class Transcriber extends React.PureComponent {
         let index = this.state.transcript.findIndex(function (a) {
             return a.start >= currentTime;
         });
-        index = index <= 0 ? 0 : index -1;
-        const closest = this.state.transcript[index];
-        const segment = this.getSegmentByStartTime(closest.start);
+        //adjust the index to the previous item when the start time is larger than the current time
+        if(this.state.transcript[index] && this.state.transcript[index].start > currentTime) {
+            index = index <= 0 ? 0 : index -1;
+        }
+        const segment = this.getSegmentByStartTime(this.state.transcript[index].start);
         if(segment) {
             return segment.sequenceNr || 0
         }
