@@ -71,7 +71,7 @@ class Transcriber extends React.PureComponent {
         const segmentId = this.findClosestSegment(Math.trunc(this.props.curPosition * 1000))
         const line = document.getElementById(segmentId);
         if(line && !this.userHasScrolled) {
-            line.parentNode.scrollTop = line.offsetTop - 20;
+            line.parentNode.scrollTop = line.offsetTop - 26;
         }
     }
 
