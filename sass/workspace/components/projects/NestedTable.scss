@@ -79,7 +79,7 @@
         background-image: $arrowUpDarkUrl;
       }
 
-      @import '_count.scss';
+      @import '../_count.scss';
 
       &.zero .count{
         background-color: $clDarkGrey;

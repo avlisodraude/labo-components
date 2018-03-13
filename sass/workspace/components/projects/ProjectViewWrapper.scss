@@ -1,6 +1,6 @@
 .bg__project-view-wrapper{
 
-  @import './infoBar.scss';
+  @import '../infoBar.scss';
 
   .info-bar{
     h2, p{
@@ -35,7 +35,7 @@
         background-color: $clGrey;
       }
 
-      @import '_count.scss';
+      @import '../_count.scss';
     }
   }
 

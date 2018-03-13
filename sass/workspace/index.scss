@@ -7,8 +7,10 @@
 @import './style/_layout.scss';
 @import './style/_mixins.scss';
 
+// Workspace -- General
+@import './components/SortTable.scss';
+
 // Workspace -- Projects
-@import './components/projects/SortTable.scss';
 @import './components/projects/ProjectListView.scss';
 @import './components/projects/ProjectForm.scss';
 @import './components/projects/ProjectViewWrapper.scss';
@@ -23,6 +25,9 @@
 @import './components/projects/AnnotationTable.scss';
 @import './components/projects/AnnotationRow.scss';
 
+
+// Workspace -- Personal collections
+@import './components/personalcollections/CollectionTable.scss';
 
 // Helpers
 @import './components/helpers/BulkActions.scss';
