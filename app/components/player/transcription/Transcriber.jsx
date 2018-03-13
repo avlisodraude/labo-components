@@ -41,8 +41,14 @@ class Transcriber extends React.PureComponent {
     }
 
     gotoLine(index) {
-        this.userHasScrolled = false;
-        this.props.playerAPI.seek(this.state.transcript[index].start / 1000);
+        //find object based on sequenceNr
+        this.state.transcript.find(function(element, i) {
+            if(element.sequenceNr === index) {
+                this.userHasScrolled = false;
+                this.props.playerAPI.seek(element.start / 1000);
+                return;
+            }
+        },this);
     }
 
     getSegmentByStartTime(time) {
@@ -98,7 +104,6 @@ class Transcriber extends React.PureComponent {
                 this.setState({transcript: this.props.transcript},
                     console.log('update to full list and display message for no matches!'))
                 $(".numberOfMatches").css("display", "none");
-
             } else {
                 this.setState({transcript: updatedList},
                     () => {
