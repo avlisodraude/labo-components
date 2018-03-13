@@ -93,7 +93,6 @@ class DataEntryTable extends React.PureComponent {
 
         //TODO this is for now the only place where this is set. Probably not good enough
         ComponentUtil.storeJSONInLocalStorage('myentries', entries);
-        console.debug('loaded some entries', entries)
         this.setState({
             entries: entries,
             loading: false
@@ -169,7 +168,6 @@ class DataEntryTable extends React.PureComponent {
             type : null,
             title : entry.title
         } : null;
-        console.debug(resource);
         this.setState({
             activeResource : resource
         })
@@ -250,6 +248,24 @@ class DataEntryTable extends React.PureComponent {
         return sort.order === 'desc' ? sorted.reverse() : sorted;
     }
 
+    toPrettyFileURL(url) {
+        let prettyUrl = url || '';
+        if(url && url.indexOf('/') != -1) {
+            prettyUrl = url.substring(url.lastIndexOf('/') + 1);
+        }
+        if(prettyUrl.indexOf('?') != -1) {
+            prettyUrl = prettyUrl.substring(0, prettyUrl.indexOf('?'))
+        }
+        return prettyUrl;
+    }
+
+    toPrettyDesription(desc) {
+        if(desc && desc.length > 40) {
+            return desc.substring(0, 40) + '...'
+        }
+        return desc
+    }
+
     //generate a table row
     getEntryRow(entry) {
         const currentUserId = this.props.user.id;
@@ -262,13 +278,17 @@ class DataEntryTable extends React.PureComponent {
                     </a>
                 )
             },
-            {content: entry.descr},
+            {content: this.toPrettyDesription(entry.descr)},
             {
                 props: { className: 'smaller' },
                 content: entry.dateCreated
             },
             {content: entry.creator},
-            {content: entry.fileUrl},
+            {content: (
+                 <a className="btn blank warning" href={entry.fileUrl} target="_download">
+                    {this.toPrettyFileURL(entry.fileUrl)}
+                </a>
+            )},
             {
                 content: entry.canDelete(currentUserId) ? (
                     <a className="btn blank warning" onClick={this.deleteEntry.bind(this, entry)}>

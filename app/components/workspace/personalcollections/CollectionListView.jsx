@@ -23,7 +23,7 @@ class CollectionListView extends React.PureComponent {
 
     render() {
         return (
-            <div className={IDUtil.cssClassName('projects-overview')}>
+            <div className={IDUtil.cssClassName('collection-list-view')}>
                 <div className="info-bar">
                     <Link to="/workspace/collections/create" className="btn primary add">
                         Add User Collection
