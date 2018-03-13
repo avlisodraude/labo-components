@@ -331,7 +331,7 @@ class BookmarkTable extends React.PureComponent {
             )
         }
         return (
-            <div className={IDUtil.cssClassName('bookmark-view')}>
+            <div className={IDUtil.cssClassName('bookmark-table')}>
                 <NestedTable
                     items={this.state.bookmarks}
                     selection={this.state.selection}

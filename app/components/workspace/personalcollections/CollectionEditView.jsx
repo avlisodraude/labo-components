@@ -159,7 +159,7 @@ class CollectionEditView extends React.PureComponent {
                                 <button
                                     type="button"
                                     onClick={this.handleAddEntry}
-                                    className="primary button add">
+                                    className="btn">
                                     Add Entry
                                 </button>
                             </th>

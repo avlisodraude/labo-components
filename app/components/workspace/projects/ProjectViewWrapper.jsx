@@ -137,7 +137,7 @@ loadProject() {
         }
 
         return (
-            <div className={IDUtil.cssClassName('project-wrapper')}>
+            <div className={IDUtil.cssClassName('project-view-wrapper')}>
                 {contents}
             </div>
         );

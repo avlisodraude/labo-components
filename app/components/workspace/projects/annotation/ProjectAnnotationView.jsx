@@ -63,7 +63,7 @@ class ProjectAnnotationView extends React.PureComponent {
         }
 
     return (
-        <div className={IDUtil.cssClassName('project-bookmarks')}>
+        <div className={IDUtil.cssClassName('project-annotation-view')}>
             <div className="tools">
                 <div className="view">
                     <h3>View</h3>

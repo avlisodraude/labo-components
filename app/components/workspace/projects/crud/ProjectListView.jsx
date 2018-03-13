@@ -24,7 +24,7 @@ class ProjectListView extends React.PureComponent {
 
     render() {
         return (
-            <div className={IDUtil.cssClassName('projects-overview')}>
+            <div className={IDUtil.cssClassName('project-list-view')}>
                 <div className="info-bar">
                     <Link to="/workspace/projects/create" className="btn primary add">
                         Create User Project

@@ -342,7 +342,7 @@ class AnnotationTable extends React.PureComponent {
             )
         }
         return (
-            <div className={IDUtil.cssClassName('annotation-view')}>
+            <div className={IDUtil.cssClassName('annotation-table')}>
                 <NestedTable
                     items={this.state.annotations}
                     selection={this.state.selection}

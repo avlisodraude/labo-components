@@ -168,7 +168,7 @@ class ProjectSessionView extends React.PureComponent {
         const currentUserId = currentUser.id;
 
         return (
-            <div className={IDUtil.cssClassName('project-sessions')}>
+            <div className={IDUtil.cssClassName('project-session-view')}>
                 <div className="tools">
                     <div className="left">
                         <h3>Filters</h3>

@@ -114,7 +114,7 @@ class NestedTable extends React.PureComponent {
 
     render() {
         return (
-            <div className={IDUtil.cssClassName('bookmark-table')}>
+            <div className={IDUtil.cssClassName('nested-table')}>
                 <div className="tools">
                     <div className="export-button btn primary"
                         onClick={this.props.onExport.bind(this, this.state.visibleItems)}>

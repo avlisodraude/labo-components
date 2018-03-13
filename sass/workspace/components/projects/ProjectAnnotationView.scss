@@ -1,9 +1,9 @@
-.bg__project-bookmarks{
+.bg__project-annotation-view{
   @import '_tools.scss';
 
   .tools{
     background-color: $clWhite;
-    
+
     .radiogroup{
       display: inline-block;
       label,input{
@@ -12,7 +12,7 @@
     }
 
     .view{
-      margin-bottom: 5px;    
+      margin-bottom: 5px;
     }
 
     .export-button{

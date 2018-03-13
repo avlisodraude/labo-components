@@ -15,7 +15,7 @@ class ProjectDetailsView extends React.PureComponent {
     render() {
         const project = this.props.project;
         return (
-            <div className={IDUtil.cssClassName('project-details')}>
+            <div className={IDUtil.cssClassName('project-details-view')}>
                 <h2>Project Details</h2>
                 <Link to={'/workspace/projects/' + encodeURIComponent(project.id) + '/edit'} className="btn">
                     Edit details
