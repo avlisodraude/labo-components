@@ -113,7 +113,7 @@ class DataEntryTable extends React.PureComponent {
                 results = results.filter(
                     entry =>
                     entry.title.toLowerCase().includes(k) ||
-                    entry.description.toLowerCase().includes(k)
+                    entry.descr.toLowerCase().includes(k)
                 );
             });
         }

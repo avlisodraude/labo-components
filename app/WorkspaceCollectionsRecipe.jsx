@@ -5,7 +5,6 @@ import PersonalCollectionAPI from './api/PersonalCollectionAPI';
 import CollectionListView from './components/workspace/personalcollections/CollectionListView';
 import CollectionCreateView from './components/workspace/personalcollections/CollectionCreateView';
 import CollectionEditView from './components/workspace/personalcollections/CollectionEditView';
-import DataEntryEditView from './components/workspace/personalcollections/DataEntryEditView';
 
 //Import others
 
@@ -49,9 +48,6 @@ class WorkspaceCollections extends Component {
                     <Route
                         path="/workspace/collections/:id/edit"
                         render={this.getPropsRenderer(CollectionEditView, this.props, {api: PersonalCollectionAPI})}/>
-                    <Route
-                        path="/workspace/collections/:cid/entry/:did/edit"
-                        render={this.getPropsRenderer(DataEntryEditView, this.props, {api: PersonalCollectionAPI})}/>
                 </Switch>
             </Router>
         )
