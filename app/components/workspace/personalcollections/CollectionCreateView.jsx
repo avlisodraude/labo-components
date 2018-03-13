@@ -8,7 +8,7 @@ import CollectionForm from './CollectionForm';
 
 import PropTypes from 'prop-types';
 
-class CollectionCreate extends React.PureComponent {
+class CollectionCreateView extends React.PureComponent {
 
     componentDidMount() {
         setBreadCrumbsFromMatch(this.props.match);
@@ -45,9 +45,9 @@ class CollectionCreate extends React.PureComponent {
     }
 }
 
-CollectionCreate.propTypes = {
+CollectionCreateView.propTypes = {
     api: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired
 };
 
-export default CollectionCreate;
+export default CollectionCreateView;

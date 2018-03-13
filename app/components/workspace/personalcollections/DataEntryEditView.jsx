@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 /**
 * Edit the data entry as specified by the router, using the DataEntryForm component
 */
-class DataEntryEdit extends React.PureComponent {
+class DataEntryEditView extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -84,9 +84,9 @@ class DataEntryEdit extends React.PureComponent {
 
 }
 
-DataEntryEdit.propTypes = {
+DataEntryEditView.propTypes = {
     api: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired
 };
 
-export default DataEntryEdit;
+export default DataEntryEditView;

@@ -8,7 +8,7 @@ import CollectionForm from './CollectionForm';
 
 import PropTypes from 'prop-types';
 
-class CollectionEdit extends React.PureComponent {
+class CollectionEditView extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -115,7 +115,7 @@ class CollectionEdit extends React.PureComponent {
             }
         }
 
-        //draw the sort table
+        //draw the sort table (TODO use the workspace/SortTable)
         const sortTable = (
             <div className={IDUtil.cssClassName('sort-table')}>
                 <h2>Data</h2>
@@ -183,7 +183,7 @@ class CollectionEdit extends React.PureComponent {
     }
 }
 
-CollectionEdit.propTypes = {
+CollectionEditView.propTypes = {
     api: PropTypes.shape({
         saveEntry: PropTypes.func.isRequired,
         deleteEntry: PropTypes.func.isRequired
@@ -191,4 +191,4 @@ CollectionEdit.propTypes = {
     user: PropTypes.object.isRequired
 };
 
-export default CollectionEdit;
+export default CollectionEditView;

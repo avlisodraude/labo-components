@@ -2,11 +2,10 @@ import classNames from 'classnames';
 import IDUtil from './util/IDUtil';
 
 import PersonalCollectionAPI from './api/PersonalCollectionAPI';
-import CollectionOverview from './components/workspace/personalcollections/CollectionsOverview';
-import CollectionCreate from './components/workspace/personalcollections/CollectionCreate';
-import CollectionDetails from './components/workspace/personalcollections/CollectionDetails';
-import CollectionEdit from './components/workspace/personalcollections/CollectionEdit';
-import DataEntryEdit from './components/workspace/personalcollections/DataEntryEdit';
+import CollectionListView from './components/workspace/personalcollections/CollectionListView';
+import CollectionCreateView from './components/workspace/personalcollections/CollectionCreateView';
+import CollectionEditView from './components/workspace/personalcollections/CollectionEditView';
+import DataEntryEditView from './components/workspace/personalcollections/DataEntryEditView';
 
 //Import others
 
@@ -14,54 +13,62 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import {
-  Switch,
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect
+    Switch,
+    BrowserRouter as Router,
+    Route,
+    Link,
+    Redirect
 } from 'react-router-dom'
 
 class WorkspaceCollections extends Component {
-  constructor(props){
-    super(props);
+    constructor(props){
+        super(props);
 
-    this.state={}
-  }
+        this.state={}
+    }
 
-  getPropsRenderer(RenderComponent, props, extraProps={}){
-    return (routeProps) => (
-       <RenderComponent {...routeProps} {...props} {...extraProps} />
-     )
-  }
+    getPropsRenderer(RenderComponent, props, extraProps={}){
+        return (routeProps) => (
+            <RenderComponent {...routeProps} {...props} {...extraProps} />
+        )
+    }
 
-  render() {
-    return(
-      <Router>
-        <Switch>
-          <Route exact path="/workspace/collections" render={this.getPropsRenderer(CollectionOverview, this.props, {api: PersonalCollectionAPI} )} />
-          <Route exact path="/workspace/collections/create" render={this.getPropsRenderer(CollectionCreate, this.props, {api: PersonalCollectionAPI} )} />
-
-          <Route path="/workspace/collections/:id/edit" render={this.getPropsRenderer(CollectionEdit, this.props, {api: PersonalCollectionAPI})} />
-          <Route path="/workspace/collections/:cid/entry/:did" render={this.getPropsRenderer(DataEntryEdit, this.props, {api: PersonalCollectionAPI})} />
-          <Route path="/workspace/collections/:id" render={this.getPropsRenderer(CollectionEdit, this.props, {api: PersonalCollectionAPI})} />
-
-        </Switch>
-      </Router>
-    );
-  }
+    render() {
+        return(
+            <Router>
+                <Switch>
+                    <Route exact
+                        path="/workspace/collections"
+                        render={this.getPropsRenderer(CollectionListView, this.props, {api: PersonalCollectionAPI} )}/>
+                    <Route exact
+                        path="/workspace/collections/create"
+                        render={this.getPropsRenderer(CollectionCreateView, this.props, {api: PersonalCollectionAPI} )}/>
+                    <Route
+                        path="/workspace/collections/:id"
+                        render={this.getPropsRenderer(CollectionEditView, this.props, {api: PersonalCollectionAPI})}/>
+                    <Route
+                        path="/workspace/collections/:id/edit"
+                        render={this.getPropsRenderer(CollectionEditView, this.props, {api: PersonalCollectionAPI})}/>
+                    <Route
+                        path="/workspace/collections/:cid/entry/:did"
+                        render={this.getPropsRenderer(DataEntryEditView, this.props, {api: PersonalCollectionAPI})}/>
+                </Switch>
+            </Router>
+        )
+    }
 }
 
 WorkspaceCollections.propTypes = {
 
-  // collection api
-  api: PropTypes.shape({
+// collection api
+api: PropTypes.shape({
     list: PropTypes.func.isRequired
-  }),
+}),
 
-  // current user object used for defining access roles per project
-  user: PropTypes.shape({
+// current user object used for defining access roles per project
+user: PropTypes.shape({
     id: PropTypes.number.isRequired
-  }).isRequired,
+}).isRequired,
 }
 
 export default WorkspaceCollections;

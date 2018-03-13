@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 * Top level component/page for the collections overview.
 * The data handling is done in the CollectionTable component.
 */
-class CollectionsOverview extends React.PureComponent {
+class CollectionListView extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -38,7 +38,7 @@ class CollectionsOverview extends React.PureComponent {
     }
 }
 
-CollectionsOverview.propTypes = {
+CollectionListView.propTypes = {
     // collection api
     api: PropTypes.shape({
         list: PropTypes.func.isRequired
@@ -50,4 +50,4 @@ CollectionsOverview.propTypes = {
     }).isRequired
 };
 
-export default CollectionsOverview;
+export default CollectionListView;
