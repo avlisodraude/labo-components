@@ -1,7 +1,7 @@
 import ComponentUtil from '../../../util/ComponentUtil';
 import IDUtil from '../../../util/IDUtil';
 
-import { exportDataAsJSON } from '../helpers/Export';
+//import { exportDataAsJSON } from '../helpers/Export';
 
 import SortTable from '../SortTable';
 
@@ -43,14 +43,10 @@ class CollectionTable extends React.PureComponent {
             filter: {
                 keywords: '',
                 currentUser: false
-            },
-            bookmarkCount: 0
+            }
         };
 
-        this.requestedBookmark = {};
-
         this.requestDataTimeout = -1;
-
         this.sortCollections = this.sortCollections.bind(this);
         this.getCollectionRow = this.getCollectionRow.bind(this);
     }

@@ -50,7 +50,7 @@ class WorkspaceCollections extends Component {
                         path="/workspace/collections/:id/edit"
                         render={this.getPropsRenderer(CollectionEditView, this.props, {api: PersonalCollectionAPI})}/>
                     <Route
-                        path="/workspace/collections/:cid/entry/:did"
+                        path="/workspace/collections/:cid/entry/:did/edit"
                         render={this.getPropsRenderer(DataEntryEditView, this.props, {api: PersonalCollectionAPI})}/>
                 </Switch>
             </Router>

@@ -23,6 +23,7 @@ class DataEntryEditView extends React.PureComponent {
     }
 
     componentDidMount() {
+        console.debug('mounting the entry editor')
         // get collection & entry id from url
         const collectionId = this.props.match.params.cid;
         const entryId = this.props.match.params.did;
