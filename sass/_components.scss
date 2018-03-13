@@ -483,15 +483,21 @@
 	}
 
 	.numberOfMatches {
-		border: 2px solid $fill-color;
+		background-color: #eee;
+		border: 1px solid #e3e3e3;
 		border-radius: 4px;
+		bottom: 2px;
 		display: inline-block;
 		float: right;
 		font-size: 12px;
-		padding: 0 4px;
+		padding: 2px 4px;
 		position: absolute;
 		right: 0;
 		text-align: center;
+		.glyphicon {
+			border: none;
+			background-color: inherit;
+		}
 	}
 }
 

@@ -89,6 +89,13 @@ class Transcriber extends React.PureComponent {
         }
     }
 
+    resetTranscriber() {
+        this.setState({transcript: this.props.transcript},
+            console.log('update to full list and display message for no matches!')),
+            $(".numberOfMatches").css("display", "none");
+        $("input:text[name='search-transcriptLine']").val('');
+    }
+
     filterList(event) {
         const searchedTerm = event.target.value;
         if (searchedTerm.length > 3 || (this.prevSearchLength > searchedTerm.length)) {
@@ -147,8 +154,12 @@ class Transcriber extends React.PureComponent {
             <div id={this.GUID} className={IDUtil.cssClassName('transcriber')}>
                 <div className="transcript_search_box">
                     <span className="glyphicon glyphicon-search"></span>
-                    <input type="text" onChange={this.filterList.bind(this)} name="search-transcriptLine" placeholder="Zoek.." />
-                    <span className="numberOfMatches"><span className="numberOfHits"></span> HITS</span>
+                    <input type="text" onChange={this.filterList.bind(this)} name="search-transcriptLine"
+                           placeholder="Zoek.."/>
+                    <span className="numberOfMatches">
+                        <span className="numberOfHits"></span> HITS
+                        <button type="button" onClick={this.resetTranscriber.bind(this)} className="glyphicon glyphicon-remove removeTranscriptFilter" aria-label="Close"></button>
+                    </span>
                 </div>
                 <div className="transcriptsList">{transcriptContainer}</div>
             </div>
