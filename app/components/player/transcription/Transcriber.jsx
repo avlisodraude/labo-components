@@ -13,6 +13,7 @@ class Transcriber extends React.PureComponent {
         this.userHasScrolled = false;
         this.alertTimerId = null;
         this.GUID = IDUtil.guid();
+        this.prevSearchLength = 0;
     }
 
     componentDidMount() {
@@ -74,6 +75,43 @@ class Transcriber extends React.PureComponent {
         }
     }
 
+    filterList(event) {
+        const searchedTerm = event.target.value;
+        if (searchedTerm.length > 3 || (this.prevSearchLength > searchedTerm.length)) {
+            const updatedList = this.props.transcript.filter(function (item) {
+                return item.words.toLowerCase().search(
+                    searchedTerm.toLowerCase()) !== -1;
+            })
+            //     .map(x => {
+            //     var regexstring = searchedTerm;
+            //     var regexp = new RegExp(regexstring, "gi");
+            //     var str = x.words;
+            //     console.log(str.replace(regexp, "<i>" + searchedTerm + "</i>"))
+            //     x.words = str.replace(regexp, "<span class='matchedTerm'>" + searchedTerm + "</span>");
+            //     return x
+            // });
+            if (updatedList.length === 0) {
+                this.setState({transcript: this.props.transcript},
+                    console.log('update to full list and display message for no matches!'))
+                $(".numberOfMatches").css("display", "none");
+
+            } else {
+                this.setState({transcript: updatedList},
+                    () => {
+                        this.prevSearchLength = searchedTerm.length;
+                        if ((updatedList.length === 0) || (updatedList.length === this.props.transcript.length)) {
+                            $(".numberOfMatches").css("display", "none");
+                        } else {
+                            $(".numberOfMatches").css("display", "inline");
+                            $('.numberOfHits').html(updatedList.length);
+                        }
+                    });
+            }
+
+        }
+        // console.log('not enough characters typed ...')
+    }
+
     /* ----------------- Rendering --------------------- */
     render() {
         const segmentId = this.findClosestSegment(Math.trunc(this.props.curPosition * 1000))
@@ -85,15 +123,21 @@ class Transcriber extends React.PureComponent {
                     onClick={this.gotoLine.bind(this, obj.sequenceNr)}>
                     <span className="data line-start-time">
                         {TimeUtil.formatMillisToTime(obj.start)}
-                        </span>&nbsp; {obj.words}
+                        </span>
+                    <span dangerouslySetInnerHTML={{__html : obj.words}}></span>
                 </div>
             );
-        })
+        });
 
         //FIXME currently there can only be one transcriber on the screen...
         return (
             <div id={this.GUID} className={IDUtil.cssClassName('transcriber')}>
-                {transcriptContainer}
+                <div className="transcript_search_box">
+                    <span className="glyphicon glyphicon-search"></span>
+                    <input type="text" onChange={this.filterList.bind(this)} name="search-transcriptLine" placeholder="Zoek.." />
+                    <span className="numberOfMatches"><span className="numberOfHits">30</span> HITS</span>
+                </div>
+                <div className="transcriptsList">{transcriptContainer}</div>
             </div>
         )
     }
