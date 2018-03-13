@@ -18,7 +18,8 @@ class Transcriber extends React.PureComponent {
 
     componentDidMount() {
         //make sure the user can still scroll through the transcript
-        const transcriptWindow = document.getElementById(this.GUID);
+        const transcriptWindow = document.getElementById(this.GUID),
+            searchHitscontainer = $('.numberOfMatches');
         if(transcriptWindow) {
             transcriptWindow.onscroll = (e) => {
                 if(this.alertTimerId == null) {
@@ -33,6 +34,9 @@ class Transcriber extends React.PureComponent {
                     }, 2000 );
                 }
             }
+        }
+        if(searchHitscontainer) {
+            searchHitscontainer.css("display", "none");
         }
     }
 
@@ -81,7 +85,7 @@ class Transcriber extends React.PureComponent {
             const updatedList = this.props.transcript.filter(function (item) {
                 return item.words.toLowerCase().search(
                     searchedTerm.toLowerCase()) !== -1;
-            })
+            });
             //     .map(x => {
             //     var regexstring = searchedTerm;
             //     var regexp = new RegExp(regexstring, "gi");
@@ -135,7 +139,7 @@ class Transcriber extends React.PureComponent {
                 <div className="transcript_search_box">
                     <span className="glyphicon glyphicon-search"></span>
                     <input type="text" onChange={this.filterList.bind(this)} name="search-transcriptLine" placeholder="Zoek.." />
-                    <span className="numberOfMatches"><span className="numberOfHits">30</span> HITS</span>
+                    <span className="numberOfMatches"><span className="numberOfHits"></span> HITS</span>
                 </div>
                 <div className="transcriptsList">{transcriptContainer}</div>
             </div>
