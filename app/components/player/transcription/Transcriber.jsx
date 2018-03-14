@@ -90,7 +90,7 @@ class Transcriber extends React.PureComponent {
     }
 
     resetTranscriber() {
-        this.setState({transcript: this.props.transcript},
+        this.setState({transcript: this.props.transcript, prevSearchLength: 0},
             () => {
                 document.querySelector('.numberOfMatches').style.display = 'none',
                     document.querySelector('input[name="search-transcriptLine"]').value = ''
@@ -101,12 +101,7 @@ class Transcriber extends React.PureComponent {
     filterList(event) {
         const searchedTerm = event.target.value;
         if(searchedTerm.length === 0) {
-            this.setState({
-                    transcript: this.props.transcript,
-                    prevSearchLength: 0
-                },
-                console.log('No matches or empty search field.'));
-            document.querySelector('.numberOfMatches').style.display = 'none';
+            this.resetTranscriber();
             return;
         }
         if (searchedTerm.length > 2 || (this.state.prevSearchLength > searchedTerm.length)) {
