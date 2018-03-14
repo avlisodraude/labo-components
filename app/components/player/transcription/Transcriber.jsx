@@ -91,8 +91,10 @@ class Transcriber extends React.PureComponent {
 
     resetTranscriber() {
         this.setState({transcript: this.props.transcript},
-            document.querySelector('.numberOfMatches').style.display = 'none',
-        document.querySelector('input[name="search-transcriptLine"]').value = ''
+            () => {
+                document.querySelector('.numberOfMatches').style.display = 'none',
+                    document.querySelector('input[name="search-transcriptLine"]').value = ''
+            }
         );
     }
 
@@ -121,7 +123,10 @@ class Transcriber extends React.PureComponent {
             } else {
                 this.setState({transcript: updatedList},
                     () => {
+                        // console.log('running slow...?')
                         this.prevSearchLength = searchedTerm.length;
+                        // console.log('running slow...2 ?')
+
                         if ((updatedList.length === 0) || (updatedList.length === this.props.transcript.length)) {
                             document.querySelector('.numberOfMatches').style.display = 'none';
                         } else {
@@ -130,7 +135,6 @@ class Transcriber extends React.PureComponent {
                         }
                     });
             }
-
         }
         // console.log('not enough characters typed ...')
     }
