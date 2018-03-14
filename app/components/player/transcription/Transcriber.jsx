@@ -7,12 +7,12 @@ class Transcriber extends React.PureComponent {
         super(props);
         //when we implement editing it's useful to have the transcript in the state
         this.state = {
-            transcript : this.props.transcript
+            transcript : this.props.transcript,
+            prevSearchLength :0
         };
         this.userHasScrolled = false;
         this.alertTimerId = null;
         this.GUID = IDUtil.guid();
-        this.prevSearchLength = 0;
     }
 
     componentDidMount() {
@@ -100,7 +100,16 @@ class Transcriber extends React.PureComponent {
 
     filterList(event) {
         const searchedTerm = event.target.value;
-        if (searchedTerm.length > 3 || (this.prevSearchLength > searchedTerm.length)) {
+        if(searchedTerm.length === 0) {
+            this.setState({
+                    transcript: this.props.transcript,
+                    prevSearchLength: 0
+                },
+                console.log('No matches or empty search field.'));
+            document.querySelector('.numberOfMatches').style.display = 'none';
+            return;
+        }
+        if (searchedTerm.length > 2 || (this.state.prevSearchLength > searchedTerm.length)) {
             let replacementText = '',
                 word = '',
                 copiedItem = {},
@@ -116,17 +125,12 @@ class Transcriber extends React.PureComponent {
                 return copiedItem;
             });
 
-            if (updatedList.length === 0) {
-                this.setState({transcript: this.props.transcript},
-                    console.log('update to full list and display message for no matches!'));
-                document.querySelector('.numberOfMatches').style.display = 'none';
-            } else {
-                this.setState({transcript: updatedList},
+            if (updatedList.length !== 0) {
+                this.setState({
+                        transcript: updatedList,
+                        prevSearchLength: searchedTerm.length
+                    },
                     () => {
-                        // console.log('running slow...?')
-                        this.prevSearchLength = searchedTerm.length;
-                        // console.log('running slow...2 ?')
-
                         if ((updatedList.length === 0) || (updatedList.length === this.props.transcript.length)) {
                             document.querySelector('.numberOfMatches').style.display = 'none';
                         } else {
@@ -134,9 +138,12 @@ class Transcriber extends React.PureComponent {
                             document.querySelector('.numberOfHits').innerHTML = updatedList.length;
                         }
                     });
+            } else {
+                this.setState({transcript: this.props.transcript},
+                    console.log('update to full list and display message for no matches!'));
+                document.querySelector('.numberOfMatches').style.display = 'none';
             }
         }
-        // console.log('not enough characters typed ...')
     }
 
     /* ----------------- Rendering --------------------- */
