@@ -8,7 +8,7 @@ class Transcriber extends React.PureComponent {
         //when we implement editing it's useful to have the transcript in the state
         this.state = {
             transcript : this.props.transcript
-        }
+        };
         this.userHasScrolled = false;
         this.alertTimerId = null;
         this.GUID = IDUtil.guid();
@@ -22,18 +22,18 @@ class Transcriber extends React.PureComponent {
 
         if (transcriptWindow) {
             transcriptWindow.onscroll = (e) => {
-                if (this.alertTimerId == null) {
+                if (this.alertTimerId === null) {
                     this.alertTimerId = setTimeout(() => {
                         this.userHasScrolled = false;
                     }, 2000);
                 } else {
                     this.userHasScrolled = true;
-                    clearTimeout(this.alertTimerId)
+                    clearTimeout(this.alertTimerId);
                     this.alertTimerId = setTimeout(() => {
                         this.userHasScrolled = false;
                     }, 2000);
                 }
-            }
+            };
         }
         if (searchHitscontainer) {
             searchHitscontainer.style.display = 'none';
@@ -56,7 +56,7 @@ class Transcriber extends React.PureComponent {
             return obj.start === time;
         });
         if(lines.length > 0) {
-            return lines[0]
+            return lines[0];
         }
         return null;
     }
@@ -76,9 +76,9 @@ class Transcriber extends React.PureComponent {
         }
         const segment = this.getSegmentByStartTime(this.state.transcript[index].start || 0);
         if(segment) {
-            return segment.sequenceNr || 0
+            return segment.sequenceNr || 0;
         }
-        return 0
+        return 0;
     }
 
     componentDidUpdate() {
@@ -91,9 +91,9 @@ class Transcriber extends React.PureComponent {
 
     resetTranscriber() {
         this.setState({transcript: this.props.transcript},
-            console.log('update to full list and display message for no matches!')),
-            document.querySelector('.numberOfMatches').style.display = 'none';
-        document.querySelector('input[name="search-transcriptLine"]').value = '';
+            document.querySelector('.numberOfMatches').style.display = 'none',
+        document.querySelector('input[name="search-transcriptLine"]').value = ''
+        );
     }
 
     filterList(event) {
@@ -116,7 +116,7 @@ class Transcriber extends React.PureComponent {
 
             if (updatedList.length === 0) {
                 this.setState({transcript: this.props.transcript},
-                    console.log('update to full list and display message for no matches!'))
+                    console.log('update to full list and display message for no matches!'));
                 document.querySelector('.numberOfMatches').style.display = 'none';
             } else {
                 this.setState({transcript: updatedList},
@@ -124,7 +124,6 @@ class Transcriber extends React.PureComponent {
                         this.prevSearchLength = searchedTerm.length;
                         if ((updatedList.length === 0) || (updatedList.length === this.props.transcript.length)) {
                             document.querySelector('.numberOfMatches').style.display = 'none';
-
                         } else {
                             document.querySelector('.numberOfMatches').style.display = 'inline';
                             document.querySelector('.numberOfHits').innerHTML = updatedList.length;
@@ -138,9 +137,9 @@ class Transcriber extends React.PureComponent {
 
     /* ----------------- Rendering --------------------- */
     render() {
-        const segmentId = this.findClosestSegment(Math.trunc(this.props.curPosition * 1000))
-        const transcriptContainer = this.state.transcript.map((obj) => {
-            let className = obj.sequenceNr == segmentId ? 'sub currentLine' : 'sub';
+        const segmentId = this.findClosestSegment(Math.trunc(this.props.curPosition * 1000)),
+            transcriptContainer = this.state.transcript.map((obj) => {
+            const className = obj.sequenceNr == segmentId ? 'sub currentLine' : 'sub';
             return (
                 <div
                     id={obj.sequenceNr} className={className}
