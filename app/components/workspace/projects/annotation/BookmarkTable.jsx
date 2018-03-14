@@ -11,7 +11,7 @@ import AnnotationStore from '../../../../flux/AnnotationStore';
 import { exportDataAsJSON } from '../../helpers/Export';
 import BulkActions from '../../helpers/BulkActions';
 
-import ItemDetailsModal from '../../ItemDetailsModal';
+import ResourceViewerModal from '../../ResourceViewerModal';
 
 import BookmarkRow from './BookmarkRow';
 import NestedTable from './NestedTable';
@@ -325,7 +325,7 @@ class BookmarkTable extends React.PureComponent {
         let detailsModal = null;
         if(this.state.detailBookmark) {
             detailsModal = (
-                <ItemDetailsModal
+                <ResourceViewerModal
                     bookmark={this.state.detailBookmark}
                     onClose={this.closeItemDetails}/>
             )

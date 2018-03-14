@@ -1,9 +1,9 @@
 import ComponentUtil from '../../../util/ComponentUtil';
 import IDUtil from '../../../util/IDUtil';
 
-import FlexModal from '../../../components/FlexModal';
+import FlexModalN from '../../../components/FlexModalN';
 
-import ItemDetailsModal from '../ItemDetailsModal';
+import ResourceViewerModal from '../ResourceViewerModal';
 import SortTable from '../SortTable';
 
 import DataEntryForm from './DataEntryForm';
@@ -12,8 +12,9 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-/**
-* Table that shows all the entries. It handles the loading and filtering of the collection data.
+/*
+* Displays all the entries of a personal collection.
+* Utilises the generic SortTable component; incorporates the ResourceViewerModal for viewing each item.
 */
 class DataEntryTable extends React.PureComponent {
 
@@ -71,6 +72,10 @@ class DataEntryTable extends React.PureComponent {
         }
     }
 
+    /********************************************************************************
+    ****************************** FOR LOADING DATA *********************************
+    *********************************************************************************/
+
     loadData() {
         this.setState({
             loading: true
@@ -86,7 +91,7 @@ class DataEntryTable extends React.PureComponent {
     onLoadData(collection) {
         let entries = collection.dataentries;
         // decorate the entries
-        this.toDummyData(entries || []);
+        this.toTableData(entries || []);
 
         // we filter the results now on client side
         entries = this.filterEntries(entries || []);
@@ -98,6 +103,98 @@ class DataEntryTable extends React.PureComponent {
             loading: false
         });
     }
+
+    /********************************************************************************
+    ****************************** RESOURCE VIEWER **********************************
+    *********************************************************************************/
+
+    openResourceViewer(entry) {
+        const resource = entry ? {
+            resourceId : entry.id,
+            collectionId : 'personalcollection__'+this.props.user.id+'__'+this.props.collection.id,
+            type : null,
+            title : entry.title
+        } : null;
+        this.setState({
+            activeResource : resource
+        })
+    }
+
+    //Close itemDetails view, and refresh the data (assuming changes have been made)
+    closeResourceViewer() {
+        // set viewbookmark to null
+        this.openResourceViewer(null);
+
+        // refresh data
+        this.loadData();
+    }
+
+    closeEditModal() {
+        this.setState({
+            activeEntry : null
+        })
+    }
+
+    /********************************************************************************
+    ****************************** FUNCTIONS FOR CRUD *******************************
+    *********************************************************************************/
+
+    addEntry() {
+        this.setState({
+            activeEntry : {
+                title : '',
+                descr : '',
+                dateCreated : '',
+                creator : '',
+                fileUrl : ''
+            },
+            showEditModal : true
+        })
+    }
+
+    editEntry(entry) {
+        this.setState({
+            activeEntry : entry,
+            showEditModal : true
+        })
+    }
+
+    onSaveEntry(data) {
+        this.closeEditModal();
+        this.loadData();
+    }
+
+    deleteEntry(entry) {
+        if (window.confirm('Are you sure you want to delete entry ' + entry.title)) {
+            this.props.api.deleteEntry(this.props.user.id, this.props.collection.id, entry.id, status => {
+                if (status && status.success) {
+                    this.loadData();
+                } else {
+                    alert('An error occured while adding this entry');
+                }
+            });
+        }
+    }
+
+    //delete multiple entries
+    deleteEntries(entries) {
+        if (window.confirm('Are you sure you want to delete ' + entries.length + ' entries?')) {
+            let calls = entries.length;
+            entries.forEach((entry, index) => {
+                this.props.api.deleteEntry(this.props.user.id, this.props.collection.id, entry.id, status => {
+                    calls--;
+                    if (calls == 0) {
+                        // after the last delete just retrieve the latest data
+                        this.loadData();
+                    }
+                });
+            });
+        }
+    }
+
+    /********************************************************************************
+    ****************************** FUNCTIONS NEEDED FOR THE SORTTABLE COMPONENT *****
+    *********************************************************************************/
 
     //filter entries (client-side for now)
     filterEntries(entries) {
@@ -125,9 +222,21 @@ class DataEntryTable extends React.PureComponent {
         return results;
     }
 
+    sortEntries(entries, sort) {
+        const sorted = entries;
+        switch (sort.field) {
+            case 'title': sorted.sort((a, b) => a.name > b.name); break;
+            case 'descr': sorted.sort((a, b) => a.name > b.name); break;
+            case 'dateCreated': sorted.sort((a, b) => a.created > b.created); break;
+            case 'creator': sorted.sort((a, b) => a.name > b.name); break;
+            default: return sorted;
+        }
+        return sort.order === 'desc' ? sorted.reverse() : sorted;
+    }
+
     //Decorate collection data with helper functions
     //(currently placeholders) - See ProjectTable.jsx as well.
-    toDummyData(entries) {
+    toTableData(entries) {
         return entries.map(c => {
             c.canDelete = function() {
                 return true;
@@ -161,111 +270,6 @@ class DataEntryTable extends React.PureComponent {
         });
     }
 
-    openResourceViewer(entry) {
-        const resource = entry ? {
-            resourceId : entry.id,
-            collectionId : 'personalcollection__'+this.props.user.id+'__'+this.props.collection.id,
-            type : null,
-            title : entry.title
-        } : null;
-        this.setState({
-            activeResource : resource
-        })
-    }
-
-    //Close itemDetails view, and refresh the data (assuming changes have been made)
-    closeResourceViewer() {
-        // set viewbookmark to null
-        this.openResourceViewer(null);
-
-        // refresh data
-        this.loadData();
-    }
-
-    addEntry() {
-        this.setState({
-            activeEntry : {
-                title : '',
-                descr : '',
-                dateCreated : '',
-                creator : '',
-                fileUrl : ''
-            },
-            showEditModal : true
-        })
-    }
-
-    editEntry(entry) {
-        this.setState({
-            activeEntry : entry,
-            showEditModal : true
-        })
-    }
-
-    onSaveEntry(collectionId) {
-        console.debug(collectionId);
-        ComponentUtil.hideModal(this, 'showEditModal', 'entry__modal', true);
-        this.loadData();
-    }
-
-    deleteEntry(entry) {
-        if (window.confirm('Are you sure you want to delete entry ' + entry.title)) {
-            this.props.api.deleteEntry(this.props.user.id, this.props.collection.id, entry.id, status => {
-                if (status && status.success) {
-                    this.loadData();
-                } else {
-                    alert('An error occured while adding this entry');
-                }
-            });
-        }
-    }
-
-    //delete multiple entries
-    deleteEntries(entries) {
-        if (window.confirm('Are you sure you want to delete ' + entries.length + ' entries?')) {
-            let calls = entries.length;
-            entries.forEach((entry, index) => {
-                this.props.api.deleteEntry(this.props.user.id, this.props.collection.id, entry.id, status => {
-                    calls--;
-                    if (calls == 0) {
-                        // after the last delete just retrieve the latest data
-                        this.loadData();
-                    }
-                });
-            });
-        }
-    }
-
-    sortEntries(entries, sort) {
-        const sorted = entries;
-        switch (sort.field) {
-            case 'title': sorted.sort((a, b) => a.name > b.name); break;
-            case 'descr': sorted.sort((a, b) => a.name > b.name); break;
-            case 'dateCreated': sorted.sort((a, b) => a.created > b.created); break;
-            case 'creator': sorted.sort((a, b) => a.name > b.name); break;
-            default: return sorted;
-        }
-        return sort.order === 'desc' ? sorted.reverse() : sorted;
-    }
-
-    toPrettyFileURL(url) {
-        let prettyUrl = url || '';
-        if(url && url.indexOf('/') != -1) {
-            prettyUrl = url.substring(url.lastIndexOf('/') + 1);
-        }
-        if(prettyUrl.indexOf('?') != -1) {
-            prettyUrl = prettyUrl.substring(0, prettyUrl.indexOf('?'))
-        }
-        return prettyUrl;
-    }
-
-    toPrettyDesription(desc) {
-        if(desc && desc.length > 40) {
-            return desc.substring(0, 40) + '...'
-        }
-        return desc
-    }
-
     //generate a table row
     getEntryRow(entry) {
         const currentUserId = this.props.user.id;
@@ -278,7 +282,7 @@ class DataEntryTable extends React.PureComponent {
                     </a>
                 )
             },
-            {content: this.toPrettyDesription(entry.descr)},
+            {content: this.__toPrettyDesription(entry.descr)},
             {
                 props: { className: 'smaller' },
                 content: entry.dateCreated
@@ -286,7 +290,7 @@ class DataEntryTable extends React.PureComponent {
             {content: entry.creator},
             {content: (
                  <a className="btn blank warning" href={entry.fileUrl} target="_download">
-                    {this.toPrettyFileURL(entry.fileUrl)}
+                    {this.__toPrettyFileURL(entry.fileUrl)}
                 </a>
             )},
             {
@@ -304,37 +308,52 @@ class DataEntryTable extends React.PureComponent {
         ];
     }
 
+    __toPrettyFileURL(url) {
+        let prettyUrl = url || '';
+        if(url && url.indexOf('/') != -1) {
+            prettyUrl = url.substring(url.lastIndexOf('/') + 1);
+        }
+        if(prettyUrl.indexOf('?') != -1) {
+            prettyUrl = prettyUrl.substring(0, prettyUrl.indexOf('?'))
+        }
+        return prettyUrl;
+    }
+
+    __toPrettyDesription(desc) {
+        if(desc && desc.length > 40) {
+            return desc.substring(0, 40) + '...'
+        }
+        return desc
+    }
+
+    /********************************************************************************
+    ****************************** JUST RENDER **************************************
+    *********************************************************************************/
+
     render() {
         let resourceViewer = null;
         if(this.state.activeResource) {
             resourceViewer = (
-                <ItemDetailsModal
+                <ResourceViewerModal
                     bookmark={this.state.activeResource}
                     onClose={this.closeResourceViewer.bind(this)}/>
             )
         }
 
         let editEntryModal = null;
-        //project modal
-        if(this.state.showEditModal) {
+        if(this.state.activeEntry) {
             editEntryModal = (
-                <FlexModal
-                    elementId="entry__modal"
-                    stateVariable="showEditModal"
-                    owner={this}
-                    size="large"
-                    title="Edit entry">
+                <FlexModalN
+                    onClose={this.closeEditModal.bind(this)}>
                         <DataEntryForm
                             submitButton="Save Entry"
-                            cancelLink={
-                                '/workspace/collections/'+this.props.collection.id+'/edit'
-                            }
+                            onCancelEditing={this.closeEditModal.bind(this)}
                             dataEntry={this.state.activeEntry}
                             dataEntryDidSave={this.onSaveEntry.bind(this)}
                             collectionId = {this.props.collection.id}
                             user={this.props.user}
                             api={this.props.api}/>
-                </FlexModal>
+                </FlexModalN>
             )
         }
         return (

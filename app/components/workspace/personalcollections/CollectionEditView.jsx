@@ -44,7 +44,7 @@ class CollectionEditView extends React.PureComponent {
     render() {
         //draw the collection form or show a loading/status message
         let formOrMessage = null;
-        let sortTable = null;
+        let dataEntryTable = null;
         if(this.state.loading) {
             formOrMessage = <h3 className="loading">Loading...</h3>
         } else {
@@ -67,8 +67,8 @@ class CollectionEditView extends React.PureComponent {
                         api={this.props.api}/>
                 )
 
-                //draw the sort table (TODO use the workspace/SortTable)
-                sortTable = (
+                //draw the data entry table
+                dataEntryTable = (
                    <DataEntryTable
                         api={this.props.api}
                         user={this.props.user}
@@ -86,7 +86,7 @@ class CollectionEditView extends React.PureComponent {
                     <p>A user collection contains personal metadata and possibly links to private collection data</p>
                 </div>
                 {formOrMessage}
-                {sortTable}
+                {dataEntryTable}
             </div>
         )
     }

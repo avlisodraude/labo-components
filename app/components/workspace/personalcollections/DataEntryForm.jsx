@@ -33,11 +33,17 @@ class DataEntryForm extends React.PureComponent {
                     // todo: ask api guys to return the id as a seperate field
                     collectionId = msg.success.substring(msg.success.lastIndexOf(' ') + 1);
                 }
-                this.props.dataEntryDidSave(this.props.collectionId);
+                this.props.dataEntryDidSave(msg);
             } else {
                 alert('An error occured while saving this entry');
             }
         });
+    }
+
+    cancelEditing() {
+        if(this.props.onCancelEditing) {
+            this.props.onCancelEditing();
+        }
     }
 
     render() {
@@ -78,9 +84,9 @@ class DataEntryForm extends React.PureComponent {
                 </div>
 
                 <div className="actions">
-                    <Link to={this.props.cancelLink} className="btn">
+                    <a onClick={this.cancelEditing.bind(this)} className="btn">
                         Cancel
-                    </Link>
+                    </a>
                     <input
                         type="submit"
                         className="btn primary add"
