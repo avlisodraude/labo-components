@@ -72,6 +72,7 @@ class CollectionEditView extends React.PureComponent {
                    <DataEntryTable
                         api={this.props.api}
                         user={this.props.user}
+                        clientId={this.props.clientId}
                         collection={this.state.collection}/>
                 )
             } else {
@@ -97,7 +98,8 @@ CollectionEditView.propTypes = {
         saveEntry: PropTypes.func.isRequired,
         deleteEntry: PropTypes.func.isRequired
     }),
-    user: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired,
+    clientId: PropTypes.string.isRequired
 };
 
 export default CollectionEditView;

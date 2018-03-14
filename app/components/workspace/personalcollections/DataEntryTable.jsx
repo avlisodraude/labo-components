@@ -108,10 +108,16 @@ class DataEntryTable extends React.PureComponent {
     ****************************** RESOURCE VIEWER **********************************
     *********************************************************************************/
 
+    //TODO the hardcoded 'personalcollection' should be replaced with the client ID!!
     openResourceViewer(entry) {
+        console.debug(this.props.clientId)
         const resource = entry ? {
             resourceId : entry.id,
-            collectionId : 'personalcollection__'+this.props.user.id+'__'+this.props.collection.id,
+            collectionId : IDUtil.personalCollectionId(
+                'personalcollection', //this.props.clientId ||
+                this.props.user.id,
+                this.props.collection.id
+            ),
             type : null,
             title : entry.title
         } : null;

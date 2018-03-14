@@ -141,6 +141,9 @@ class ItemDetailsRecipe extends React.Component {
 
 	onLoadItemData(collectionId, resourceId, data) {
 		let found = data ? data.found : false;
+		if(data && data.error) {
+			found = false; //e.g. in case of access denied
+		}
 		if(collectionId && found != false) {
 			CollectionUtil.generateCollectionConfig(this.props.user, collectionId, function(config) {
 				const itemDetailData = config.getItemDetailData(data);
@@ -577,8 +580,8 @@ class ItemDetailsRecipe extends React.Component {
 	render() {
 		if(!this.state.itemData) {
 			return (<h4>Loading item</h4>);
-		} else if(!this.state.found) {
-			return (<h4>This item does not exist</h4>);
+		} else if(this.state.found === false) {
+			return (<h4>Either you are not allowed access or this item does not exist</h4>);
 		} else {
 			let annotationBox = null;
 			let annotationList = null;

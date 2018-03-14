@@ -93,6 +93,7 @@ class CollectionConfig {
 		if(this.collectionInfo) {
 			searchIndex = this.collectionInfo.index
 			if(!searchIndex && this.collectionInfo.user && this.collectionInfo.id) {
+				//FIXME ditch the personalcollection__ prefix and start using the client ID!!!!
 				searchIndex = 'personalcollection__' + this.collectionInfo.user + '__' + this.collectionInfo.id
 			}
 		}
@@ -240,6 +241,10 @@ class CollectionConfig {
 	getItemDetailData(result, currentDateField) {
 		//first flatten the pure ES response
 		result = this.formatSearchResult(result);
+
+		if(!result) {
+			return null;
+		}
 
 		//initiate the formatted result with the most basic data from ES
 		let formattedResult = {

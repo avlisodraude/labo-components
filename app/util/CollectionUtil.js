@@ -79,6 +79,7 @@ const CollectionUtil = {
 
 	//checks first whether the collection is a personal collection or not,
 	//then either asks CKAN or the workspace API for info
+	//TODO/FIXME the hardcoded 'personalcollection' should be replaced with the client ID!!
 	loadCollectionInfo(user, collectionId, collectionStats, callback, configClass) {
 		if(collectionId.startsWith('personalcollection')) {
 			CollectionUtil.loadPersonalCollectionInfo(user, collectionId, collectionStats, callback, configClass);
