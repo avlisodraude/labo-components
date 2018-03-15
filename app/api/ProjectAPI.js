@@ -1,5 +1,7 @@
-const ProjectAPI = {
+import ObjectModelUtil from '../util/ObjectModelUtil';
 
+//TODO make sure *all* calls make use of the ObjectModelUtil to ensure proper project objects!
+const ProjectAPI = {
 
 	save : function (userId, project, callback) {
 		let url = _config.PROJECT_API_BASE + '/' + userId + "/projects";
@@ -59,7 +61,7 @@ const ProjectAPI = {
 				if(xhr.status == 200) {
 					const respData = JSON.parse(xhr.responseText);
 					if(respData && !respData.error) {
-						callback(respData);
+						callback(ObjectModelUtil.ensureProjectList(respData));
 					} else {
 						callback(null);
 					}
@@ -81,7 +83,7 @@ const ProjectAPI = {
 				if(xhr.status == 200) {
 					const respData = JSON.parse(xhr.responseText);
 					if(respData && !respData.error) {
-						callback(respData);
+						callback(ObjectModelUtil.ensureProject(respData));
 					} else {
 						callback(null);
 					}

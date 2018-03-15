@@ -20,9 +20,6 @@ import { Link } from 'react-router-dom';
 
 class ProjectSessionView extends React.PureComponent {
 
-/**
-* Construct this component
-*/
     constructor(props) {
         super(props);
 

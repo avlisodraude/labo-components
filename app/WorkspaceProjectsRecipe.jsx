@@ -14,6 +14,9 @@ import ProjectEditView from './components/workspace/projects/crud/ProjectEditVie
 //session view
 import ProjectSessionView from './components/workspace/projects/session/ProjectSessionView';
 
+//queries view
+import ProjectQueriesView from './components/workspace/projects/query/ProjectQueriesView';
+
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -55,6 +58,8 @@ class WorkspaceProjects extends Component {
                         render={this.getPropsRenderer(ProjectAnnotationView, this.props, {api: ProjectAPI})} />
                     <Route path="/workspace/projects/:id/sessions"
                         render={this.getPropsRenderer(ProjectSessionView, this.props, {api: ProjectAPI})} />
+                    <Route path="/workspace/projects/:id/queries"
+                        render={this.getPropsRenderer(ProjectQueriesView, this.props, {api: ProjectAPI})} />
                     <Route path="/workspace/projects/:id/details"
                         render={this.getPropsRenderer(ProjectDetailsView, this.props, {api: ProjectAPI})} />
                     <Route path="/workspace/projects/:id/edit"

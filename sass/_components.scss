@@ -238,6 +238,12 @@
 	}
 }
 
+.bg__query-editor { /* QueryEditor.jsx */
+	.bg__qed__table {
+		padding: 15px;
+	}
+}
+
 .bg__query-factory {
 	.bg__qf__grid {
 		.bg__qf__cell {
@@ -547,4 +553,11 @@
 	li {
 		padding-top: 2rem;
 	}
+}
+
+
+/* ==================== Workspace ============================================ */
+
+.bg__workpace{
+	margin-top: 40px;
 }

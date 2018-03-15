@@ -28,10 +28,7 @@
 @import './powerSelect';
 
 
-/* Custom styling for Workspace components */
-.bg__workpace{
-  margin-top: 40px;
-
-  /* Note: There is a reset in on workspace to disable bootstrap for its components */
+/* Disables bootstrap styling; only works with custom styles */
+.bg__no-bootstrap-custom-styling {
   @import './workspace/index.scss';
 }

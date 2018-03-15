@@ -3,6 +3,7 @@ import ProjectSelector from './components/workspace/projects/ProjectSelector';
 import BookmarkSelector from './components/bookmark/BookmarkSelector';
 
 import QueryBuilder from './components/search/QueryBuilder';
+import QueryEditor from './components/search/QueryEditor';
 import SearchHit from './components/search/SearchHit';
 import Paging from './components/search/Paging';
 import Sorting from './components/search/Sorting';
@@ -96,6 +97,8 @@ class SingleSearchRecipe extends React.Component {
 			);
 		} else if(componentClass == 'BookmarkSelector') {
 			this.bookmarkToGroupInProject(data);
+		} else if(componentClass == 'QueryEditor') {
+			this.onQuerySaved(data)
 		}
 	}
 
@@ -369,7 +372,7 @@ class SingleSearchRecipe extends React.Component {
 			if(this.state.awaitingProcess) {
 				switch(this.state.awaitingProcess) {
 					case 'bookmark' : this.selectBookmarkGroup(); break;
-					case 'saveQuery' : this.saveQueryToProject(); break;
+					case 'saveQuery' : this.showQueryModal(); break;
 				}
 			}
 		});
@@ -397,7 +400,6 @@ class SingleSearchRecipe extends React.Component {
 
 	//finally after a bookmark group is selected, save the bookmark
 	bookmarkToGroupInProject(annotation) {
-		console.debug(annotation);
 		ComponentUtil.hideModal(this, 'showBookmarkModal', 'bookmark__modal', true, () => {
 			//concatenate the
 			let targets = annotation.target.concat(this.state.currentOutput.results
@@ -416,14 +418,12 @@ class SingleSearchRecipe extends React.Component {
 			})
 			//set the deduped targets as the annotation target
 			annotation.target = dedupedTargets;
-			console.debug('THESE BOOKMARKS WILL BE SAVED', annotation);
 			//TODO implement saving the bookmarks in the workspace API
 			AnnotationAPI.saveAnnotation(annotation, this.onSaveBookmarks.bind(this));
 		});
 	}
 
 	onSaveBookmarks(data) {
-		console.debug('Saved bookmarks', data);
 		this.setState({
 			selectedRows : {},
 			allRowsSelected : false
@@ -439,14 +439,21 @@ class SingleSearchRecipe extends React.Component {
 				awaitingProcess : 'saveQuery'
 			});
 		} else {
-			this.saveQueryToProject();
+			this.showQueryModal();
 		}
 	}
 
-	saveQueryToProject() {
-		alert('TODO: Save query to the workspace API');
+	showQueryModal() {
 		this.setState({
+			showQueryModal : true,
 			awaitingProcess : null
+		});
+	}
+
+	//called after onComponentOutput of QueryEditor
+	onQuerySaved(project) {
+		ComponentUtil.hideModal(this, 'showQueryModal', 'query__modal', true, () => {
+			ComponentUtil.storeJSONInLocalStorage('activeProject', project)
 		});
 	}
 
@@ -456,6 +463,7 @@ class SingleSearchRecipe extends React.Component {
 		let collectionModal = null; //modal that holds the collection selector
 		let projectModal = null;
 		let bookmarkModal = null;
+		let queryModal = null;
 		let searchComponent = null; //single search, comparative search or combined search
 
 		//search results, paging and sorting
@@ -534,6 +542,24 @@ class SingleSearchRecipe extends React.Component {
 			)
 		}
 
+		//query name modal where the user should enter the name of the query to be saved
+		if(this.state.showQueryModal) {
+			queryModal = (
+				<FlexModal
+					elementId="query__modal"
+					stateVariable="showQueryModal"
+					owner={this}
+					size="large"
+					title="Enter a name for your query">
+						<QueryEditor
+							query={this.state.currentOutput.params}
+							user={this.props.user}
+							project={this.state.activeProject}
+							onOutput={this.onComponentOutput.bind(this)}/>
+				</FlexModal>
+			)
+		}
+
 		//only draw when a collection config is properly loaded
 		if(this.state.collectionConfig) {
 			if(this.state.collectionId) {
@@ -589,8 +615,7 @@ class SingleSearchRecipe extends React.Component {
 						type="button"
 						className="btn btn-primary"
 						onClick={this.saveQuery.bind(this)}
-						title="Save current query to project"
-						>
+						title="Save current query to project">
 						&nbsp;
 						<i className="fa fa-save" style={{color: 'white'}}></i>
 						&nbsp;
@@ -602,8 +627,7 @@ class SingleSearchRecipe extends React.Component {
 							type="button"
 							className="btn btn-primary"
 							onClick={this.bookmark.bind(this)}
-							title="Bookmark selection to project"
-							>
+							title="Bookmark selection to project">
 							&nbsp;
 							<i className="fa fa-star" style={{color: 'white'}}></i>
 							&nbsp;
@@ -660,6 +684,7 @@ class SingleSearchRecipe extends React.Component {
 						{chooseCollectionBtn}&nbsp;{chooseProjectBtn}
 						{collectionModal}
 						{projectModal}
+						{queryModal}
 						{bookmarkModal}
 						{searchComponent}
 					</div>

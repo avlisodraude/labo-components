@@ -1,3 +1,32 @@
+/*
+A collection object looks like this:
+{
+	"id": "0ccdfa08-6f0d-487d-9937-f99d1d78d971",
+	"name": "string",
+	"description": "string",
+	"user": "clariah_test",
+	"creator": "string",
+	"created": "2018-03-13T16:35:16Z",
+	"dateCreated": "2018-03-13",
+	"isPrivate": true
+}
+
+A collection item looks like this:
+{
+	"id": "AWIgAVFzQaBIye3atpIZ",
+	"title": "string",
+	"creator": "jaap",
+	"descr": "string",
+	"fileUrl": "https://www.openbeelden.nl/files/10/01/1001775.1001770.Artur_Avila.mp4",
+	"dateCreated": "2018-03-13",
+	"created": "2018-03-13T16:36:20Z",
+	"updated": "2018-03-14T08:41:57Z",
+	"owner": {
+		"id": "clariah_test",
+		"name": "clariah_test"
+	}
+}
+*/
 const PersonalCollectionAPI = {
 
 	save : function (userId, collection, callback) {
