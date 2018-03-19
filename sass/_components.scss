@@ -27,9 +27,11 @@
 
 .bg__annotation-summary { /* AnnotationSummary.jsx */
 	.bg__ans__card-list {
+		border:1px solid white;
 		list-style: none;
-		padding: 10px;
 		margin: 0px;
+		margin-bottom:5px;
+		padding: 10px;
 		.key {
 			font-weight: bold;
 		}
@@ -37,8 +39,6 @@
 			border-bottom:1px dotted $border-color;
 			word-break: break-word;
 		}
-		margin-bottom:5px;
-		border:1px solid white;
 		&:hover {
 			background-color: $subdued-hover-color;
 			border: 1px solid $fill-color;
@@ -48,8 +48,8 @@
 }
 
 .bg__classification { /* Classification.jsx */
-	font-size: 100% !important;
 	display: inline-block !important;
+	font-size: 100% !important;
 	margin: 0px 5px 5px 0px;
 	&.ms_custom {
 		color: $subdued-bg;
@@ -91,24 +91,24 @@
 
 .bg__information-card-form { /* MetadataForm.jsx */
 	.bg__icf__card-table {
-		width: 100%;
 		margin-bottom: $default-margin;
+		width: 100%;
 	}
 
 	.bg__icf__card-table-row {
+		border-bottom:5px solid transparent;
+		vertical-align: top;
 		.bg__icf__key {
-			width:25%;
 			padding-right:1%;
+			width:25%;
 		}
 		.bg__icf__value {
-			width:65%;
 			padding-right:1%;
+			width:65%;
 		}
 		.bg__icf__icon {
 			width:6%;
 		}
-		border-bottom:5px solid transparent;
-		vertical-align: top;
 	}
 }
 
@@ -128,10 +128,10 @@
 		padding: $default-margin;
 
 		.bg__agb__tag-cloud-item {
-			display:inline-block;
-			margin: 0px 5px 5px 0px;
 			color: $fill-color;
 			cursor: pointer;
+			display:inline-block;
+			margin: 0px 5px 5px 0px;
 			&:hover {
 				text-decoration:underline;
 			}
@@ -143,11 +143,11 @@
 	}
 	.bg__agb__breadcrumbs {
 		.bg__agb__crumb {
-			display: inline-block;
-	    	margin: 0px 5px 5px 0px;
-	    	background-color: $fill-color;
-	    	padding: 0px 5px;
+			background-color: $fill-color;
 	    	color: white;
+	    	display: inline-block;
+	    	margin: 0px 5px 5px 0px;
+	    	padding: 0px 5px;
 	    	i {
 	    		cursor: pointer;
 		    	&:hover {
@@ -214,8 +214,8 @@
 	.bg__mdt__poster {}
 	.bg__mdt__special-props {}
 	.bg__mdt__raw-data {
-		overflow:auto;
 		height: 400px;
+		overflow:auto;
 	}
 }
 
@@ -247,16 +247,16 @@
 .bg__query-factory {
 	.bg__qf__grid {
 		.bg__qf__cell {
+			background-color: $subdued-bg;
+			border-radius: $border-radius;
 			display:inline-block;
-			height: 900px;
 			float:left;
+			height: 900px;
 			margin-right: 2%;
 			margin-top: 1%;
-			width:48%;
-			background-color: $subdued-bg;
 
 			padding: 3px 8px;
-			border-radius: $border-radius;
+			width:48%;
 
 			.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
 				background-color: $subdued-bg;
@@ -266,12 +266,12 @@
 }
 
 .bg__search-hit { /* SearchHit.jsx */
+	border-bottom: 1px solid $border-color;
 	margin: 5px;
 	padding: 10px;
-	border-bottom: 1px solid $border-color;
 	.bg__sh__quickview {
-		margin-right: $default-margin;
 		float:left;
+		margin-right: $default-margin;
 	}
 	.bg__sh__select {
 		@include checkbox();
@@ -279,15 +279,15 @@
 	.bg__search-snippet {
 		margin: 5px;
 		.bg__ss__fragment {
-			margin-top:5px;
-			font-style:italic;
 			color: dimgray;
+			font-style:italic;
+			margin-top:5px;
 		}
 	}
 	&.fragment { /* possibly change this into .bg__search-hit--fragment (BEM style) */
+		border-right: 1px solid $highlight-color;
 		margin: 5px;
 		padding: $default-margin;
-		border-right: 1px solid $highlight-color;
 	}
 }
 
@@ -305,15 +305,15 @@
 
 .bg__collection-selector { /* CollectionSelector.jsx */
 	.bg__cls__collection {
-		float: left;
-	    margin: 1% 1% 1% 1%;
+		border: 1px solid grey;
 	    border-radius: $border-radius;
-	    border: 1px solid grey;
-	    width: 30%;
+	    float: left;
+	    height: 150px;
+	    margin: 1% 1% 1% 1%;
 	    overflow:hidden;
 	    padding: 10px;
-	    height: 150px;
 	    text-align: center;
+	    width: 30%;
 		img {
 	    	width: 50%;
 		}
@@ -354,30 +354,30 @@
 /* ==================== Player packages ============================================ */
 
 .bg__annotation-timeline { /* AnnotationTimeline.jsx */
-	width:100%;
-	height:50px;
-	display:block;
-	position:relative;
-	margin-top:10px;
 	background-color: $timeline-bg;
 	cursor: crosshair;
+	display:block;
+	height:50px;
+	margin-top:10px;
+	position:relative;
+	width:100%;
 }
 
 .bg__html5-audio-player {} /* HTML5AudioPlayer.jsx */
 
 .bg__flex-image-viewer { /* FlexImageViewer.jsx */
 	.bg__fiv__overlay {
-		outline: $image-overlay-border;
-		box-shadow: $box-shadow-base $shadow-subdued;
-		border-radius: $image-overlay-border-radius;
-		padding:10px;
 		background-color: $image-overlay-bg;
+		border-radius: $image-overlay-border-radius;
+		box-shadow: $box-shadow-base $shadow-subdued;
 		cursor: pointer;
+		outline: $image-overlay-border;
+		padding:10px;
 		&.active { /* possibly change this into .bg__flex-image-viewer--active (BEM style) */
-			outline: $image-overlay-border-active;
-			box-shadow: $box-shadow-base $shadow-active;
-			border-radius: $image-overlay-border-radius-active;
 			background-color: $image-overlay-bg-active;
+			border-radius: $image-overlay-border-radius-active;
+			box-shadow: $box-shadow-base $shadow-active;
+			outline: $image-overlay-border-active;
 		}
 	}
 	.bg__fiv__highlight {
@@ -394,13 +394,13 @@
 }
 
 .bg__segmentation-timeline { /* SegmentationTimeline.jsx */
-	width:100%;
-	height:50px;
-	display:block;
-	position:relative;
-	margin-top:10px;
 	background-color: $timeline-bg;
 	cursor: crosshair;
+	display:block;
+	height:50px;
+	margin-top:10px;
+	position:relative;
+	width:100%;
 }
 
 .bg__flex-player {} /* FlexPlayer.jsx */
@@ -416,34 +416,96 @@
 /* ==================== transcription ============================================ */
 
 .bg__transcriber { /* Transcriber.jsx */
-	background-color: white;
-	font-size: 80%;
-	color: black;
-	margin-bottom: 10px;
+	@import url("https://fonts.googleapis.com/css?family=BenchNine");
+	background-color: $timeline-bg;
+	border: 1px solid $subdued-hover-color;
+	color: #9493a1;
+	font-family: "BenchNine";
+	font-size: 1.5rem;
+	letter-spacing: .3px;
+	margin-bottom: 2rem;
 	margin-top: 10px;
-	max-height: 220px;
-	overflow-y: scroll;
-	padding: 5px;
+	padding: 1rem 0;
 	position: relative;
 
 	.currentLine {
-		color: $highlight-color;
+		color: white;
+		
+		&:hover {
+			color: white;
+		}
 	}
 
 	.line-start-time {
-		background-color: black;
+		background-color: $fill-color;
+		border-radius: 4px;
 		color: white;
 		display: inline-block;
-		font-size: 80%;
+		font-family: Curier;
+		font-size: 1rem;
 		margin: 0 10px 0 0;
 		min-width: 40px;
-		padding: 2px 3px;
+		padding: 1px 6px;
 	}
 
 	.sub {
-		margin-bottom: 3px;
+		position: relative;
+		padding: .5rem;
 		&:hover {
-			color: $highlight-color;
+			color: white;
+		}
+	}
+
+	.transcript_search_box {
+		position: absolute;
+		top:0;
+		z-index: 10;
+		background-color: white;
+		width: 100%;
+	}
+	.transcriptsList {
+		overflow-y: scroll;
+		height: 200px;
+		margin-top:20px;
+		.highLightText {
+			color:#e02717;
+		}
+	}
+
+//	search box filter for transcriber
+	input[type=text][name='search-transcriptLine'] {
+		width: 92%;
+		box-sizing: border-box;
+		border: none;
+		font-size: 1rem;
+		background-color: white;
+		background-position: 10px 10px;
+		background-repeat: no-repeat;
+		padding: 6px 10px 6px 30px;
+		margin-bottom: 0;
+	}
+	.glyphicon.glyphicon-search {
+		position: absolute;
+		top: 7px;
+		left: 7px;
+		font-size: 12px;
+	}
+
+	.numberOfMatches {
+		background-color: #eee;
+		border: 1px solid #e3e3e3;
+		border-radius: 4px;
+		bottom: 2px;
+		display: inline-block;
+		float: right;
+		font-size: 12px;
+		padding: 2px 4px;
+		position: absolute;
+		right: 0;
+		text-align: center;
+		.glyphicon {
+			border: none;
+			background-color: inherit;
 		}
 	}
 }
@@ -451,9 +513,9 @@
 /* ==================== Generic/flex components/package ============================================ */
 
 .bg__flex-box { /* FlexBox.jsx */
-	padding: $default-margin;
-	margin-bottom: $default-margin;
 	cursor:pointer;
+	margin-bottom: $default-margin;
+	padding: $default-margin;
 	.bg__fb__open {
 		float:right;
 		&:after {
@@ -489,8 +551,8 @@
 
 .bg__collection-recipe { /* CollectionRecipe.jsx */
 	.bg__rcp__cl__input-area {
-		margin-top:5px;
 		background-color: $subdued-bg;
+		margin-top:5px;
 		padding: 10px;
 	}
 }
@@ -517,11 +579,11 @@
 		margin-top: 6px;
 	}
 	.bg__rcp__ss__table-actions-header {
-		min-width: 800px;
-		min-height:53px;
-		margin: 5px;
-		padding: 10px;
 		background-color: #2d343a;
+		margin: 5px;
+		min-height:53px;
+		min-width: 800px;
+		padding: 10px;
 		.bg__rcp__ss__table-actions {
 			float:left;
 			.btn {
@@ -530,8 +592,8 @@
 		}
 	}
 	.bg__rcp__ss__table-actions-footer {
-		text-align: center;
 		padding: 10px;
+		text-align: center;
 	}
 } /* SingleSearchRecipe.jsx */
 
