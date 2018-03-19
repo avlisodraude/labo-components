@@ -1,3 +1,17 @@
+import SearchAPI from './api/SearchAPI';
+import AnnotationAPI from './api/AnnotationAPI';
+
+import IDUtil from './util/IDUtil';
+import ElasticsearchDataUtil from './util/ElasticsearchDataUtil';
+import CollectionUtil from './util/CollectionUtil';
+import ComponentUtil from './util/ComponentUtil';
+import AnnotationUtil from './util/AnnotationUtil';
+import ObjectModelUtil from './util/ObjectModelUtil';
+
+import FlexBox from './components/FlexBox';
+import FlexModal from './components/FlexModal';
+import FlexRouter from './util/FlexRouter';
+
 import CollectionSelector from './components/collection/CollectionSelector';
 import ProjectSelector from './components/workspace/projects/ProjectSelector';
 import BookmarkSelector from './components/bookmark/BookmarkSelector';
@@ -8,18 +22,6 @@ import SearchHit from './components/search/SearchHit';
 import Paging from './components/search/Paging';
 import Sorting from './components/search/Sorting';
 
-import FlexBox from './components/FlexBox';
-import FlexModal from './components/FlexModal';
-import FlexRouter from './util/FlexRouter';
-
-import IDUtil from './util/IDUtil';
-import ElasticsearchDataUtil from './util/ElasticsearchDataUtil';
-import CollectionUtil from './util/CollectionUtil';
-import ComponentUtil from './util/ComponentUtil';
-import AnnotationUtil from './util/AnnotationUtil';
-
-import SearchAPI from './api/SearchAPI';
-import AnnotationAPI from './api/AnnotationAPI';
 
 class SingleSearchRecipe extends React.Component {
 	constructor(props) {
@@ -36,9 +38,17 @@ class SingleSearchRecipe extends React.Component {
 			showBookmarkModal : false, //for the bookmark group selector
 			activeProject : ComponentUtil.getJSONFromLocalStorage('activeProject'),
 			awaitingProcess : null, //which process is awaiting the output of the project selector
+
 			collectionId : collectionId,
+
+			//influences the query
 			pageSize : 20,
-			collectionConfig : null,
+
+			//use for a lot TODO write proper reasons
+			collectionConfig : null, //loaded after mounting, without it nothing works
+			query : null,
+
+			//for doing actions on the search results
 			selectedRows : {},
 			allRowsSelected : false
 		};
@@ -57,7 +67,128 @@ class SingleSearchRecipe extends React.Component {
 	}
 
 	onLoadCollectionConfig(config) {
-		this.setState({collectionConfig : config});
+		this.setState({
+			collectionConfig : config,
+			query : this.generateInitialQueryFromURL(config)
+		});
+	}
+
+	//TODO move this to the recipe level
+	//TODO this is called twice by render... optimise!
+	/*
+		http://localhost:5302/recipe/beng-catalogue-search
+		?st=werk
+		&sf=bg:keywords.bg:keyword|onderwijs
+		&fr=0&sz=25&cids=nisv
+		&sl=nisv,nisv__asr
+		&fc=titles
+		&dr=date__-441849600000__599616000000
+		&sort=date__desc
+	*/
+	generateInitialQueryFromURL(collectionConfig) {
+		console.debug('updating the damn params');
+		if(this.props.params) {
+			const numParams = Object.keys(this.props.params).length;
+			if(numParams == 0) {
+				return null;
+			} else if(numParams == 1 && this.props.params.cids) {
+				return null;
+			}
+		} else {
+			return null;
+		}
+		const searchTerm = this.props.params.st ? this.props.params.st : '';
+		const fc = this.props.params.fc;
+		const fr = this.props.params.fr ? this.props.params.fr : 0;
+		const size = this.props.params.sz ? this.props.params.sz : 10;
+		const sf = this.props.params.sf;
+		const sl = this.props.params.sl;
+		const dr = this.props.params.dr;
+		const s = this.props.params.s;
+
+		//populate the field category
+		let fieldCategory = [];
+
+		if(fc) {
+            // split field selected parameters.
+            let selectedFields = [];
+            fc.split('|').forEach(function(field){
+                selectedFields.push(field);
+            });
+
+			const tmp = collectionConfig.getMetadataFieldCategories();
+			let currentSelectedfields= [];
+
+            selectedFields.map(selField => {
+				tmp.map(fieldsArray => {
+					if( fieldsArray.id == selField){
+                        currentSelectedfields.push(fieldsArray)
+					}
+				})
+            });
+            fieldCategory = currentSelectedfields;
+		}
+
+		//populate the facets
+		const selectedFacets = {};
+		if(sf) {
+			const tmp = sf.split(',');
+			tmp.forEach((aggr) => {
+				const a = aggr.split('|');
+				const key = a[0];
+				const value = a[1];
+				if(selectedFacets[key]) {
+					selectedFacets[key].push(value);
+				} else {
+					selectedFacets[key] = [value];
+				}
+			});
+		}
+
+		//populate the search layers
+		let searchLayers = []
+		if(sl) {
+			searchLayers = sl.split(',');
+		}
+
+		//populate the date range TODO think of a way to include min/max :s
+		let dateRange = null;
+		if(dr) {
+			const tmp = dr.split('__');
+			if(tmp.length == 3) {
+				dateRange = {
+					field : tmp[0],
+					start : parseInt(tmp[1]),
+					end : parseInt(tmp[2])
+				}
+			}
+		}
+
+		//populate the sort
+		let sortParams = null;
+		if(s) {
+			const tmp = s.split('__');
+			if(tmp.length == 2) {
+				sortParams = {
+					field : tmp[0],
+					order : tmp[1]
+				}
+			}
+		}
+
+		return ObjectModelUtil.ensureQuery (
+			{
+				searchLayers : searchLayers,
+				term : searchTerm,
+				dateRange : dateRange,
+				fieldCategory : fieldCategory,
+				selectedFacets : selectedFacets,
+				sortParams : sortParams,
+				offset : parseInt(fr),
+				size : parseInt(size)
+			},
+			collectionConfig
+		)
 	}
 
 	//this function receives all output of components that generate output and orchestrates where
@@ -128,7 +259,8 @@ class SingleSearchRecipe extends React.Component {
 		}
 	}
 
-	setBrowserHistory(searchTerm, fieldCategory, offset, pageSize, selectedFacets, dateRange, sortParams, searchLayers, collection) {
+	setBrowserHistory(searchTerm, fieldCategory, offset, pageSize, selectedFacets, dateRange,
+		sortParams, searchLayers, collection) {
 		const params = {
 			fr : offset,
 			sz : pageSize,
@@ -180,122 +312,6 @@ class SingleSearchRecipe extends React.Component {
 			params, //will also be stored in the browser state (cannot exceed 640k chars)
 			this.constructor.name //used as the title for the state
 		)
-	}
-
-	//TODO move this to the recipe level
-	//TODO this is called twice by render... optimise!
-	/*
-		http://localhost:5302/recipe/beng-catalogue-search
-		?st=werk
-		&sf=bg:keywords.bg:keyword|onderwijs
-		&fr=0&sz=25&cids=nisv
-		&sl=nisv,nisv__asr
-		&fc=titles
-		&dr=date__-441849600000__599616000000
-		&sort=date__desc
-	*/
-	extractSearchParams() {
-		if(this.props.params) {
-			const numParams = Object.keys(this.props.params).length;
-			if(numParams == 0) {
-				return null;
-			} else if(numParams == 1 && this.props.params.cids) {
-				return null;
-			}
-		} else {
-			return null;
-		}
-		const searchTerm = this.props.params.st ? this.props.params.st : '';
-		const fc = this.props.params.fc;
-		const fr = this.props.params.fr ? this.props.params.fr : 0;
-		const size = this.props.params.sz ? this.props.params.sz : 10;
-		const sf = this.props.params.sf;
-		const sl = this.props.params.sl;
-		const dr = this.props.params.dr;
-		const s = this.props.params.s;
-
-		//populate the field category
-		let fieldCategory = [];
-
-		if(fc) {
-            // split field selected parameters.
-            let selectedFields = [];
-            fc.split('|').forEach(function(field){
-                selectedFields.push(field);
-            });
-
-			const tmp = this.state.collectionConfig.getMetadataFieldCategories();
-			let currentSelectedfields= [];
-
-            selectedFields.map(selField => {
-				tmp.map(fieldsArray => {
-					if( fieldsArray.id == selField){
-                        currentSelectedfields.push(fieldsArray)
-					}
-				})
-            });
-            //console.debug(currentSelectedfields)
-            fieldCategory = currentSelectedfields;
-		}
-
-		//populate the facets
-		const selectedFacets = {};
-		if(sf) {
-			const tmp = sf.split(',');
-			tmp.forEach((aggr) => {
-				const a = aggr.split('|');
-				const key = a[0];
-				const value = a[1];
-				if(selectedFacets[key]) {
-					selectedFacets[key].push(value);
-				} else {
-					selectedFacets[key] = [value];
-				}
-			});
-		}
-
-		//populate the search layers
-		let searchLayers = []
-		if(sl) {
-			searchLayers = sl.split(',');
-		}
-
-		//populate the date range TODO think of a way to include min/max :s
-		let dateRange = null;
-		if(dr) {
-			const tmp = dr.split('__');
-			if(tmp.length == 3) {
-				dateRange = {
-					field : tmp[0],
-					start : parseInt(tmp[1]),
-					end : parseInt(tmp[2])
-				}
-			}
-		}
-
-		//populate the sort
-		let sortParams = null;
-		if(s) {
-			const tmp = s.split('__');
-			if(tmp.length == 2) {
-				sortParams = {
-					field : tmp[0],
-					order : tmp[1]
-				}
-			}
-		}
-
-		return {
-			'searchTerm' : searchTerm,
-			'fieldCategory' : fieldCategory,
-			'selectedFacets' : selectedFacets,
-			'searchLayers' : searchLayers,
-			'from' : parseInt(fr),
-			'pageSize' : parseInt(size),
-			'recipeId' : this.props.recipe.id,
-			'dateRange' : dateRange,
-			'sortParams' : sortParams
-		}
 	}
 
 	/* ------------------------------------------------------------------------------
@@ -566,15 +582,17 @@ class SingleSearchRecipe extends React.Component {
 				//this components outputs: search results, aggregations & sorting & paging functions!
 				searchComponent = (<QueryBuilder
 					key={this.state.collectionId} //for resetting all the states held within after selecting a new collection
-					queryId={'single__query'}
+
+					//UI options not relevant for querying
+					header={true}
 					aggregationView={this.props.recipe.ingredients.aggregationView}
-					pageSize={this.state.pageSize}
 					dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
+
+					query={this.state.query} //FIXME these are actually only used once in the init, should be changed!
 					collectionConfig={this.state.collectionConfig}
-					searchAPI={_config.SEARCH_API_BASE}
-					searchParams={this.extractSearchParams()} //FIXME these are actually only used once in the init, should be changed!
-					onOutput={this.onComponentOutput.bind(this)}
-					header={true}/>);
+
+					onOutput={this.onComponentOutput.bind(this)}/>
+				);
 			}
 
 			//draw the search hits in here, so it's possible to put the linechart in between the search box and the results
