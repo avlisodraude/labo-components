@@ -1,7 +1,20 @@
 /*
 Check this out later: https://zhirzh.github.io/2017/01/30/browser-history-functioning-&-loopback-gotcha/
 */
+import QueryModel from '../model/QueryModel';
+
 const FlexRouter = {
+
+	routeQueryToSingleSearch : function(query) {
+		const paramList = FlexRouter.__toUrlParamList(
+			QueryModel.toUrlParams(query)
+		)
+		let url = FlexRouter.__getBaseUrl() + '/tool/single-search';
+		if(paramList) {
+			url += '?' + paramList.join('&');
+		}
+		document.location.href =  url;
+	},
 
 	//this is typically called from a search recipe after clicking a search result
 	gotoItemDetails : function(itemDetailsRecipePath, searchResult, searchTerm) {
@@ -40,14 +53,22 @@ const FlexRouter = {
 		return arr[0] + "//" + arr[2];
 	},
 
-	//TODO extend this function so it is optional to put the params in the URL
-	setBrowserHistory : function(params, stateTitle) {
-		let url = document.location.pathname;
+	__toUrlParamList : function(params) {
+		let paramList = null;
 		if(params && typeof(params) == 'object' && Object.keys(params).length > 0) {
-			const paramList = [];
+			paramList = [];
 			for(const p in params) {
 				paramList.push(p + '=' + params[p]);
 			}
+		}
+		return paramList
+	},
+
+	//TODO extend this function so it is optional to put the params in the URL
+	setBrowserHistory : function(params, stateTitle) {
+		let url = document.location.pathname;
+		let paramList = FlexRouter.__toUrlParamList(params);
+		if(paramList) {
 			url += '?' + paramList.join('&');
 		}
 		window.history.pushState(params, stateTitle, url);

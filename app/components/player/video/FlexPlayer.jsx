@@ -46,6 +46,8 @@ Raar geskipt naar het einde:
 http://localhost:5302/recipe/default-item-details?id=4238372@program&cid=nisv&fq=aanleg
 http://localhost:5302/recipe/default-item-details?id=4238372@program&cid=nisv-catalogue-aggr
 
+TODO: check out this new React player: https://github.com/CookPete/react-player
+
 */
 
 class FlexPlayer extends React.Component {

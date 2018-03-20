@@ -1,3 +1,5 @@
+import QueryModel from '../../model/QueryModel';
+
 //for the collection selector in a modal
 import CollectionSelector from '../collection/CollectionSelector';
 import FlexModal from '../FlexModal';
@@ -46,11 +48,11 @@ class QueryFactory extends React.Component {
 		const openQueryData = {}
 		configs.forEach((conf) => {
 			const queryId = IDUtil.guid();
-			openQueries.push(queryId)
+			openQueries.push(queryId);
 			openQueryData[queryId] = {
-				queryId : queryId,
+				query : QueryModel.ensureQuery({id : queryId, size: this.props.pageSize}, conf),
 				collectionConfig : conf
-			}
+			};
 		});
 		this.setState({
 			openQueries : openQueries,
@@ -79,12 +81,15 @@ class QueryFactory extends React.Component {
 
 			const oqd = this.state.openQueryData;
 			oqd[queryId] = {
-				queryId : queryId,
+				query : QueryModel.ensureQuery({id : queryId, size : this.props.pageSize}, data),
 				collectionConfig : data
 			}
 
 			this.setState(
-				{openQueries : oq, openQueryData : oqd},
+				{
+					openQueries : oq,
+					openQueryData : oqd
+				},
 				ComponentUtil.hideModal(this, 'showModal', 'collection__modal', true)
 			);
 		} else if(componentClass == 'QueryBuilder') {
@@ -93,8 +98,8 @@ class QueryFactory extends React.Component {
 
 			//store the just executed query, so the user can save it later
 			const oqd = this.state.openQueryData;
-			if(data.queryId && oqd[data.queryId]) {
-				oqd[data.queryId]['queryParams'] = data.params;
+			if(data.query.id && oqd[data.query.id]) {
+				oqd[data.query.id]['queryParams'] = data.query;
 				this.setState({
 					openQueryData : oqd
 				});
@@ -121,28 +126,9 @@ class QueryFactory extends React.Component {
 		}
 	}
 
-	saveQuery(queryId) {
-		const query = this.state.openQueryData[queryId];
-		console.debug('saving query');
-		console.debug(query.queryParams);
-
-		console.debug(ElasticsearchDataUtil.toPrettyQuery(query.queryParams))
-	}
-
-	getEmptyCell() {
-		return (
-			<div className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)} style={{textAlign : 'center', height : 'inherit'}}>
-				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
-					Add query&nbsp;<i className="fa fa-plus"></i>
-				</button>
-			</div>
-		)
-	}
-
 	/* ---------------------- RENDER ------------------- */
 
 	render() {
-		let queryGrid = null;
 		let collectionModal = null;
 
 		//collection modal
@@ -166,10 +152,12 @@ class QueryFactory extends React.Component {
 		const cells = this.state.openQueries.map(function(queryId, index) {
 
 			const queryData = this.state.openQueryData[queryId];
-			let title = queryData.collectionConfig.collectionId;
+			let title = queryData.query.collectionId;
 			if(queryData.collectionConfig.collectionInfo) {
 				title = queryData.collectionConfig.collectionInfo.title;
 			}
+
+			//console.debug(queryData.query)
 			return (
 				<div key={queryId + '__qbw'} className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)}>
 					<h5>
@@ -180,36 +168,33 @@ class QueryFactory extends React.Component {
 						</i>
 					</h5>
 					<QueryBuilder
-						key={queryId + '__qb'}
-						queryId={queryId}
-						user={this.props.user}
-						collectionConfig={queryData.collectionConfig}
-						pageSize={this.props.pageSize ? this.props.pageSize : 10}
+						key={queryId + '__qb'} //for resetting all the states held within after selecting a new collection
+
+						//UI options not relevant for querying
 						header={false}
-						searchAPI={_config.SEARCH_API_BASE}
-						itemDetailsPath={this.props.itemDetailsPath}
 						aggregationView={this.props.aggregationView}
 						dateRangeSelector={this.props.dateRangeSelector}
-						searchParams={null} //TODO when ComparativeSearchRecipe knows how to store all q's in the URL
+						showTimeLine={false}
+
+						query={queryData.query}
+						collectionConfig={queryData.collectionConfig}
+
 						onOutput={this.onComponentOutput.bind(this)}/>
 				</div>
 			)
 		}, this);
 
-		//always add an empty cell
-		cells.push(this.getEmptyCell())
-
-
-		queryGrid = (
-			<div className={IDUtil.cssClassName('grid', this.CLASS_PREFIX)}>
-				{cells}
-			</div>
-		)
-
 		return (
 			<div className={IDUtil.cssClassName('query-factory')}>
+				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
+					Add query&nbsp;<i className="fa fa-plus"></i>
+				</button>
+				<div className={IDUtil.cssClassName('scrollwindow', this.CLASS_PREFIX)}>
+					<div className={IDUtil.cssClassName('grid', this.CLASS_PREFIX)}>
+						{cells}
+					</div>
+				</div>
 				{collectionModal}
-				{queryGrid}
 			</div>
 		)
 	}

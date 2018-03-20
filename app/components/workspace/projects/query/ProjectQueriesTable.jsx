@@ -1,6 +1,9 @@
+import QueryModel from '../../../../model/QueryModel';
+
 import ProjectAPI from '../../../../api/ProjectAPI';
 
 import IDUtil from '../../../../util/IDUtil';
+import FlexRouter from '../../../../util/FlexRouter';
 
 import { exportDataAsJSON } from '../../helpers/Export';
 
@@ -84,7 +87,10 @@ class ProjectQueriesTable extends React.PureComponent {
     }
 
     viewQuery(query) {
-        alert('to be implemented');
+        const selectedQuery = this.state.queries.filter(q => q.name == query.name);
+        if(selectedQuery.length > 0) {
+            FlexRouter.routeQueryToSingleSearch(selectedQuery[0].query);
+        }
     }
 
     deleteQuery(query) {
@@ -164,7 +170,7 @@ class ProjectQueriesTable extends React.PureComponent {
                         props: { className: 'primary' },
                         content: query.name
                     },
-                    { content: Object.keys(query.query).length},
+                    { content: QueryModel.toHumanReadableString(query.query)},
                     {
                         content: (
                             <a className="btn blank warning" onClick={this.deleteQuery.bind(this, query)}>
