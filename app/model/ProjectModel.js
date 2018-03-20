@@ -15,7 +15,7 @@ const ProjectModel = {
 
 	ensureProjectList : function(list) {
 		list = list || [];
-		return list.map(p => ObjectModelUtil.ensureProject(p));
+		return list.map(p => ProjectModel.ensureProject(p));
 	},
 
 	//TODO really bad implementation and never used. Finish & test later

@@ -395,43 +395,54 @@ class QueryBuilder extends React.Component {
 					// and the length of the data is greater than 0.
 					//TODO fix the ugly if/else statements!!
 					if(this.state.query.dateRange && this.state.aggregations[this.state.query.dateRange.field] !== undefined) {
-						if (this.state.aggregations[this.state.query.dateRange.field].length !== 0) {
 
-                            // Display graph based on its type. Defaults to bar chart.
-                            if (this.state.graphType === 'lineChart') {
-                                graph = (
-                                    <div className="cl_graphWrapper">
-                                        <button onClick={this.switchGraphType.bind(this, 'histogram')} type="button" className="cl_switchBtnCharts btn btn-primary btn-xs">Histogram
-                                        </button>
+						//draw a graph
+						if(this.props.showTimeLine) {
+							if (this.state.aggregations[this.state.query.dateRange.field].length !== 0) {
 
-                                            <QuerySingleLineChart
-                                                data={this.state.aggregations[this.state.query.dateRange.field]}
-                                                comparisonId={this.state.searchId}/>
+	                            // Display graph based on its type. Defaults to bar chart.
+	                            if (this.state.graphType === 'lineChart') {
+	                                graph = (
+	                                    <div className="cl_graphWrapper">
+	                                        <button
+	                                        	onClick={this.switchGraphType.bind(this, 'histogram')}
+	                                        	type="button"
+	                                        	className="cl_switchBtnCharts btn btn-primary btn-xs">
+	                                        	Histogram
+	                                        </button>
 
-                                    </div>
-                                );
-                            } else {
-                                graph = (
-                                    <div className="cl_graphWrapper">
-                                        <button onClick={this.switchGraphType.bind(this, 'lineChart')} type="button" className="cl_switchBtnCharts btn btn-primary btn-xs">Line
-                                            Chart
-                                        </button>
-                                        <Histogram
-                                            queryId={this.state.query.id}
-                                            dateRange={this.state.query.dateRange}
-                                            data={this.state.aggregations[this.state.query.dateRange.field]}
-                                            title={this.props.collectionConfig.toPrettyFieldName(this.state.query.dateRange.field)}
-                                            searchId={this.state.searchId}/>
-                                    </div>
-                                );
-                            }
-						} else if (this.state.aggregations[this.state.query.dateRange.field].length === 0) {
-						    graph = (
-								 <div>
-									 <br/>
-									 <div className="alert alert-danger">No data found for this Date Type Field</div>
-								 </div>
-						    )
+	                                        <QuerySingleLineChart
+	                                            data={this.state.aggregations[this.state.query.dateRange.field]}
+	                                            comparisonId={this.state.searchId}/>
+
+	                                    </div>
+	                                );
+	                            } else {
+	                                graph = (
+	                                    <div className="cl_graphWrapper">
+	                                        <button
+	                                        	onClick={this.switchGraphType.bind(this, 'lineChart')}
+	                                        	type="button"
+	                                        	className="cl_switchBtnCharts btn btn-primary btn-xs">
+	                                        	Line chart
+	                                        </button>
+	                                        <Histogram
+	                                            queryId={this.state.query.id}
+	                                            dateRange={this.state.query.dateRange}
+	                                            data={this.state.aggregations[this.state.query.dateRange.field]}
+	                                            title={this.props.collectionConfig.toPrettyFieldName(this.state.query.dateRange.field)}
+	                                            searchId={this.state.searchId}/>
+	                                    </div>
+	                                );
+	                            }
+							} else if (this.state.aggregations[this.state.query.dateRange.field].length === 0) {
+							    graph = (
+									 <div>
+										 <br/>
+										 <div className="alert alert-danger">No data found for this Date Type Field</div>
+									 </div>
+							    )
+							}
 						}
 
 						//draw the summary stuff

@@ -396,18 +396,20 @@ class SingleSearchRecipe extends React.Component {
 		if(this.state.collectionId && this.state.collectionConfig && this.state.query) {
 
 			//this components outputs: search results, aggregations & sorting & paging functions!
-			searchComponent = (<QueryBuilder
-				key={this.state.collectionId} //for resetting all the states held within after selecting a new collection
+			searchComponent = (
+				<QueryBuilder
+					key={this.state.collectionId} //for resetting all the states held within after selecting a new collection
 
-				//UI options not relevant for querying
-				header={true}
-				aggregationView={this.props.recipe.ingredients.aggregationView}
-				dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
+					//UI options not relevant for querying
+					header={true}
+					aggregationView={this.props.recipe.ingredients.aggregationView}
+					dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
+					showTimeLine={true}
 
-				query={this.state.query}
-				collectionConfig={this.state.collectionConfig}
+					query={this.state.query}
+					collectionConfig={this.state.collectionConfig}
 
-				onOutput={this.onComponentOutput.bind(this)}/>
+					onOutput={this.onComponentOutput.bind(this)}/>
 			);
 
 

@@ -49,7 +49,10 @@ class QueryFactory extends React.Component {
 		configs.forEach((conf) => {
 			const queryId = IDUtil.guid();
 			openQueries.push(queryId);
-			openQueryData[queryId] = QueryModel.ensureQuery({id : queryId}, conf);
+			openQueryData[queryId] = {
+				query : QueryModel.ensureQuery({id : queryId}, conf),
+				collectionConfig : conf
+			};
 		});
 		this.setState({
 			openQueries : openQueries,
@@ -77,7 +80,10 @@ class QueryFactory extends React.Component {
 			oq.push(queryId)
 
 			const oqd = this.state.openQueryData;
-			oqd[queryId] = QueryModel.ensureQuery({id : queryId}, conf)
+			oqd[queryId] = {
+				query : QueryModel.ensureQuery({id : queryId}, data),
+				collectionConfig : data
+			}
 
 			this.setState(
 				{openQueries : oq, openQueryData : oqd},
@@ -162,10 +168,12 @@ class QueryFactory extends React.Component {
 		const cells = this.state.openQueries.map(function(queryId, index) {
 
 			const queryData = this.state.openQueryData[queryId];
-			let title = queryData.collectionConfig.collectionId;
+			let title = queryData.query.collectionId;
 			if(queryData.collectionConfig.collectionInfo) {
 				title = queryData.collectionConfig.collectionInfo.title;
 			}
+
+			//console.debug(queryData.query)
 			return (
 				<div key={queryId + '__qbw'} className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)}>
 					<h5>
@@ -176,17 +184,17 @@ class QueryFactory extends React.Component {
 						</i>
 					</h5>
 					<QueryBuilder
-						key={queryId + '__qb'}
-						queryId={queryId}
-						user={this.props.user}
-						collectionConfig={queryData.collectionConfig}
-						pageSize={this.props.pageSize ? this.props.pageSize : 10}
+						key={queryId + '__qb'} //for resetting all the states held within after selecting a new collection
+
+						//UI options not relevant for querying
 						header={false}
-						searchAPI={_config.SEARCH_API_BASE}
-						itemDetailsPath={this.props.itemDetailsPath}
 						aggregationView={this.props.aggregationView}
 						dateRangeSelector={this.props.dateRangeSelector}
-						searchParams={null} //TODO when ComparativeSearchRecipe knows how to store all q's in the URL
+						showTimeLine={false}
+
+						query={queryData.query}
+						collectionConfig={queryData.collectionConfig}
+
 						onOutput={this.onComponentOutput.bind(this)}/>
 				</div>
 			)

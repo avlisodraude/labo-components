@@ -56,26 +56,32 @@ class ComparativeSearchRecipe extends React.Component {
 			alert('Your query did not yield any results');
 		} else if(data.pagingOutOfBounds) { //due to ES limitations
 			alert('The last page cannot be retrieved, please refine your search');
-		} else { //there is a normal response from the search API
+		} else {
 			const csr = this.state.combinedSearchResults;
 			const lineChartData = this.state.lineChartData;
-			if(!data.deleted) {
-				const newData = ElasticsearchDataUtil.searchResultsToTimeLineData(data);
-				if(newData) {
-					//TODO add more information about the query
-					lineChartData[data.queryId] = {
-						label : 'Query #', //+ Object.keys(lineChartData).length,
-					 	dateField : data.dateField,
-					 	prettyQuery : ElasticsearchDataUtil.toPrettyQuery(data.params),
-					 	data : newData,
-					 	queryId : data.queryId
-					}
-				}
-				csr[data.queryId] = data;
-			} else { //the query factory deleted a query
+
+			if(data.deleted === true && data.queryId) { //the query factory deleted a query
 				delete csr[data.queryId];
 				delete lineChartData[data.queryId];
+			} else { //the data is the same stuff returned by a QueryBuilder
+				const newData = ElasticsearchDataUtil.searchResultsToTimeLineData(
+					data.query,
+					data.aggregations
+				);
+				if(newData) {
+					//TODO add more information about the query
+					lineChartData[data.query.id] = {
+						label : 'Query #',
+					 	dateField : data.dateRange ? data.dateRange.field : null,
+					 	prettyQuery : ElasticsearchDataUtil.toPrettyQuery(data.query),
+					 	data : newData,
+					 	queryId : data.query.id
+					}
+				}
+				csr[data.query.id] = data;
 			}
+
+			//finally set the state with the queries & line chart data
 			this.setState({
 				combinedSearchResults : csr,
 				lineChartData : lineChartData,
@@ -109,19 +115,11 @@ class ComparativeSearchRecipe extends React.Component {
 	//TODO figure out how to call this without needing the QueryBuilder
 	gotoPage(queryId, pageNumber) {
 		if(this.state.combinedSearchResults[queryId]) {
-			const sr = this.state.combinedSearchResults[queryId];
+			const query = this.state.combinedSearchResults[queryId].query;
+			query.offset = (pageNumber-1) * this.state.pageSize;
 			SearchAPI.search(
-				queryId,
-				sr.collectionConfig,
-				sr.params.searchLayers,
-				sr.params.term,
-				sr.params.fieldCategory,
-				sr.params.desiredFacets,
-				sr.params.selectedFacets,
-				sr.params.dateRange,
-				sr.params.sort,
-				(pageNumber-1) * this.state.pageSize, //adjust the offset to reflect the intended page
-				this.state.pageSize,
+				query,
+				this.state.combinedSearchResults[queryId].collectionConfig,
 				this.onSearched.bind(this),
 				false
 			)
@@ -130,19 +128,12 @@ class ComparativeSearchRecipe extends React.Component {
 
 	sortResults(queryId, sortParams) {
 		if(this.state.combinedSearchResults[queryId]) {
-			const sr = this.state.combinedSearchResults[queryId];
+			const query = this.state.combinedSearchResults[queryId].query;
+			query.offset = 0;
+			query.sort = sortParams;
 			SearchAPI.search(
-				queryId,
-				sr.collectionConfig,
-				sr.params.searchLayers,
-				sr.params.term,
-				sr.params.fieldCategory,
-				sr.params.desiredFacets,
-				sr.params.selectedFacets,
-				sr.params.dateRange,
-				sortParams, //use the new sort params
-				0,
-				this.state.pageSize,
+				query,
+				this.state.combinedSearchResults[queryId].collectionConfig,
 				this.onSearched.bind(this),
 				false
 			)
@@ -171,6 +162,7 @@ class ComparativeSearchRecipe extends React.Component {
 		//TODO only render when there is linechart data
 		if(this.props.recipe.ingredients.output == 'lineChart') {
 			if(Object.keys(this.state.lineChartData).length > 0) {
+				console.debug(this.state.lineChartData);
 				lineChart = (
 					<FlexBox title="Search results plotted on a time line">
 						<QueryComparisonLineChart
@@ -199,13 +191,13 @@ class ComparativeSearchRecipe extends React.Component {
 				}
 
 				//draw the sorting buttons
-				if(searchResults.params.sort) {
+				if(searchResults.query.sort) {
 					sortButtons = <Sorting
 						queryId={queryId}
 						collectionConfig={searchResults.collectionConfig}
 						sortResults={this.sortResults.bind(this)}
-						sortParams={searchResults.params.sort}
-						dateField={searchResults.dateField}/>
+						sortParams={searchResults.query.sort}
+						dateField={searchResults.query.dateRange ? searchResults.query.dateRange.field : null}/>
 				}
 
 				//draw the list of search results
@@ -214,7 +206,7 @@ class ComparativeSearchRecipe extends React.Component {
 						<SearchHit
 							key={'__' + index}
 							result={result}
-							searchTerm={searchResults.params.term}
+							searchTerm={searchResults.query.term}
 							collectionConfig={searchResults.collectionConfig}
 							itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}/>
 					)

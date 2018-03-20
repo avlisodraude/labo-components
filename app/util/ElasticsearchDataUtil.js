@@ -24,23 +24,21 @@ const ElasticsearchDataUtil = {
 	/* ----------------------------- Used by: ComparativeSearchRecipe ------------------------------------------------ */
 
 	//TODO make sure the different date formats can be handled!
-	searchResultsToTimeLineData : function(data) {
-		if(data && data.dateField) {
+	searchResultsToTimeLineData : function(query, aggregations) {
+		if(query && aggregations) {
 		 	const timelineData = []
-		 	if(data && data.results && data.dateField) {
-			 	if(data.aggregations && data.aggregations[data.dateField]) {
-					data.aggregations[data.dateField].forEach((a) => {
-						const y = new Date(a.date_millis).getFullYear();
-						if (!(isNaN(y))) {
-							let td = {
-								year: y
-							}
-							td[data.queryId] = a.doc_count//
-							timelineData.push(td);
+		 	//check if there is a selected date field and if it is also part of the aggregations
+		 	if(query.dateRange && query.dateRange.field && aggregations[query.dateRange.field]) {
+				aggregations[query.dateRange.field].forEach((a) => {
+					const y = new Date(a.date_millis).getFullYear();
+					if (!(isNaN(y))) {
+						let td = {
+							year: y
 						}
-					});
-
-				}
+						td[query.id] = a.doc_count
+						timelineData.push(td);
+					}
+				});
 			}
 			return timelineData;
 		}
