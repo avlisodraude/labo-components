@@ -22,6 +22,18 @@ class SearchSnippet extends React.Component {
 		return mediaTypes
 	}
 
+    highlightSearchedTerm(text) {
+		if(text === null) {
+		 	return text
+		}
+        let regex = new RegExp(this.props.searchTerm, 'gi');
+
+        return text.replace(regex, (term) => "<span class='highLightText'>" + term + "</span>");
+    }
+
+    createMarkup(text){
+		return {__html: text}
+	}
 	//possible default fields: posterURL, title, description, tags
 	render() {
 		let poster = null;
@@ -101,24 +113,28 @@ class SearchSnippet extends React.Component {
 		}
 
 		//generate main classes
-		const classNames = ['media', IDUtil.cssClassName('search-snippet')]
+        const classNames = ['media', IDUtil.cssClassName('search-snippet')],
+            title = this.props.data.title ? this.props.data.title + ' ' : '',
+            date = this.props.data.date ? '(' + this.props.data.date + ')' : '';
 
-		return (
+        return (
 			<div className={classNames.join(' ')}>
 				<div className="media-left">
 					{poster}
 				</div>
-				<div className="media-body">
+				<div  className="media-body">
 					<h4 className="media-heading custom-pointer" title={this.props.data.id}>
-						{this.props.data.title ? this.props.data.title + ' ' : ''}
-						{this.props.data.date ? '(' + this.props.data.date + ')' : ''}
+						<span dangerouslySetInnerHTML={this.createMarkup(this.highlightSearchedTerm(title))}></span>
+						{date}
 						&nbsp;{mediaTypes}&nbsp;{accessIcon}&nbsp;{fragmentIcon}
 					</h4>
-					{CollectionUtil.highlightSearchTermInDescription(
-						this.props.data.description,
-						this.props.searchTerm,
-						35
-					)}
+					<span className="snippet_description" dangerouslySetInnerHTML={this.createMarkup(
+                        this.highlightSearchedTerm(CollectionUtil.highlightSearchTermInDescription(
+                            this.props.data.description,
+                            this.props.searchTerm,
+                            35
+                        ))
+					)} />
 					{fragmentInfo}
 					{tags}
 				</div>
