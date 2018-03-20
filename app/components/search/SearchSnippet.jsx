@@ -26,9 +26,15 @@ class SearchSnippet extends React.Component {
 		if(text === null) {
 		 	return text
 		}
-        let regex = new RegExp(this.props.searchTerm, 'gi');
-
+        let regex = new RegExp(this.stripQuotes(this.props.searchTerm), 'gi');
         return text.replace(regex, (term) => "<span class='highLightText'>" + term + "</span>");
+    }
+
+    stripQuotes(str) {
+    	if(str.startsWith('"') && str.endsWith('"') && str.length > 2) {
+			return str.substring(1, str.length -1)
+		}
+		return str
     }
 
     createMarkup(text){
@@ -113,9 +119,9 @@ class SearchSnippet extends React.Component {
 		}
 
 		//generate main classes
-        const classNames = ['media', IDUtil.cssClassName('search-snippet')],
-            title = this.props.data.title ? this.props.data.title + ' ' : '',
-            date = this.props.data.date ? '(' + this.props.data.date + ')' : '';
+        const classNames = ['media', IDUtil.cssClassName('search-snippet')];
+        const title = this.props.data.title ? this.props.data.title + ' ' : '';
+        const date = this.props.data.date ? '(' + this.props.data.date + ')' : '';
 
         return (
 			<div className={classNames.join(' ')}>
@@ -131,7 +137,7 @@ class SearchSnippet extends React.Component {
 					<span className="snippet_description" dangerouslySetInnerHTML={this.createMarkup(
                         this.highlightSearchedTerm(CollectionUtil.highlightSearchTermInDescription(
                             this.props.data.description,
-                            this.props.searchTerm,
+                            this.stripQuotes(this.props.searchTerm),
                             35
                         ))
 					)} />
