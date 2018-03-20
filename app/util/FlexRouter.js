@@ -5,110 +5,15 @@ import QueryModel from '../model/QueryModel';
 
 const FlexRouter = {
 
-	//TODO probably better to return a default query instead of null whenever the urlParams are null
-	generateInitialQueryFromURL : function(urlParams, collectionConfig) {
-		if(urlParams) {
-			const numParams = Object.keys(urlParams).length;
-			if(numParams == 0) {
-				return null;
-			} else if(numParams == 1 && urlParams.cids) {
-				return null;
-			}
-		} else {
-			return null;
-		}
-		const searchTerm = urlParams.st ? urlParams.st : '';
-		const fc = urlParams.fc;
-		const fr = urlParams.fr ? urlParams.fr : 0;
-		const size = urlParams.sz ? urlParams.sz : 10;
-		const sf = urlParams.sf;
-		const sl = urlParams.sl;
-		const dr = urlParams.dr;
-		const s = urlParams.s;
-
-		//populate the field category
-		let fieldCategory = [];
-
-		if(fc) {
-            // split field selected parameters.
-            let selectedFields = [];
-            fc.split('|').forEach(function(field){
-                selectedFields.push(field);
-            });
-
-			const tmp = collectionConfig.getMetadataFieldCategories();
-			let currentSelectedfields= [];
-
-            selectedFields.map(selField => {
-				tmp.map(fieldsArray => {
-					if( fieldsArray.id == selField){
-                        currentSelectedfields.push(fieldsArray)
-					}
-				})
-            });
-            fieldCategory = currentSelectedfields;
-		}
-
-		//populate the facets
-		const selectedFacets = {};
-		if(sf) {
-			const tmp = sf.split(',');
-			tmp.forEach((aggr) => {
-				const a = aggr.split('|');
-				const key = a[0];
-				const value = a[1];
-				if(selectedFacets[key]) {
-					selectedFacets[key].push(value);
-				} else {
-					selectedFacets[key] = [value];
-				}
-			});
-		}
-
-		//populate the search layers
-		let searchLayers = []
-		if(sl) {
-			searchLayers = sl.split(',');
-		}
-
-		//populate the date range TODO think of a way to include min/max :s
-		let dateRange = null;
-		if(dr) {
-			const tmp = dr.split('__');
-			if(tmp.length == 3) {
-				dateRange = {
-					field : tmp[0],
-					start : parseInt(tmp[1]),
-					end : parseInt(tmp[2])
-				}
-			}
-		}
-
-		//populate the sort
-		let sortParams = null;
-		if(s) {
-			const tmp = s.split('__');
-			if(tmp.length == 2) {
-				sortParams = {
-					field : tmp[0],
-					order : tmp[1]
-				}
-			}
-		}
-
-		return QueryModel.ensureQuery (
-			{
-				searchLayers : searchLayers,
-				term : searchTerm,
-				dateRange : dateRange,
-				fieldCategory : fieldCategory,
-				selectedFacets : selectedFacets,
-				sortParams : sortParams,
-				offset : parseInt(fr),
-				size : parseInt(size)
-			},
-			collectionConfig
+	routeQueryToSingleSearch : function(query) {
+		const paramList = FlexRouter.__toUrlParamList(
+			QueryModel.toUrlParams(query)
 		)
+		let url = FlexRouter.__getBaseUrl() + '/tool/single-search';
+		if(paramList) {
+			url += '?' + paramList.join('&');
+		}
+		document.location.href =  url;
 	},
 
 	//this is typically called from a search recipe after clicking a search result
@@ -148,14 +53,22 @@ const FlexRouter = {
 		return arr[0] + "//" + arr[2];
 	},
 
-	//TODO extend this function so it is optional to put the params in the URL
-	setBrowserHistory : function(params, stateTitle) {
-		let url = document.location.pathname;
+	__toUrlParamList : function(params) {
+		let paramList = null;
 		if(params && typeof(params) == 'object' && Object.keys(params).length > 0) {
-			const paramList = [];
+			paramList = [];
 			for(const p in params) {
 				paramList.push(p + '=' + params[p]);
 			}
+		}
+		return paramList
+	},
+
+	//TODO extend this function so it is optional to put the params in the URL
+	setBrowserHistory : function(params, stateTitle) {
+		let url = document.location.pathname;
+		let paramList = FlexRouter.__toUrlParamList(params);
+		if(paramList) {
 			url += '?' + paramList.join('&');
 		}
 		window.history.pushState(params, stateTitle, url);

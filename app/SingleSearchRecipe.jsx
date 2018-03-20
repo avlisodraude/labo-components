@@ -76,7 +76,7 @@ class SingleSearchRecipe extends React.Component {
 	onLoadCollectionConfig(config, fromUrl = true) {
 		let query = null;
 		if(fromUrl) {
-			query = FlexRouter.generateInitialQueryFromURL(this.props.params, config)
+			query = QueryModel.urlParamsToQuery(this.props.params, config)
 		} else {
 			query = QueryModel.ensureQuery({size : this.state.pageSize}, config);
 		}
