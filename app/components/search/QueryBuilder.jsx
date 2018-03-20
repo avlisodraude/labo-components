@@ -1,3 +1,5 @@
+import QueryModel from '../../model/QueryModel';
+
 import SearchAPI from '../../api/SearchAPI';
 
 //data utilities
@@ -46,16 +48,9 @@ class QueryBuilder extends React.Component {
 	//TODO also provide an option to directly pass a config, this is pretty annoying with respect to reusability
 	componentDidMount() {
 		//do an initial search in case there are search params in the URL
-        if(this.props.searchParams && this.refs.searchTerm) {
-			this.refs.searchTerm.value = this.props.searchParams.searchTerm;
-			this.doSearch(this.state.query);
-		}
-		//make sure the search is done again when flipping back through the history (a bit weird, but it seems ok for now)
-		//TODO make sure how the browse history works outside of the recipes
-		if(this.props.searchParams) {
-			window.onpopstate = function(event) {
-	  			document.location.href=document.location;
-			};
+        if(this.props.query) {
+			this.refs.searchTerm.value = this.props.query.term;
+			this.doSearch(this.props.query);
 		}
 	}
 
@@ -244,22 +239,14 @@ class QueryBuilder extends React.Component {
         if (this.props.onOutput) {
             this.props.onOutput(this.constructor.name, data);
         }
-        let q = this.state.query;
         if (data && !data.error) {
-        	//update the query in the state
-        	q.searchLayers = data.searchLayers;
-        	q.dateRange = data.selectedDateRange;
-        	q.selectedFacets = data.selectedFacets;
-        	q.desiredFacets = data.desiredFacets;
-        	q.fieldCategory = data.fieldCategory;
-        	q.sort = data.params.sort;
 
             this.setState({
             	//so involved components know that a new search was done
             	searchId: data.searchId,
 
             	//refresh params of the query object
-            	query : q,
+            	query : data.query,
 
                 //actual OUTPUT of the query
                 aggregations: data.aggregations, //for drawing the AggregationBox/List/Histogram
@@ -271,6 +258,7 @@ class QueryBuilder extends React.Component {
             });
         } else {
         	//Note: searchLayers & desiredFacets & selectedSortParams stay the same
+        	let q = this.state.query;
         	q.dateRange = null;
         	q.selectedFacets = {};
         	q.fieldCategory = null;

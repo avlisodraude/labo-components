@@ -1,3 +1,5 @@
+import QueryModel from '../../model/QueryModel';
+
 //for the collection selector in a modal
 import CollectionSelector from '../collection/CollectionSelector';
 import FlexModal from '../FlexModal';
@@ -46,11 +48,8 @@ class QueryFactory extends React.Component {
 		const openQueryData = {}
 		configs.forEach((conf) => {
 			const queryId = IDUtil.guid();
-			openQueries.push(queryId)
-			openQueryData[queryId] = {
-				queryId : queryId,
-				collectionConfig : conf
-			}
+			openQueries.push(queryId);
+			openQueryData[queryId] = QueryModel.ensureQuery({id : queryId}, conf);
 		});
 		this.setState({
 			openQueries : openQueries,
@@ -78,10 +77,7 @@ class QueryFactory extends React.Component {
 			oq.push(queryId)
 
 			const oqd = this.state.openQueryData;
-			oqd[queryId] = {
-				queryId : queryId,
-				collectionConfig : data
-			}
+			oqd[queryId] = QueryModel.ensureQuery({id : queryId}, conf)
 
 			this.setState(
 				{openQueries : oq, openQueryData : oqd},
@@ -93,8 +89,8 @@ class QueryFactory extends React.Component {
 
 			//store the just executed query, so the user can save it later
 			const oqd = this.state.openQueryData;
-			if(data.queryId && oqd[data.queryId]) {
-				oqd[data.queryId]['queryParams'] = data.params;
+			if(data.query.id && oqd[data.query.id]) {
+				oqd[data.query.id]['queryParams'] = data.query;
 				this.setState({
 					openQueryData : oqd
 				});

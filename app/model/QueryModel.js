@@ -1,50 +1,6 @@
-import IDUtil from './IDUtil';
-/*
-	This utility should become the central place where all client-side application objects are ensured/validated!
-	also merge with the toDummyData toTableObject functions (see different workspace components)
+import IDUtil from '../util/IDUtil';
 
-	Notes:
-		- The 'ensure' functions basically make sure that no matter what a valid object is returned
-
-		- The 'validate' functions purely validate the objects passed
-*/
-const ObjectModelUtil = {
-
-	/*----------------------------------------------------------------------
-	*---------------------------- PROJECT ----------------------------------
-	----------------------------------------------------------------------*/
-
-	ensureProject : function(obj) {
-		obj = obj || {};
-		return {
-			id : obj.id || null,
-			name : obj.name || null,
-			description : obj.description || null,
-			user : obj.user || null,
-			created : obj.created || null,
-			isPrivate : obj.isPrivate || true,
-			queries : obj.queries || [],
-			sessions : obj.sessions || []
-		}
-	},
-
-	ensureProjectList : function(list) {
-		list = list || [];
-		return list.map(p => ObjectModelUtil.ensureProject(p));
-	},
-
-	//TODO really bad implementation and never used. Finish & test later
-	validateProject : function(obj) {
-		return
-			typeof(obj.id) == 'string' &&
-			typeof(obj.name) == 'string' &&
-			typeof(obj.description) == 'string' &&
-			typeof(obj.user) == 'string' &&
-			typeof(obj.created) == 'string' &&
-			typeof(obj.isPrivate) == 'boolean' &&
-			typeof(obj.queries) == 'object' &&
-			typeof(obj.sessions) == 'object'
-	},
+const QueryModel = {
 
 	/*----------------------------------------------------------------------
 	*---------------------------- QUERY -----------------------------------
@@ -109,7 +65,7 @@ const ObjectModelUtil = {
 			collectionId : (collectionConfig ? collectionConfig.getSearchIndex() : obj.collectionId) || null,
 
 			//what layers to search through (always check them with the collection config)
-			searchLayers: ObjectModelUtil.getInitialSearchLayers(obj, collectionConfig),
+			searchLayers: QueryModel.getInitialSearchLayers(obj, collectionConfig),
 
 			//the search term entered by the user
 			term: obj.term || '',
@@ -125,7 +81,7 @@ const ObjectModelUtil = {
 			selectedFacets: obj.selectedFacets || null,
 
 			//which aggregations should be included next to the search results
-			desiredFacets: obj.desiredFacets || ObjectModelUtil.getInitialDesiredFacets(obj, collectionConfig),
+			desiredFacets: obj.desiredFacets || QueryModel.getInitialDesiredFacets(obj, collectionConfig),
 
 			//sort by a certain field and order (asc/desc)
 			sort: obj.sort || { "field": "_score", "order": "desc"},
@@ -151,7 +107,6 @@ const ObjectModelUtil = {
 			innerHitsOffset: obj.innerHitsOffset || 0,
 			innerHitsSize: obj.innerHitsSize || 5
 		}
-
 	},
 
 	getInitialSearchLayers(query, config) {
@@ -181,6 +136,64 @@ const ObjectModelUtil = {
 		}
 		return df
 	},
+
+	//TODO add support for missing params such as: desiredFacets
+	toUrlParams(query) {
+		const params = {
+			fr : query.offset,
+			sz : query.size,
+			cids : query.collectionId
+		}
+
+		if(query.searchLayers) {
+			const sl = Object.keys(query.searchLayers).filter((l) => {
+				return query.searchLayers[l];
+			});
+			if(sl.length > 0) {
+				params['sl'] = sl.join(',');
+			}
+		}
+
+		if(query.term) {
+			params['st'] = query.term;
+		}
+
+		if(query.dateRange) {
+			let dr = query.dateRange.field + '__';
+			dr += query.dateRange.start + '__';
+			dr += query.dateRange.end;
+			params['dr'] = dr;
+		}
+
+		if(query.fieldCategory) {
+            params['fc'] ='';
+            query.fieldCategory.map(function(item){
+                params['fc'] += item.id + '|';
+			});
+            params['fc'] = params['fc'].slice(0, -1);
+		}
+
+		let sf = []
+		if(query.selectedFacets) {
+			sf = Object.keys(query.selectedFacets).map((key) => {
+				return query.selectedFacets[key].map((value) => {
+					return key + '|' + value;
+				})
+			});
+			params['sf'] = sf.join(',');
+		}
+
+		if(query.sort) {
+			let s = query.sort.field + '__';
+			s += query.sort.order;
+			params['s'] = s;
+		}
+		return params;
+	},
+
+	/*----------------------------------------------------------------------
+	*---------------------------- NOT USED YET ------------------------------
+	----------------------------------------------------------------------*/
 
 	//e.g. { "nisv-catalogue-aggr": true}
 	validateSearchLayers : function(obj) {
@@ -218,4 +231,4 @@ const ObjectModelUtil = {
 	}
 }
 
-export default ObjectModelUtil;
+export default QueryModel;

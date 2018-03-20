@@ -1,4 +1,4 @@
-import ObjectModelUtil from '../util/ObjectModelUtil';
+import ProjectModel from '../model/ProjectModel';
 
 //TODO make sure *all* calls make use of the ObjectModelUtil to ensure proper project objects!
 const ProjectAPI = {
@@ -61,7 +61,7 @@ const ProjectAPI = {
 				if(xhr.status == 200) {
 					const respData = JSON.parse(xhr.responseText);
 					if(respData && !respData.error) {
-						callback(ObjectModelUtil.ensureProjectList(respData));
+						callback(ProjectModel.ensureProjectList(respData));
 					} else {
 						callback(null);
 					}
@@ -83,7 +83,7 @@ const ProjectAPI = {
 				if(xhr.status == 200) {
 					const respData = JSON.parse(xhr.responseText);
 					if(respData && !respData.error) {
-						callback(ObjectModelUtil.ensureProject(respData));
+						callback(ProjectModel.ensureProject(respData));
 					} else {
 						callback(null);
 					}

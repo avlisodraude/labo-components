@@ -41,6 +41,7 @@ class CollectionSelector extends React.Component {
 		if(!collectionId) {
 			collectionId = event.option.index;
 		}
+		console.debug(collectionId);
 		if(collectionId) {
 			this.setState(
 				{activeCollection : collectionId},
@@ -68,9 +69,11 @@ class CollectionSelector extends React.Component {
 	------------------------------------------------------------------------------- */
 
 	onOutput(collectionId, collectionStats, collectionInfo) {
+		console.debug('nou nou nou');
 		const collectionConfig = CollectionUtil.createCollectionConfig(this.props.user, collectionId, collectionStats, collectionInfo);
 		if(this.props.onOutput) {
 			if(collectionId) {
+				console.debug('dit is het hoor', collectionConfig);
 				this.props.onOutput(this.constructor.name, collectionConfig);
 			} else {
 				console.debug('No collection selected...');
