@@ -3,24 +3,6 @@ import TimeUtil from './TimeUtil';
 //TODO maybe move this to some other utility class
 const ElasticsearchDataUtil = {
 
-	//transforms a query from the QueryBuilder into something readable for the user
-	toPrettyQuery(query) {
-		if(query) {
-			//console.debug(query);
-			const strList = []
-			if(query.term) {
-				strList.push('Search term: ' + query.term);
-			} else {
-				strList.push('No search term');
-			}
-			if(query.selectedFacets && Object.keys(query.selectedFacets).length > 0) {
-				strList.push('# filters: ' + Object.keys(query.selectedFacets).length);
-			}
-			return strList.join('; ')
-		}
-		return null;
-	},
-
 	/* ----------------------------- Used by: ComparativeSearchRecipe ------------------------------------------------ */
 
 	//TODO make sure the different date formats can be handled!

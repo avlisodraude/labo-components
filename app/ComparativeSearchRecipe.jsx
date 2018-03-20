@@ -1,3 +1,5 @@
+import QueryModel from './model/QueryModel';
+
 import QueryFactory from './components/search/QueryFactory';
 
 import SearchAPI from './api/SearchAPI';
@@ -73,7 +75,7 @@ class ComparativeSearchRecipe extends React.Component {
 					lineChartData[data.query.id] = {
 						label : 'Query #',
 					 	dateField : data.dateRange ? data.dateRange.field : null,
-					 	prettyQuery : ElasticsearchDataUtil.toPrettyQuery(data.query),
+					 	prettyQuery : QueryModel.toHumanReadableString(data.query),
 					 	data : newData,
 					 	queryId : data.query.id
 					}
@@ -143,94 +145,95 @@ class ComparativeSearchRecipe extends React.Component {
 	render() {
 		let searchComponent = null;
 		let lineChart = null;
-		let paging = null;
-		let sortButtons = null;
+		let aggregatedHits = null;
 
 		//generates a tabbed pane with a search component for each collection + a collection browser
 		searchComponent = (
-			<FlexBox title="Search multiple collections">
-				<QueryFactory
-					user={this.state.user}
-					pageSize={this.state.pageSize}
-					initialCollections={this.state.collections}
-					itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}
-					aggregationView={this.props.recipe.ingredients.aggregationView}
-					dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
-					onOutput={this.onComponentOutput.bind(this)}/>
-			</FlexBox>);
+			<QueryFactory
+				user={this.state.user}
+				pageSize={this.state.pageSize}
+				initialCollections={this.state.collections}
+				itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}
+				aggregationView={this.props.recipe.ingredients.aggregationView}
+				dateRangeSelector={this.props.recipe.ingredients.dateRangeSelector}
+				onOutput={this.onComponentOutput.bind(this)}/>
+		);
 
 		//TODO only render when there is linechart data
 		if(this.props.recipe.ingredients.output == 'lineChart') {
 			if(Object.keys(this.state.lineChartData).length > 0) {
 				console.debug(this.state.lineChartData);
 				lineChart = (
-					<FlexBox title="Search results plotted on a time line">
-						<QueryComparisonLineChart
-							data={this.state.lineChartData}
-							comparisonId={this.state.comparisonId}/>
-					</FlexBox>
+					<QueryComparisonLineChart
+						data={this.state.lineChartData}
+						comparisonId={this.state.comparisonId}/>
 				);
 			}
 		}
 
-		//TODO put this in a Comerda Component
-		const aggregatedHits = Object.keys(this.state.combinedSearchResults).map((queryId, index) => {
+		if(this.props.recipe.ingredients.showSearchResults) {
+			//TODO put this in a Comerda Component (move the functions gotoPage and sortResults there too)
+			aggregatedHits = Object.keys(this.state.combinedSearchResults).map((queryId, index) => {
+				let paging = null;
+				let sortButtons = null;
 
-			const searchResults = this.state.combinedSearchResults[queryId];
-			const collectionTitle = searchResults.collectionConfig.collectionInfo.title;
+				const searchResults = this.state.combinedSearchResults[queryId];
+				const collectionTitle = searchResults.collectionConfig.collectionInfo.title;
 
-			//draw the search hits in here, so it's possible to put the linechart in between the search box and the results
-			if(searchResults && searchResults.results && searchResults.results.length > 0) {
-				//draw the paging buttons
-				if(searchResults.currentPage > 0) {
-					paging = <Paging
-						queryId={queryId}
-						currentPage={searchResults.currentPage}
-						numPages={Math.ceil(searchResults.totalHits / this.state.pageSize)}
-						gotoPage={this.gotoPage.bind(this)}/>
-				}
+				//draw the search hits in here, so it's possible to put the linechart in between the search box and the results
+				if(searchResults && searchResults.results && searchResults.results.length > 0) {
+					//draw the paging buttons
+					if(searchResults.currentPage > 0) {
+						paging = <Paging
+							queryId={queryId}
+							currentPage={searchResults.currentPage}
+							numPages={Math.ceil(searchResults.totalHits / this.state.pageSize)}
+							gotoPage={this.gotoPage.bind(this)}/>
+					}
 
-				//draw the sorting buttons
-				if(searchResults.query.sort) {
-					sortButtons = <Sorting
-						queryId={queryId}
-						collectionConfig={searchResults.collectionConfig}
-						sortResults={this.sortResults.bind(this)}
-						sortParams={searchResults.query.sort}
-						dateField={searchResults.query.dateRange ? searchResults.query.dateRange.field : null}/>
-				}
-
-				//draw the list of search results
-				const items = searchResults.results.map((result, index) => {
-					return (
-						<SearchHit
-							key={'__' + index}
-							result={result}
-							searchTerm={searchResults.query.term}
+					//draw the sorting buttons
+					if(searchResults.query.sort) {
+						sortButtons = <Sorting
+							queryId={queryId}
 							collectionConfig={searchResults.collectionConfig}
-							itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}/>
-					)
-				}, this);
-				return (
-					<FlexBox title={'Results for query #' + (index + 1) + ' ('+collectionTitle+')'}>
-						<div className="row">
-							<div className="col-md-12">
-								{paging}&nbsp;{sortButtons}
-								{items}
-								{paging}
-							</div>
-						</div>
-					</FlexBox>
-				)
-			}
-		});
+							sortResults={this.sortResults.bind(this)}
+							sortParams={searchResults.query.sort}
+							dateField={searchResults.query.dateRange ? searchResults.query.dateRange.field : null}/>
+					}
 
+					//draw the list of search results
+					const items = searchResults.results.map((result, index) => {
+						return (
+							<SearchHit
+								key={'__' + index}
+								result={result}
+								searchTerm={searchResults.query.term}
+								collectionConfig={searchResults.collectionConfig}
+								itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}/>
+						)
+					}, this);
+					return (
+						<FlexBox title={'Results for query #' + (index + 1) + ' ('+collectionTitle+')'}>
+							<div className="row">
+								<div className="col-md-12">
+									{paging}&nbsp;{sortButtons}
+									{items}
+									{paging}
+								</div>
+							</div>
+						</FlexBox>
+					)
+				}
+			});
+		}
 
 		return (
 			<div className={IDUtil.cssClassName('comparative-search-recipe')}>
 				<div className="row">
+					{searchComponent}
+				</div>
+				<div className="row">
 					<div className="col-md-12">
-						{searchComponent}
 						{lineChart}
 					</div>
 				</div>

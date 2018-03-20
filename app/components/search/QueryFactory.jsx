@@ -50,7 +50,7 @@ class QueryFactory extends React.Component {
 			const queryId = IDUtil.guid();
 			openQueries.push(queryId);
 			openQueryData[queryId] = {
-				query : QueryModel.ensureQuery({id : queryId}, conf),
+				query : QueryModel.ensureQuery({id : queryId, size: this.props.pageSize}, conf),
 				collectionConfig : conf
 			};
 		});
@@ -81,12 +81,15 @@ class QueryFactory extends React.Component {
 
 			const oqd = this.state.openQueryData;
 			oqd[queryId] = {
-				query : QueryModel.ensureQuery({id : queryId}, data),
+				query : QueryModel.ensureQuery({id : queryId, size : this.props.pageSize}, data),
 				collectionConfig : data
 			}
 
 			this.setState(
-				{openQueries : oq, openQueryData : oqd},
+				{
+					openQueries : oq,
+					openQueryData : oqd
+				},
 				ComponentUtil.hideModal(this, 'showModal', 'collection__modal', true)
 			);
 		} else if(componentClass == 'QueryBuilder') {
@@ -123,28 +126,9 @@ class QueryFactory extends React.Component {
 		}
 	}
 
-	saveQuery(queryId) {
-		const query = this.state.openQueryData[queryId];
-		console.debug('saving query');
-		console.debug(query.queryParams);
-
-		console.debug(ElasticsearchDataUtil.toPrettyQuery(query.queryParams))
-	}
-
-	getEmptyCell() {
-		return (
-			<div className={IDUtil.cssClassName('cell', this.CLASS_PREFIX)} style={{textAlign : 'center', height : 'inherit'}}>
-				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
-					Add query&nbsp;<i className="fa fa-plus"></i>
-				</button>
-			</div>
-		)
-	}
-
 	/* ---------------------- RENDER ------------------- */
 
 	render() {
-		let queryGrid = null;
 		let collectionModal = null;
 
 		//collection modal
@@ -200,20 +184,17 @@ class QueryFactory extends React.Component {
 			)
 		}, this);
 
-		//always add an empty cell
-		cells.push(this.getEmptyCell())
-
-
-		queryGrid = (
-			<div className={IDUtil.cssClassName('grid', this.CLASS_PREFIX)}>
-				{cells}
-			</div>
-		)
-
 		return (
 			<div className={IDUtil.cssClassName('query-factory')}>
+				<button className="btn btn-primary" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
+					Add query&nbsp;<i className="fa fa-plus"></i>
+				</button>
+				<div className={IDUtil.cssClassName('scrollwindow', this.CLASS_PREFIX)}>
+					<div className={IDUtil.cssClassName('grid', this.CLASS_PREFIX)}>
+						{cells}
+					</div>
+				</div>
 				{collectionModal}
-				{queryGrid}
 			</div>
 		)
 	}

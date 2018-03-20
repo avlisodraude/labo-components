@@ -2,58 +2,6 @@ import IDUtil from '../util/IDUtil';
 
 const QueryModel = {
 
-	/*----------------------------------------------------------------------
-	*---------------------------- QUERY -----------------------------------
-	----------------------------------------------------------------------*/
-
-	/*
-		queryId, NON SEARCH API PARAM
-		collectionConfig, NON SEARCH API PARAM
-		callback, NON SEARCH API PARAM
-		updateUrl, NON SEARCH API PARAM
-
-		√ searchLayers,
-
-		√ term,
-
-		√ dateRange,
-
-		√ fieldCategory,
-
-		√ selectedFacets,
-
-		x desiredFacets,
-
-		√ sortParams,
-
-		√ offset,
-		√ pageSize,
-
-		x innerHitsSize=5,
-		x innerHitsOffset=0
-
-		x collectionConfig.getFragmentPath(), SET IN THE SEARCH API
-		x collectionConfig.getFragmentTextFields() SET IN THE SEARCH API
-
-		x includeFragmentChildren: SET ON THE SERVER! --> default to same on server for now
-
-		x includeMediaObjects: SET IN THE SEARCH API --> default to same on search API
-
-
-		//TAKEN FROM URL
-		'searchLayers' : searchLayers,
-		'searchTerm' : searchTerm,
-		'dateRange' : dateRange,
-		'fieldCategory' : fieldCategory,
-		'selectedFacets' : selectedFacets,
-		'sortParams' : sortParams
-		'from' : parseInt(fr),
-		'pageSize' : parseInt(size),
-		'recipeId' : this.props.recipe.id,
-
-
-	*/
-
 	//when a collectionConfig is provided, it means that defaults from this should be used to populate the query object
 	ensureQuery : function(obj, collectionConfig) {
 		obj = obj || {};
@@ -78,7 +26,7 @@ const QueryModel = {
 			fieldCategory: obj.fieldCategory || null,
 
 			//filters selected by the user (by selecting certain values from the desiredFacets)
-			selectedFacets: obj.selectedFacets || null,
+			selectedFacets: obj.selectedFacets || {},
 
 			//which aggregations should be included next to the search results
 			desiredFacets: obj.desiredFacets || QueryModel.getInitialDesiredFacets(obj, collectionConfig),
@@ -135,6 +83,22 @@ const QueryModel = {
 			});
 		}
 		return df
+	},
+
+	toHumanReadableString(query) {
+		if(query) {
+			const strList = []
+			if(query.term) {
+				strList.push('Search term: ' + query.term);
+			} else {
+				strList.push('No search term');
+			}
+			if(query.selectedFacets && Object.keys(query.selectedFacets).length > 0) {
+				strList.push('# filters: ' + Object.keys(query.selectedFacets).length);
+			}
+			return strList.join('; ')
+		}
+		return null;
 	},
 
 	//TODO add support for missing params such as: desiredFacets
