@@ -32,7 +32,7 @@ class FieldCategoryCreator extends React.PureComponent {
 		const stats = this.props.collectionConfig.getCollectionStats();
 		const options = stats.collection_statistics.document_types[0].fields.text.map((field, index) => {
 			return (
-				<option id={index}>{this.props.collectionConfig.toPrettyFieldName(field)}</option>
+				<option id={index} value={field}>{this.props.collectionConfig.toPrettyFieldName(field)}</option>
 			)
 		});
 		return (
