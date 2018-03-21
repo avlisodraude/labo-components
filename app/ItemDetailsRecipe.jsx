@@ -10,6 +10,8 @@ import FlexImageViewer from './components/player/image/FlexImageViewer';
 
 import MetadataTable from './components/search/MetadataTable';
 
+import LDResourceViewer from './components/linkeddata/LDResourceViewer';
+
 import DocumentAPI from './api/DocumentAPI';
 import PlayoutAPI from './api/PlayoutAPI';
 
@@ -45,6 +47,7 @@ import BookmarkSelector from './components/bookmark/BookmarkSelector';
 
 */
 
+//TODO move most of the stuff to a new component called ResourceViewer
 class ItemDetailsRecipe extends React.Component {
 
 	constructor(props) {
@@ -56,7 +59,7 @@ class ItemDetailsRecipe extends React.Component {
 
 			activeProject : ComponentUtil.getJSONFromLocalStorage('activeProject'),
 
-			itemData : null, //populated from componentDidMount
+			itemData : null, //populated via componentDidMount
 
 			activeMediaTab : 0, //which tab, i.e. media player, is visible/active
 
@@ -121,22 +124,17 @@ class ItemDetailsRecipe extends React.Component {
 		}
 	}
 
-	//determine which (media object) target on the page should be the active annotation target
-	getAnnotationTarget(itemDetailData, index=0) {
-		if(itemDetailData && itemDetailData.playableContent) {
-			const mediaObject = itemDetailData.playableContent[index];
-			if(mediaObject) {
-				const annotation = AnnotationUtil.generateW3CEmptyAnnotation(
-					this.props.user,
-					this.state.activeProject,
-					itemDetailData.index,
-					itemDetailData.resourceId,
-					mediaObject
-				);
-				return annotation.target;
-			}
+	onComponentOutput(componentClass, data) {
+		if(componentClass == 'ProjectSelector') {
+			this.setState(
+				{activeProject : data},
+				() => {
+					this.onProjectChanged.call(this, data)
+				}
+			);
+		} else if(componentClass == 'BookmarkSelector') {
+			this.bookmarkToGroupInProject(data);
 		}
-		return null;
 	}
 
 	onLoadItemData(collectionId, resourceId, data) {
@@ -206,6 +204,24 @@ class ItemDetailsRecipe extends React.Component {
 	------------------------------- ANNOTATION RELATED FUNCTIONS --------------------
 	------------------------------------------------------------------------------- */
 
+	//determine which (media object) target on the page should be the active annotation target
+	getAnnotationTarget(itemDetailData, index=0) {
+		if(itemDetailData && itemDetailData.playableContent) {
+			const mediaObject = itemDetailData.playableContent[index];
+			if(mediaObject) {
+				const annotation = AnnotationUtil.generateW3CEmptyAnnotation(
+					this.props.user,
+					this.state.activeProject,
+					itemDetailData.index,
+					itemDetailData.resourceId,
+					mediaObject
+				);
+				return annotation.target;
+			}
+		}
+		return null;
+	}
+
 	onSaveAnnotation(annotation) {
 		ComponentUtil.hideModal(this, 'showModal' , 'annotation__modal', true);
 		//finally update the resource annotations (the "bookmark")
@@ -255,6 +271,109 @@ class ItemDetailsRecipe extends React.Component {
 		}
 	}
 
+	refreshResourceAnnotations() {
+		AnnotationStore.getDirectResourceAnnotations(
+			this.state.itemData.resourceId,
+			this.props.user,
+			this.state.activeProject,
+			this.onLoadResourceAnnotations.bind(this)
+		)
+	}
+
+	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)
+	onLoadResourceAnnotations(data) {
+		this.setState({
+			resourceAnnotations : data.annotations || []
+		})
+	}
+
+	/* ------------------------------------------------------------------
+	----------------------- PROJECTS ------------------------------------
+	--------------------------------------------------------------------- */
+
+	triggerProjectSelector() {
+		let showProjectModal = this.state.showProjectModal;
+		this.setState({
+			showProjectModal : !showProjectModal
+		});
+	}
+
+	//TODO test this
+	onProjectChanged(project) {
+		ComponentUtil.storeJSONInLocalStorage('activeProject', project)
+		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true, () => {
+			AnnotationActions.changeProject(project);
+			this.refreshResourceAnnotations()
+			if(this.state.awaitingProcess == 'bookmark') {
+				this.selectBookmarkGroup();
+			}
+		});
+	}
+
+	/* ------------------------------------------------------------------
+	----------------------- BOOKMARK ------------------------------------
+	--------------------------------------------------------------------- */
+
+	//this will first check if a project was selected. Then either bookmarks or opens the project selector first
+	bookmark() {
+		if(this.state.activeProject == null) {
+			this.setState({
+				showProjectModal : true,
+				awaitingProcess : 'bookmark'
+			});
+		} else {
+			this.selectBookmarkGroup();
+		}
+	}
+
+	//this will actually save the selection to the workspace API
+	selectBookmarkGroup() {
+		this.setState({
+			showBookmarkModal : true,
+			awaitingProcess : null
+		});
+	}
+
+	//finally after a bookmark group is selected, save the bookmark
+	bookmarkToGroupInProject(annotation) {
+		ComponentUtil.hideModal(this, 'showBookmarkModal', 'bookmark__modal', true, () => {
+			//concatenate this resource to the existing "bookmark annotation"
+			const targets = annotation.target;
+			targets.push(
+				AnnotationUtil.generateSimpleResourceTarget(
+					this.state.itemData.resourceId,
+					this.state.itemData.index //collectionId
+				)
+			);
+			const temp = {};
+			const dedupedTargets = [];
+			targets.forEach((t) => {
+				if(!temp[t.source]) {
+					temp[t.source] = true;
+					dedupedTargets.push(t);
+				}
+			})
+			//set the deduped targets as the annotation target
+			annotation.target = dedupedTargets;
+			//TODO implement saving the bookmarks in the workspace API
+			AnnotationAPI.saveAnnotation(annotation, this.onSaveBookmarks.bind(this));
+		});
+	}
+
+	onSaveBookmarks(data) {
+		this.setState({
+			selectedRows : {},
+			allRowsSelected : false
+		}, () => {
+			console.debug('saved bookmark, refreshing the annotations', data);
+			this.refreshResourceAnnotations();
+		})
+	}
+
+	/************************************************************************
+	************************ CALLED BY RENDER *******************************
+	*************************************************************************/
+
 	checkMediaObjectIsSelected(mediaObject) {
 		if(mediaObject.url == this.props.params.fragmentUrl) {
 			mediaObject.start = this.props.params.s;
@@ -267,10 +386,6 @@ class ItemDetailsRecipe extends React.Component {
 		}
 		return false;
 	}
-
-	/************************************************************************
-	************************ CALLED BY RENDER *******************************
-	*************************************************************************/
 
 	getRenderedMediaContent() {
 		//first get all of the media contents per media type
@@ -461,118 +576,6 @@ class ItemDetailsRecipe extends React.Component {
 		return null;
 	}
 
-	onComponentOutput(componentClass, data) {
-		if(componentClass == 'ProjectSelector') {
-			this.setState(
-				{activeProject : data},
-				() => {
-					this.onProjectChanged.call(this, data)
-				}
-			);
-		} else if(componentClass == 'BookmarkSelector') {
-			this.bookmarkToGroupInProject(data);
-		}
-	}
-
-	refreshResourceAnnotations() {
-		AnnotationStore.getDirectResourceAnnotations(
-			this.state.itemData.resourceId,
-			this.props.user,
-			this.state.activeProject,
-			this.onLoadResourceAnnotations.bind(this)
-		)
-	}
-
-	//TODO loaded all bookmarks associated with this resource (e.g. program, newspaper)
-	onLoadResourceAnnotations(data) {
-		this.setState({
-			resourceAnnotations : data.annotations || []
-		})
-	}
-
-	/* ------------------------------------------------------------------
-	----------------------- PROJECTS ------------------------------------
-	--------------------------------------------------------------------- */
-
-	triggerProjectSelector() {
-		let showProjectModal = this.state.showProjectModal;
-		this.setState({
-			showProjectModal : !showProjectModal
-		});
-	}
-
-	//TODO test this
-	onProjectChanged(project) {
-		ComponentUtil.storeJSONInLocalStorage('activeProject', project)
-		ComponentUtil.hideModal(this, 'showProjectModal', 'project__modal', true, () => {
-			AnnotationActions.changeProject(project);
-			this.refreshResourceAnnotations()
-			if(this.state.awaitingProcess == 'bookmark') {
-				this.selectBookmarkGroup();
-			}
-		});
-	}
-
-	/* ------------------------------------------------------------------
-	----------------------- BOOKMARK ------------------------------------
-	--------------------------------------------------------------------- */
-
-	//this will first check if a project was selected. Then either bookmarks or opens the project selector first
-	bookmark() {
-		if(this.state.activeProject == null) {
-			this.setState({
-				showProjectModal : true,
-				awaitingProcess : 'bookmark'
-			});
-		} else {
-			this.selectBookmarkGroup();
-		}
-	}
-
-	//this will actually save the selection to the workspace API
-	selectBookmarkGroup() {
-		this.setState({
-			showBookmarkModal : true,
-			awaitingProcess : null
-		});
-	}
-
-	//finally after a bookmark group is selected, save the bookmark
-	bookmarkToGroupInProject(annotation) {
-		ComponentUtil.hideModal(this, 'showBookmarkModal', 'bookmark__modal', true, () => {
-			//concatenate this resource to the existing "bookmark annotation"
-			const targets = annotation.target;
-			targets.push(
-				AnnotationUtil.generateSimpleResourceTarget(
-					this.state.itemData.resourceId,
-					this.state.itemData.index //collectionId
-				)
-			);
-			const temp = {};
-			const dedupedTargets = [];
-			targets.forEach((t) => {
-				if(!temp[t.source]) {
-					temp[t.source] = true;
-					dedupedTargets.push(t);
-				}
-			})
-			//set the deduped targets as the annotation target
-			annotation.target = dedupedTargets;
-			//TODO implement saving the bookmarks in the workspace API
-			AnnotationAPI.saveAnnotation(annotation, this.onSaveBookmarks.bind(this));
-		});
-	}
-
-	onSaveBookmarks(data) {
-		this.setState({
-			selectedRows : {},
-			allRowsSelected : false
-		}, () => {
-			console.debug('saved bookmark, refreshing the annotations', data);
-			this.refreshResourceAnnotations();
-		})
-	}
-
 	/* ------------------------------------------------------------------
 	----------------------- RENDER --------------------------------------
 	--------------------------------------------------------------------- */
@@ -583,14 +586,16 @@ class ItemDetailsRecipe extends React.Component {
 		} else if(this.state.found === false) {
 			return (<h4>Either you are not allowed access or this item does not exist</h4>);
 		} else {
-			let annotationBox = null;
+			let ldResourceViewer = null;
 			let annotationList = null;
+
 			let metadataPanel = null;
 			let mediaPanel = null;
 
-			//disabled when there is ingredients.disableProject = true
-			let projectModal = null;
+			let annotationModal = null;
+			let projectModal = null; //disabled when there is ingredients.disableProject = true
 			let bookmarkModal = null;
+
 			let projectSelectorBtn = null;
 			let bookmarkBtn = null;
 
@@ -598,7 +603,7 @@ class ItemDetailsRecipe extends React.Component {
 			//on the top level we only check if there is any form of annotationSupport
 			if(this.props.recipe.ingredients.annotationSupport) {
 				if(this.state.showModal) {
-					annotationBox = (
+					annotationModal = (
 						<FlexModal
 							elementId="annotation__modal"
 							stateVariable="showModal"
@@ -692,8 +697,14 @@ class ItemDetailsRecipe extends React.Component {
 				mediaPanel = this.getRenderedMediaContent();
 			}
 
+			ldResourceViewer = (
+				<LDResourceViewer resourceId={this.state.itemData.resourceId}
+					graphId={this.state.itemData.collectionId}/>
+			)
+
 			return (
 				<div className={IDUtil.cssClassName('item-details-recipe')}>
+					{annotationModal}
 					{projectModal}
 					{bookmarkModal}
 					<div className="row">
@@ -709,7 +720,7 @@ class ItemDetailsRecipe extends React.Component {
 								</div>
 								<div className="col-md-5">
 									{annotationList}
-									{annotationBox}
+									{ldResourceViewer}
 								</div>
 								<br/>
 							</div>

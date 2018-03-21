@@ -183,6 +183,17 @@
 
 } /* FieldCategorySelector.jsx */
 
+.bg__field-selector {
+	form {
+		select {
+			height:200px;
+		}
+		label {
+			margin : 15px 0px 5px 0px;
+		}
+	}
+} /* FieldSelector.jsx */
+
 .bg__item-details { /* ItemDetails.jsx */
 	.bg__itd__media-player {
 		img {
@@ -308,6 +319,29 @@
 .bg__search-snippet {} /* SearchSnippet.jsx */
 
 .bg__sorting {} /* Sorting.jsx */
+
+/* ==================== Linked data package ============================================ */
+
+.bg__ld-resource-viewer {
+	overflow-x : auto;
+	max-height: 620px;
+	.bg__ldrv__property-list {
+		list-style : none;
+		.property {
+			margin-top:5px;
+			.predicate {
+
+			}
+			.value {
+				font-weight: bold;
+				margin-left: 20px;
+			}
+		}
+	}
+	.bg__ldrv__info {
+		margin:10px 0px;
+	}
+}
 
 
 /* ==================== Collection package ============================================ */

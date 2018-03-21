@@ -1,6 +1,11 @@
-import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
-import ReactTooltip from 'react-tooltip'; //https://www.npmjs.com/package/react-tooltip
 import IDUtil from '../../util/IDUtil';
+import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
+import ComponentUtil from '../../util/ComponentUtil';
+import FlexModal from '../FlexModal';
+
+import FieldCategoryCreator from './FieldCategoryCreator';
+
+import ReactTooltip from 'react-tooltip'; //https://www.npmjs.com/package/react-tooltip
 import { PowerSelectMultiple } from 'react-power-select';
 
 //TODO this component is not used yet and does not have a proper component ID yet
@@ -8,6 +13,16 @@ class FieldCategorySelector extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			showModal : false
+		}
+	}
+
+	onComponentOutput(componentClass, data) {
+		if(componentClass == 'FieldCategoryCreator') {
+			this.onFieldsSelected(data);
+		}
 	}
 
 	onOutput(data) {
@@ -47,10 +62,42 @@ class FieldCategorySelector extends React.Component {
     	return selected;
     }
 
+    onFieldsSelected(data) {
+    	ComponentUtil.hideModal(this, 'showBookmarkModal', 'fields__modal', true, () => {
+    		const fields = this.props.fieldCategory || []
+    		if(data) { //when nothing was selected, it is no use to update the owner
+	    		fields.push(data)
+	    		this.onOutput(fields)
+	    	}
+    	});
+    }
+
+    addCustomFields(selectComponent) {
+    	selectComponent.actions.close();
+    	this.setState({
+    		showModal : true
+    	})
+    }
+
 	render() {
 		let fieldCategorySelector = null;
 		const includedFields = 'All metadata fields (classified as text field) are included in your search';
 		const selectedFields = this.props.fieldCategory || [];
+
+		let fieldSelectionModal = null;
+		if(this.state.showModal) {
+			fieldSelectionModal = (
+				<FlexModal
+					elementId="fields__modal"
+					stateVariable="showModal"
+					owner={this}
+					title="Choose your own fields mijnheertje koekepeertje">
+					<FieldCategoryCreator collectionConfig={this.props.collectionConfig}
+						onOutput={this.onComponentOutput.bind(this)}/>
+				</FlexModal>
+			)
+		}
+
 		if(this.props.collectionConfig.getMetadataFieldCategories()) {
 			const optionsToSelect = this.props.collectionConfig.getMetadataFieldCategories().filter((fc)=> {
 				return !this.isSelected(fc, selectedFields);
@@ -70,8 +117,17 @@ class FieldCategorySelector extends React.Component {
           				}
 						onChange={this.handleChange.bind(this)}
 						placeholder="Search in: all fields"
+						afterOptionsComponent={({ select }) => (
+				            <button className="btn btn-primary"
+								onClick={() => {
+									this.addCustomFields(select);
+								}}>
+				              + Custom category
+							</button>
+						)}
 					/>
 				<ReactTooltip id={'__fs__tt' + this.props.queryId} />
+				{fieldSelectionModal}
 			</div>);
 		}
 
@@ -88,7 +144,7 @@ export const CustomOptionComponent = ({ option }) => (
 	</div>
 );
 
-export const CustomSelectedOptionComponent = ({ option, optionLabelPath, onCloseClick, select, queryId, collectionConfig }) => (
+export const CustomSelectedOptionComponent = ({option, optionLabelPath, onCloseClick, select, queryId, collectionConfig}) => (
 	<li className="PowerSelectMultiple__SelectedOption">
 		<span className="PowerSelectMultiple__SelectedOption__Label"
 			data-for={'__fs__tt' + queryId}
