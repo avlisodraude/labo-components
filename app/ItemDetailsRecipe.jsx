@@ -697,10 +697,12 @@ class ItemDetailsRecipe extends React.Component {
 				mediaPanel = this.getRenderedMediaContent();
 			}
 
-			ldResourceViewer = (
-				<LDResourceViewer resourceId={this.state.itemData.resourceId}
-					graphId={this.state.itemData.collectionId}/>
-			)
+			if(1 == 2) {
+				ldResourceViewer = (
+					<LDResourceViewer resourceId={this.state.itemData.resourceId}
+						graphId={this.state.itemData.collectionId}/>
+				)
+			}
 
 			return (
 				<div className={IDUtil.cssClassName('item-details-recipe')}>
