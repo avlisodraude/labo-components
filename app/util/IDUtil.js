@@ -34,7 +34,7 @@ const IDUtil = {
 	},
 
 	personalCollectionId(clientId, userId, collectionId) {
-		return [clientId, userId, collectionId].join('__');
+		return 'pc__' + [clientId, userId, collectionId].join('__');
 	}
 }
 

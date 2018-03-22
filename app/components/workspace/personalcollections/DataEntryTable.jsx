@@ -114,7 +114,7 @@ class DataEntryTable extends React.PureComponent {
         const resource = entry ? {
             resourceId : entry.id,
             collectionId : IDUtil.personalCollectionId(
-                'personalcollection', //this.props.clientId ||
+                this.props.clientId,
                 this.props.user.id,
                 this.props.collection.id
             ),

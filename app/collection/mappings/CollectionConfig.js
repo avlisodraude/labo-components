@@ -15,7 +15,9 @@ TODO:
 class CollectionConfig {
 
 	//requires the output of [SEARCH_API]/api/v1/collections/show_stats?collectionId=[ID]
-	constructor(collectionId, collectionStats, collectionInfo) {
+	constructor(clientId, user, collectionId, collectionStats, collectionInfo) {
+		this.clientId = clientId;
+		this.user = user;
 		this.collectionId = collectionId; //based on the ES index name
 		this.collectionStats = collectionStats; //ES stats (mostly about field types)
 		this.collectionInfo = collectionInfo; //CKAN metadata (null for personal collections or outside of CLARIAH)
@@ -93,8 +95,7 @@ class CollectionConfig {
 		if(this.collectionInfo) {
 			searchIndex = this.collectionInfo.index
 			if(!searchIndex && this.collectionInfo.user && this.collectionInfo.id) {
-				//FIXME ditch the personalcollection__ prefix and start using the client ID!!!!
-				searchIndex = 'personalcollection__' + this.collectionInfo.user + '__' + this.collectionInfo.id
+				searchIndex = 'pc__' + this.clientId + '__' + this.collectionInfo.user + '__' + this.collectionInfo.id;
 			}
 		}
 		return searchIndex

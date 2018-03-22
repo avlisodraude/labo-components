@@ -5,8 +5,8 @@ import CollectionConfig from './CollectionConfig';
 */
 
 class ExampleCollectionConfig extends CollectionConfig {
-	constructor(collectionId, stats, info) {
-		super(collectionId, stats, info);
+	constructor(clientId, user, collectionId, stats, info) {
+		super(clientId, user, collectionId, stats, info);
 	}
 
 	getVideoBaseUrl() {

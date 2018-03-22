@@ -15,15 +15,16 @@ In general what needs to be considered is:
 import PersonalCollectionAPI from '../api/PersonalCollectionAPI';
 import CollectionAPI from '../api/CollectionAPI';
 import CKANAPI from '../api/CKANAPI';
-import CollectionConfig from '../collection/mappings/CollectionConfig';
-import CollectionMapping from '../collection/mappings/CollectionMapping';
 
 import TimeUtil from '../util/TimeUtil';
+
+import CollectionConfig from '../collection/mappings/CollectionConfig';
+import CollectionMapping from '../collection/mappings/CollectionMapping';
 
 const CollectionUtil = {
 
 	//returns the correct CollectionConfig instance based on the collectionId
-	getCollectionClass(collectionId, lookupMapping = true, user = null) {
+	getCollectionClass(clientId, user, collectionId, lookupMapping = true) {
 		let configClass = null;
 		if(lookupMapping) {
 			configClass = CollectionMapping[collectionId];
@@ -44,16 +45,16 @@ const CollectionUtil = {
 	},
 
 	//called by the CollectionSelector
-	createCollectionConfig : function(user, collectionId, collectionStats, collectionInfo) {
-		const configClass = CollectionUtil.getCollectionClass(collectionId, true, user);
-		return new configClass(collectionId, collectionStats, collectionInfo)
+	createCollectionConfig : function(clientId, user, collectionId, collectionStats, collectionInfo) {
+		const configClass = CollectionUtil.getCollectionClass(clientId, user, collectionId, true);
+		return new configClass(clientId, user, collectionId, collectionStats, collectionInfo)
 	},
 
 
-	generateCollectionConfigs : function(user, collectionIds, callback, lookupMapping = true) {
+	generateCollectionConfigs : function(clientId, user, collectionIds, callback, lookupMapping = true) {
 		const configs = [];
 		collectionIds.forEach((cid) => {
-			CollectionUtil.generateCollectionConfig(user, cid, (config) => {
+			CollectionUtil.generateCollectionConfig(clientId, user, cid, (config) => {
 				configs.push(config);
 				if(configs.length == collectionIds.length) {
 					callback(configs);
@@ -63,55 +64,58 @@ const CollectionUtil = {
 	},
 
 	//make sure this works also by passing the stats
-	generateCollectionConfig : function(user, collectionId, callback, lookupMapping = true) {
-		const configClass = CollectionUtil.getCollectionClass(collectionId, lookupMapping, user);
+	generateCollectionConfig : function(clientId, user, collectionId, callback, lookupMapping = true) {
+		const configClass = CollectionUtil.getCollectionClass(clientId, user, collectionId, lookupMapping, user);
 
 		//load the stats & information asynchronously TODO (rewrite to promise is nicer)
-		CollectionUtil.loadCollectionStats(user, collectionId, callback, configClass)
+		CollectionUtil.__loadCollectionStats(clientId, user, collectionId, callback, configClass)
 	},
 
 	//loads the Elasticsearch stats of the provided collection
-	loadCollectionStats(user, collectionId, callback, configClass) {
+	__loadCollectionStats(clientId, user, collectionId, callback, configClass) {
 		CollectionAPI.getCollectionStats(collectionId, function(collectionStats) {
-			CollectionUtil.loadCollectionInfo(user, collectionId, collectionStats, callback, configClass);
+			CollectionUtil.__loadCollectionInfo(clientId, user, collectionId, collectionStats, callback, configClass);
 		});
 	},
 
 	//checks first whether the collection is a personal collection or not,
 	//then either asks CKAN or the workspace API for info
-	//TODO/FIXME the hardcoded 'personalcollection' should be replaced with the client ID!!
-	loadCollectionInfo(user, collectionId, collectionStats, callback, configClass) {
-		if(collectionId.startsWith('personalcollection')) {
-			CollectionUtil.loadPersonalCollectionInfo(user, collectionId, collectionStats, callback, configClass);
+	__loadCollectionInfo(clientId, user, collectionId, collectionStats, callback, configClass) {
+		if(collectionId.startsWith('pc__')) {
+			CollectionUtil.__loadPersonalCollectionInfo(clientId, user, collectionId, collectionStats, callback, configClass);
 		} else if(user){
-			CollectionUtil.loadCKANInfo(user, collectionId, collectionStats, callback, configClass);
+			CollectionUtil.__loadCKANInfo(clientId, user, collectionId, collectionStats, callback, configClass);
 		} else {
-			callback(new configClass(collectionId, collectionStats, null));
+			callback(new configClass(clientId, user, collectionId, collectionStats, null));
 		}
 	},
 
 	//loads the CKAN metadata of the provided collection
-	loadCKANInfo(user, collectionId, collectionStats, callback, configClass) {
+	__loadCKANInfo(clientId, user, collectionId, collectionStats, callback, configClass) {
 		CKANAPI.getCollectionInfo(collectionId, function(collectionInfo) {
-			callback(new configClass(collectionId, collectionStats, collectionInfo));
+			callback(new configClass(clientId, user, collectionId, collectionStats, collectionInfo));
 		});
 	},
 
 	//loads the (personal) collection metadata from the workspace API
-	loadPersonalCollectionInfo(user, collectionId, collectionStats, callback, configClass) {
+	__loadPersonalCollectionInfo(clientId, user, collectionId, collectionStats, callback, configClass) {
 		//extract the workspace collection ID from the collectionID (by stripping off the user id + prefix)
-		const cid = CollectionUtil.toWorkspaceAPICollectionId(user, collectionId);
+		const cid = CollectionUtil.__toWorkspaceAPICollectionId(clientId, user, collectionId);
 		PersonalCollectionAPI.get(user.id, cid, function(collectionInfo) {
-			callback(new configClass(collectionId, collectionStats, collectionInfo));
+			callback(new configClass(clientId, user, collectionId, collectionStats, collectionInfo));
 		});
 	},
 
-	toWorkspaceAPICollectionId(user, collectionId) {
-		if(collectionId.indexOf('personalcollection') != -1 && user) {
-			return collectionId.substring('personalcollection__'.length + user.id.length + 2);
+	__toWorkspaceAPICollectionId(clientId, user, collectionId) {
+		if(collectionId.indexOf('pc__') != -1 && user) {
+			return collectionId.substring('pc__'.length + clientId.length + user.id.length + 2);
 		}
 		return collectionId
 	},
+
+	/*------------------------------------------------------------------------
+	------------------------ MISC FUNCTIONS TO BE (RE)MOVED ------------------
+	------------------------------------------------------------------------*/
 
 	SEARCH_LAYER_MAPPING : {
 		'srt' : 'Subtitles',

@@ -28,6 +28,8 @@ import CollectionUtil from './util/CollectionUtil';
 import ProjectSelector from './components/workspace/projects/ProjectSelector';
 import BookmarkSelector from './components/bookmark/BookmarkSelector';
 
+import PropTypes from 'prop-types';
+
 //import TranscriptExample from './components/transcript.json';
 
 /*
@@ -143,47 +145,51 @@ class ItemDetailsRecipe extends React.Component {
 			found = false; //e.g. in case of access denied
 		}
 		if(collectionId && found != false) {
-			CollectionUtil.generateCollectionConfig(this.props.user, collectionId, function(config) {
-				const itemDetailData = config.getItemDetailData(data);
-				found = itemDetailData == null ? false : true;
-				if(found) {
-					//determine which media contant tab should be active
-					let activeMediaTab = 0;
-					if(itemDetailData.playableContent && this.props.params.fragmentUrl) {
-						for(let i = 0;i<itemDetailData.playableContent.length;i++) {
-							const mediaObject = itemDetailData.playableContent[i];
-							if(mediaObject.url == this.props.params.fragmentUrl) {
-								activeMediaTab = i;
-								break;
+			CollectionUtil.generateCollectionConfig(
+				this.props.clientId,
+				this.props.user,
+				collectionId,
+				function(config) {
+					const itemDetailData = config.getItemDetailData(data);
+					found = itemDetailData == null ? false : true;
+					if(found) {
+						//determine which media contant tab should be active
+						let activeMediaTab = 0;
+						if(itemDetailData.playableContent && this.props.params.fragmentUrl) {
+							for(let i = 0;i<itemDetailData.playableContent.length;i++) {
+								const mediaObject = itemDetailData.playableContent[i];
+								if(mediaObject.url == this.props.params.fragmentUrl) {
+									activeMediaTab = i;
+									break;
+								}
 							}
 						}
-					}
-					let desiredState = {
-						itemData : itemDetailData,
-						annotationTarget : this.getAnnotationTarget.call(this, itemDetailData), //for the list
-						found : true,
-						activeMediaTab : activeMediaTab
-					}
-					if (config.requiresPlayoutAccess() && itemDetailData.playableContent) {
-						PlayoutAPI.requestAccess(
-							collectionId,
-							itemDetailData.playableContent[0].assetId,
-							desiredState,
-							this.onLoadPlayoutAccess.bind(this)
-						)
-					} else {
-						this.setState(desiredState);
-					}
+						let desiredState = {
+							itemData : itemDetailData,
+							annotationTarget : this.getAnnotationTarget.call(this, itemDetailData), //for the list
+							found : true,
+							activeMediaTab : activeMediaTab
+						}
+						if (config.requiresPlayoutAccess() && itemDetailData.playableContent) {
+							PlayoutAPI.requestAccess(
+								collectionId,
+								itemDetailData.playableContent[0].assetId,
+								desiredState,
+								this.onLoadPlayoutAccess.bind(this)
+							)
+						} else {
+							this.setState(desiredState);
+						}
 
-					//finally load the resource annotation with motivation bookmarking
-					AnnotationStore.getDirectResourceAnnotations(
-						itemDetailData.resourceId,
-						this.props.user,
-						this.state.activeProject,
-						this.onLoadResourceAnnotations.bind(this)
-					)
-				}
-			}.bind(this));
+						//finally load the resource annotation with motivation bookmarking
+						AnnotationStore.getDirectResourceAnnotations(
+							itemDetailData.resourceId,
+							this.props.user,
+							this.state.activeProject,
+							this.onLoadResourceAnnotations.bind(this)
+						)
+					}
+				}.bind(this));
 		}
 		if(found == false) {
 			this.setState({
@@ -733,5 +739,14 @@ class ItemDetailsRecipe extends React.Component {
 		}
 	}
 }
+
+ItemDetailsRecipe.propTypes = {
+	clientId : PropTypes.string,
+
+    user: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    })
+
+};
 
 export default ItemDetailsRecipe;

@@ -13,6 +13,8 @@ import IDUtil from './util/IDUtil';
 import ElasticsearchDataUtil from './util/ElasticsearchDataUtil';
 import QueryComparisonLineChart from './components/stats/QueryComparisonLineChart';
 
+import PropTypes from 'prop-types';
+
 /*
 Notes about this component:
 
@@ -36,7 +38,6 @@ class ComparativeSearchRecipe extends React.Component {
 			collections = this.props.recipe.ingredients.collections;
 		}
 		this.state = {
-			user : this.props.user || {id : 'testuser', name : 'Test user', attributes : []},
 			lineChartData: {},
 			collections : collections,
 			pageSize : 10,
@@ -150,7 +151,8 @@ class ComparativeSearchRecipe extends React.Component {
 		//generates a tabbed pane with a search component for each collection + a collection browser
 		searchComponent = (
 			<QueryFactory
-				user={this.state.user}
+				clientId={this.props.clientId}
+				user={this.props.user}
 				pageSize={this.state.pageSize}
 				initialCollections={this.state.collections}
 				itemDetailsPath={this.props.recipe.ingredients.itemDetailsPath}
@@ -242,5 +244,14 @@ class ComparativeSearchRecipe extends React.Component {
 		);
 	}
 }
+
+ComparativeSearchRecipe.propTypes = {
+	clientId : PropTypes.string,
+
+    user: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    })
+
+};
 
 export default ComparativeSearchRecipe;

@@ -23,6 +23,7 @@ import SearchHit from './components/search/SearchHit';
 import Paging from './components/search/Paging';
 import Sorting from './components/search/Sorting';
 
+import PropTypes from 'prop-types';
 
 class SingleSearchRecipe extends React.Component {
 	constructor(props) {
@@ -59,6 +60,7 @@ class SingleSearchRecipe extends React.Component {
 	componentDidMount() {
 		if(this.state.collectionId) {
 			CollectionUtil.generateCollectionConfig(
+				this.props.clientId,
 				this.props.user,
 				this.state.collectionId,
 				this.onLoadCollectionConfig.bind(this),
@@ -327,6 +329,8 @@ class SingleSearchRecipe extends React.Component {
 						size="large"
 						title="Choose a collection">
 							<CollectionSelector
+								clientId={this.props.clientId}
+								user={this.props.user}
 								onOutput={this.onComponentOutput.bind(this)}
 								showSelect={true}
 								showBrowser={true}/>
@@ -536,5 +540,14 @@ class SingleSearchRecipe extends React.Component {
 		);
 	}
 }
+
+SingleSearchRecipe.propTypes = {
+	clientId : PropTypes.string,
+
+    user: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    })
+
+};
 
 export default SingleSearchRecipe;

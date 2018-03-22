@@ -1,7 +1,10 @@
 import CKANAPI from '../../api/CKANAPI';
 import CollectionAPI from '../../api/CollectionAPI';
+
 import CollectionUtil from '../../util/CollectionUtil';
 import IDUtil from '../../util/IDUtil';
+
+import PropTypes from 'prop-types';
 import { PowerSelect } from 'react-power-select';
 /*
 
@@ -68,7 +71,16 @@ class CollectionSelector extends React.Component {
 	------------------------------------------------------------------------------- */
 
 	onOutput(collectionId, collectionStats, collectionInfo) {
-		const collectionConfig = CollectionUtil.createCollectionConfig(this.props.user, collectionId, collectionStats, collectionInfo);
+		console.debug(collectionId)
+		console.debug(collectionStats)
+		console.debug(collectionInfo)
+		const collectionConfig = CollectionUtil.createCollectionConfig(
+			this.props.clientId,
+			this.props.user,
+			collectionId,
+			collectionStats,
+			collectionInfo
+		);
 		if(this.props.onOutput) {
 			if(collectionId) {
 				console.debug('dit is het hoor', collectionConfig);
@@ -152,6 +164,15 @@ class CollectionSelector extends React.Component {
 			</div>
 		)
 	}
+
+};
+
+CollectionSelector.propTypes = {
+	clientId : PropTypes.string,
+
+    user: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    })
 
 };
 

@@ -1,17 +1,17 @@
 import QueryModel from '../../model/QueryModel';
 
-//for the collection selector in a modal
-import CollectionSelector from '../collection/CollectionSelector';
-import FlexModal from '../FlexModal';
-
-//for search
-import QueryBuilder from './QueryBuilder';
 import IDUtil from '../../util/IDUtil';
 import ComponentUtil from '../../util/ComponentUtil';
 import CollectionUtil from '../../util/CollectionUtil';
+import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
+
+import CollectionSelector from '../collection/CollectionSelector';
+import QueryBuilder from './QueryBuilder';
+
+import FlexModal from '../FlexModal';
 import FlexBox from '../FlexBox';
 
-import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
+import PropTypes from 'prop-types';
 
 /*
 
@@ -36,6 +36,7 @@ class QueryFactory extends React.Component {
 	componentDidMount() {
 		if(this.props.initialCollections) {
 			CollectionUtil.generateCollectionConfigs(
+				this.props.clientId,
 				this.props.user,
 				this.props.initialCollections,
 				this.onConfigsLoaded.bind(this)
@@ -199,5 +200,14 @@ class QueryFactory extends React.Component {
 		)
 	}
 }
+
+QueryFactory.propTypes = {
+	clientId : PropTypes.string,
+
+    user: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    })
+
+};
 
 export default QueryFactory;

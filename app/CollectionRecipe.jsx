@@ -1,21 +1,24 @@
-import FlexRouter from './util/FlexRouter';
 import IDUtil from './util/IDUtil';
+import FlexRouter from './util/FlexRouter';
 import ComponentUtil from './util/ComponentUtil';
 import CollectionUtil from './util/CollectionUtil';
+
 import FlexBox from './components/FlexBox';
 import FlexModal from './components/FlexModal';
+
 import CollectionAnalyser from './components/collection/CollectionAnalyser';
 import CollectionSelector from './components/collection/CollectionSelector';
 import CollectionStats from './components/collection/CollectionStats';
 import FieldAnalysisStats from './components/collection/FieldAnalysisStats';
 import QueryComparisonLineChart from './components/stats/QueryComparisonLineChart';
 
+import PropTypes from 'prop-types';
+
 class CollectionRecipe extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			user : this.props.user || {id : 'testuser', name : 'Test user', attributes : []},
 			selectedCollections : {},
 			activeCollection : null,
 			collectionStats : null, //output from the collectionSelector
@@ -28,6 +31,7 @@ class CollectionRecipe extends React.Component {
 	componentDidMount() {
 		if(this.props.params.cids) {
 			CollectionUtil.generateCollectionConfigs(
+				this.props.clientId,
 				this.props.user,
 				this.props.params.cids.split(','),
 				this.onConfigsLoaded.bind(this)
@@ -315,5 +319,14 @@ class CollectionRecipe extends React.Component {
 	}
 
 }
+
+CollectionRecipe.propTypes = {
+	clientId : PropTypes.string,
+
+    user: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    })
+
+};
 
 export default CollectionRecipe;
