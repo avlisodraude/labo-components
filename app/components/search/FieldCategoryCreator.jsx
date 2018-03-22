@@ -30,13 +30,13 @@ class FieldCategoryCreator extends React.PureComponent {
 
 	render() {
 		const stats = this.props.collectionConfig.getCollectionStats();
-		const options = stats.collection_statistics.document_types[0].fields.text.map((field, index) => {
+		const options = stats.collection_statistics.document_types[0].fields.text.sort().map((field, index) => {
 			return (
 				<option id={index} value={field}>{this.props.collectionConfig.toPrettyFieldName(field)}</option>
 			)
 		});
 		return (
-			<div className={IDUtil.cssClassName('field-selector')}>
+			<div className={IDUtil.cssClassName('field-category-creator')}>
 				<form onSubmit={this.onOutput.bind(this)}>
 					<label for="field_selector">Select one or more fields to include</label>
 					<select className="form-control" multiple id="field_selector">

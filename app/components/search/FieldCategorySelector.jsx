@@ -17,6 +17,7 @@ class FieldCategorySelector extends React.Component {
 		this.state = {
 			showModal : false
 		}
+		this.CLASS_PREFIX = 'fcs';
 	}
 
 	onComponentOutput(componentClass, data) {
@@ -91,7 +92,7 @@ class FieldCategorySelector extends React.Component {
 					elementId="fields__modal"
 					stateVariable="showModal"
 					owner={this}
-					title="Choose your own fields mijnheertje koekepeertje">
+					title="Create a new cluster of metadata fields to search through">
 					<FieldCategoryCreator collectionConfig={this.props.collectionConfig}
 						onOutput={this.onComponentOutput.bind(this)}/>
 				</FlexModal>
@@ -109,21 +110,25 @@ class FieldCategorySelector extends React.Component {
 						options={optionsToSelect}
 						selected={selectedFields}
 						optionLabelPath="label"
-          				optionComponent={<CustomOptionComponent />}
+          				optionComponent={
+          					<ListOption collectionConfig={this.props.collectionConfig}/>
+          				}
           				selectedOptionComponent={
-          					<CustomSelectedOptionComponent
+          					<SelectedOption
           						queryId={this.props.queryId}
           						collectionConfig={this.props.collectionConfig}/>
           				}
 						onChange={this.handleChange.bind(this)}
 						placeholder="Search in: all fields"
 						afterOptionsComponent={({ select }) => (
-				            <button className="btn btn-primary"
-								onClick={() => {
-									this.addCustomFields(select);
-								}}>
-				              + Custom category
-							</button>
+							<div className={IDUtil.cssClassName('option-create', this.CLASS_PREFIX)}>
+					            <button className="btn btn-sm btn-primary"
+									onClick={() => {
+										this.addCustomFields(select);
+									}}>
+					              + Custom category
+								</button>
+							</div>
 						)}
 					/>
 				<ReactTooltip id={'__fs__tt' + this.props.queryId} />
@@ -138,21 +143,16 @@ class FieldCategorySelector extends React.Component {
 export default FieldCategorySelector;
 
 
-export const CustomOptionComponent = ({ option }) => (
-	<div>
+export const ListOption = ({ option, collectionConfig }) => (
+	<div title={option.fields.map((f) => collectionConfig.toPrettyFieldName(f)).join('\n')}>
 		Search in: {option.label}
 	</div>
 );
 
-export const CustomSelectedOptionComponent = ({option, optionLabelPath, onCloseClick, select, queryId, collectionConfig}) => (
+export const SelectedOption = ({option, optionLabelPath, onCloseClick, select, queryId, collectionConfig}) => (
 	<li className="PowerSelectMultiple__SelectedOption">
 		<span className="PowerSelectMultiple__SelectedOption__Label"
-			data-for={'__fs__tt' + queryId}
-			data-tip={
-				'The following metadata fields are included in this category:<br/><br/>' +
-				option.fields.map((f) => collectionConfig.toPrettyFieldName(f)).join('<br/>')
-			}
-			data-html={true}>
+			title={option.fields.map((f) => collectionConfig.toPrettyFieldName(f)).join('\n')}>
 			{option[optionLabelPath]}
 		</span>
 		<span

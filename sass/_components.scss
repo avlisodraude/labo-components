@@ -179,17 +179,33 @@
 .bg__field-category-selector {
 	.PowerSelectMultiple__SelectedOptions {
 		margin:0px;
+		.PowerSelectMultiple__SelectedOption {
+			background-color: $fill-color;
+			color: white;
+			border: 1px solid $border-color;
+		}
+		.PowerSelectMultiple__SelectedOption__Close {
+			&:hover {
+				background-color: $hover-color;
+			}
+		}
 	}
-
 } /* FieldCategorySelector.jsx */
 
-.bg__field-selector {
+.bg__fcs__option-create {
+	padding: 0px 5px 5px 10px;
+} /* NOTE: Also in FieldCategorySelector.jsx */
+
+.bg__field-category-creator {
 	form {
 		select {
 			height:200px;
 		}
 		label {
 			margin : 15px 0px 5px 0px;
+			&:first-child {
+				margin : 0px 0px 5px 0px;
+			}
 		}
 	}
 } /* FieldSelector.jsx */
