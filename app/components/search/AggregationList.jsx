@@ -37,7 +37,11 @@ class AggregationList extends React.Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
+        this.setFacetsFolding();
+    }
+
+	setFacetsFolding() {
         let min = this.minToShow,
             selectedOpts = 0;
         Array.from(document.getElementsByClassName("checkboxGroup")).map((item, index) => {
@@ -51,7 +55,7 @@ class AggregationList extends React.Component {
                 }
             )
         });
-	}
+    }
 
     toggleSelectedFacet(key, value, e) {
         const facets = this.props.selectedFacets;
