@@ -375,21 +375,30 @@ class QueryBuilder extends React.Component {
 								aggregations={this.state.aggregations} //part of the search results
 								facets={this.state.query.desiredFacets} //as obtained from the collection config
 								selectedFacets={this.state.query.selectedFacets} //via AggregationBox or AggregationList
+                                desiredFacets={this.state.query.desiredFacets}
+                                collectionConfig={this.props.collectionConfig} //for the aggregation creator only
 								onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
 								/>
 						)
 					}
 
-
-					if(aggrView) {
-						aggregationBox = (
-							<div className="row">
-								<div className="col-md-12">
-									{aggrView}
-								</div>
-							</div>
-						)
-					}
+                    if (aggrView && this.props.aggregationView === 'box') {
+                        if(aggrView) {
+                            aggregationBox = (
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        {aggrView}
+                                    </div>
+                                </div>
+                            )
+                        }
+                    }else {
+                        aggregationBox = (
+                            <div className="col-md-3">
+                                {aggrView}
+                            </div>
+                        )
+                    }
 
 					// Display the graph only if an option other than the default is selected
 					// and the length of the data is greater than 0.
@@ -544,26 +553,45 @@ class QueryBuilder extends React.Component {
                     </div>
                 );
 
-				resultBlock = (
-					<div>
-						{resultStats}
-						<div className="separator"></div>
-						{dateRangeCrumb}
-						<div className="row">
-							<div className="col-md-12">
-								{dateRangeSelector}
-								{graph}
-							</div>
-						</div>
-						<div className="separator"></div>
-						<div>
-							<div className="col-md-12">
-								{aggregationBox}
-								<br/>
-							</div>
-						</div>
-					</div>
-				)
+                if (this.props.aggregationView === 'box') {
+                    resultBlock = (
+                        <div>
+                            {resultStats}
+                            <div className="separator"></div>
+                            {dateRangeCrumb}
+                            <div className="row">
+                                <div className="col-md-12">
+                                    {dateRangeSelector}
+                                    {graph}
+                                </div>
+                            </div>
+                            <div className="separator"></div>
+                            <div>
+                                <div className="col-md-12">
+                                    {aggregationBox}
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                } else {
+                    resultBlock = (
+                        <div>
+                            {resultStats}
+                            <div className="separator"></div>
+                            {dateRangeCrumb}
+                            <div className="row">
+                                <div className="col-md-12">
+                                    {dateRangeSelector}
+                                    {graph}
+                                </div>
+                            </div>
+                            <div className="separator"></div>
+                            {aggregationBox}
+                        </div>
+                    )
+                }
+
 			} else if(this.state.searchId != null) {
 				let dateRangeMessage = null;
 				if(this.state.query.dateRange) {

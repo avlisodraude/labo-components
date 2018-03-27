@@ -500,26 +500,49 @@ class SingleSearchRecipe extends React.Component {
 							onOutput={this.onComponentOutput.bind(this)}/>
 					)
 				}, this);
-				resultList = (
-					<div className="row">
-						<div className="col-md-12">
-							<div className={IDUtil.cssClassName('table-actions-header', this.CLASS_PREFIX)}>
-								{tableActionControls}
-								{actionButtons}
-								<div style={{textAlign : 'center'}}>
-									{paging}
-									<div style={{float: 'right'}}>
-										{sortButtons}
-									</div>
-								</div>
-							</div>
-							{items}
-							<div className={IDUtil.cssClassName('table-actions-footer', this.CLASS_PREFIX)}>
-								{paging}
-							</div>
-						</div>
-					</div>
-				)
+
+                if (this.props.recipe.ingredients.aggregationView === 'box') {
+                    resultList = (
+                        <div className="row">
+                            <div className="col-md-12">
+                                <div className={IDUtil.cssClassName('table-actions-header', this.CLASS_PREFIX)}>
+                                    {tableActionControls}
+                                    {actionButtons}
+                                    <div style={{textAlign: 'center'}}>
+                                        {paging}
+                                        <div style={{float: 'right'}}>
+                                            {sortButtons}
+                                        </div>
+                                    </div>
+                                </div>
+                                {items}
+                                <div className={IDUtil.cssClassName('table-actions-footer', this.CLASS_PREFIX)}>
+                                    {paging}
+                                </div>
+                            </div>
+                        </div>
+                    )
+                } else {
+                    resultList = (
+                        <div className="col-md-9">
+                            <div className={IDUtil.cssClassName('table-actions-header', this.CLASS_PREFIX)}>
+                                {tableActionControls}
+                                {actionButtons}
+                                <div style={{textAlign: 'center'}}>
+                                    {paging}
+                                    <div style={{float: 'right'}}>
+                                        {sortButtons}
+                                    </div>
+                                </div>
+                            </div>
+                            {items}
+                            <div className={IDUtil.cssClassName('table-actions-footer', this.CLASS_PREFIX)}>
+                                {paging}
+                            </div>
+                        </div>
+                    )
+                }
+
 			}
 		}
 
@@ -533,9 +556,10 @@ class SingleSearchRecipe extends React.Component {
 						{queryModal}
 						{bookmarkModal}
 						{searchComponent}
+                        {resultList}
 					</div>
 				</div>
-				{resultList}
+
 			</div>
 		);
 	}
