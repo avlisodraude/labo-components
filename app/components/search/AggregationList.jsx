@@ -159,12 +159,13 @@ class AggregationList extends React.Component {
 					<li key={'facet__' + index + '__' + fIndex}
 						className={IDUtil.cssClassName('facet-item', this.CLASS_PREFIX)}>
 						<div className="checkbox">
+                            <input id={facetId}
+                                   type="checkbox"
+                                   checked={checkedOpt}
+                                   onClick={this.toggleSelectedFacet.bind(this, key, facet.key)}/>
 							<label>
-								<input id={facetId}
-									type="checkbox"
-									checked={checkedOpt}
-									onClick={this.toggleSelectedFacet.bind(this, key, facet.key)}/>
-									{facet.key}&nbsp;({facet.doc_count})
+                                <span> </span>
+                                {facet.key}&nbsp;({facet.doc_count})
 							</label>
 						</div>
 					</li>
@@ -173,7 +174,7 @@ class AggregationList extends React.Component {
 
             // placing checked options on top of list.
             options.forEach(function(item) {
-                if(item.props.children.props.children.props.children[0].props.checked) {
+                if(item.props.children.props.children[0].props.checked) {
                     sortedOpts.unshift(item)
                 } else {
                     sortedOpts.push(item)
@@ -193,12 +194,12 @@ class AggregationList extends React.Component {
                 }
 				facets.push((
                     <div className="checkboxGroup" key={'facet__' + index} id={'index__' + index}>
-                        <h5>{ElasticsearchDataUtil.getAggregationTitle(key, this.props.facets)}
+                        <h4>{ElasticsearchDataUtil.getAggregationTitle(key, this.props.facets)}
                             <span data-for={'__ci_tooltip'} data-tip={key} data-html={true}>
 							<i className="fa fa-info-circle"></i>
 						</span>
                             <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, key)}></span>
-                        </h5>
+                        </h4>
                         <ul className={IDUtil.cssClassName('facet-group', this.CLASS_PREFIX)}>
                             {sortedOpts}
                         </ul>
