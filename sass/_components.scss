@@ -161,19 +161,109 @@
 .bg__aggregation-creator {} /* AggregationCreator.jsx */
 
 .bg__aggregation-list { /* AggregationList.jsx */
+	.bg__agl__tab-new {
+		list-style: none;
+	}
 	.bg__agl__facet-group {
-		list-style:none;
-		margin:0px;
-		padding:0px;
+		margin:0;
+
 		.bg__agl__facet-item {
 			color: $list-item-color;
+			.checkbox {
+				margin: 0;
+				//Customs styling for checkboxes in facet's view.
+				input[type=checkbox] {
+					height: 100%;
+					opacity: 0;
+					width: 100%;
+					z-index: 10;
+				}
+				input[type=checkbox] + label {
+					padding-left: 10px;
+				}
+				input[type=checkbox] + label span {
+					border: 1px solid #ccc;
+					border-radius: 4px;
+					display: inline-block;
+					font-style: normal;
+					height: 18px;
+					margin-right: 10px;
+					width: 18px;
+				}
+
+				input[type=checkbox]:checked + label span {
+					position:relative;
+				}
+				input[type=checkbox]:checked + label span:after {
+					color: #468dcb;
+					content: "\2713";
+					font-size: 18px;
+					font-weight: bold;
+					margin-top:-4px;
+					position: absolute;
+				}
+			}
 			&:hover {
 				color:#ccc;
 			}
 		}
 	}
+	.checkboxGroup {
+		background-color: #ebebeb;
+		border-radius: 6px;
+
+		h4 {
+			padding: 8px 0 0;
+		}
+		.fa-remove {
+			cursor: pointer;
+			float: right;
+			margin-right: 1rem;
+		}
+
+		.fa-info-circle {
+			float: left;
+			margin-left: 1.4rem;
+			margin-right: 1rem;
+		}
+		ul {
+			padding-left: 0;
+			li {
+				background-color: #efefef;
+				font-size: 1.3rem;
+				list-style-type: none;
+				margin-bottom: 1px;
+				padding: 6px;
+				position: relative;
+				text-transform: uppercase;
+			}
+		}
+		.switchView {
+			background-color: #efefef;
+			border-radius: 0 0 6px 6px;
+			color: #666;
+			display: block;
+			padding: 6px;
+			&:hover {
+				color: red;
+			}
+
+			.switchViewText {
+				font-size: 1.1rem;
+				padding-left: 1rem;
+			}
+			.switchIcon {
+				font-size: 1rem;
+				margin-left: .5rem;
+			}
+		}
+	}
 }
 
+.aggregation-list {
+	padding-left: 0;
+	padding-right: 0;
+}
 .bg__date-range-select {} /* DateRangeSelector.jsx */
 
 .bg__field-category-selector {
@@ -627,13 +717,11 @@
 
 .bg__comparative-search-recipe {
 	.react-datepicker__input-container {
+		margin-left: 2px;
 		input	{
 			min-width: 130px;
 		}
 
-	}
-	.react-datepicker-wrapper {
-		margin-top: -10px !important;
 	}
 } /* ComparativeSearchRecipe.jsx */
 
@@ -644,9 +732,10 @@
 	}
 	.bg__rcp__ss__table-actions-header {
 		background-color: #2d343a;
+		border-radius: 6px;
 		margin: 5px;
 		min-height:53px;
-		min-width: 800px;
+		min-width: 100%;
 		padding: 10px;
 		.bg__rcp__ss__table-actions {
 			float:left;
@@ -658,6 +747,9 @@
 	.bg__rcp__ss__table-actions-footer {
 		padding: 10px;
 		text-align: center;
+	}
+	.result-list {
+		margin-top: 25px;
 	}
 } /* SingleSearchRecipe.jsx */
 
