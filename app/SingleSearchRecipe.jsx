@@ -524,7 +524,7 @@ class SingleSearchRecipe extends React.Component {
                     )
                 } else {
                     resultList = (
-                        <div className="col-md-9">
+                        <div className="col-md-9 result-list">
                             <div className={IDUtil.cssClassName('table-actions-header', this.CLASS_PREFIX)}>
                                 {tableActionControls}
                                 {actionButtons}
