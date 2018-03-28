@@ -394,7 +394,7 @@ class QueryBuilder extends React.Component {
                         }
                     }else {
                         aggregationBox = (
-                            <div className="col-md-3">
+                            <div className="col-md-3 aggregation-list">
                                 {aggrView}
                             </div>
                         )
