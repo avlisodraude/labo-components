@@ -171,6 +171,7 @@
 			color: $list-item-color;
 			.checkbox {
 				margin: 0;
+				//Customs styling for checkboxes in facet's view.
 				input[type=checkbox] {
 					height: 100%;
 					opacity: 0;
@@ -259,6 +260,10 @@
 	}
 }
 
+.aggregation-list {
+	padding-left: 0;
+	padding-right: 0;
+}
 .bg__date-range-select {} /* DateRangeSelector.jsx */
 
 .bg__field-category-selector {
@@ -730,7 +735,7 @@
 		border-radius: 6px;
 		margin: 5px;
 		min-height:53px;
-		min-width: 800px;
+		min-width: 100%;
 		padding: 10px;
 		.bg__rcp__ss__table-actions {
 			float:left;
