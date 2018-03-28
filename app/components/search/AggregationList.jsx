@@ -86,7 +86,7 @@ class AggregationList extends React.Component {
     }
 
     switchListView(index){
-        let btnText = document.querySelectorAll(".switchViewText")[index].textContent,
+        let btnText = document.querySelectorAll("#index__" + index + " .switchViewText")[0].textContent,
             jCurrentList = Array.from(document.querySelectorAll("#index__" + index + " ul>li")),
             currentlyChecked = 0;
 
