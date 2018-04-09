@@ -513,4 +513,10 @@ height:20rem;
     top: 9px;
     right: 6px;
   }
+  .fa-calendar {
+    z-index: -1;
+  }
+  input {
+    background-color: transparent;
+  }
 }
