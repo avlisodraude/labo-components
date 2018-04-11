@@ -208,9 +208,19 @@
 			}
 		}
 	}
+	.bg__query-pie-chart {
+		box-shadow: -1px 1px 1px 1px #c3c3c3;
+		border-radius: 6px;
+		background-color: #f9f9f9;
+
+		h3 {
+			padding: 1rem 0 0 1rem;
+		}
+	}
 	.checkboxGroup {
 		background-color: #ebebeb;
 		border-radius: 6px;
+		box-shadow: -1px 1px 1px 1px #c3c3c3;
 
 		h4 {
 			padding: 8px 0 0;
@@ -225,6 +235,11 @@
 			float: left;
 			margin-left: 1.4rem;
 			margin-right: 1rem;
+		}
+		.glyphicon-modal-window {
+			cursor: pointer;
+			float: right;
+			margin-right: 20px;
 		}
 		ul {
 			padding-left: 0;

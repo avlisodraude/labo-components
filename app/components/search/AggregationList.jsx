@@ -4,32 +4,50 @@ import IDUtil from '../../util/IDUtil';
 import ElasticsearchDataUtil from '../../util/ElasticsearchDataUtil';
 import ComponentUtil from "../../util/ComponentUtil";
 import ReactTooltip from 'react-tooltip';
+import {
+    LineChart,
+    PieChart,
+    Cell,
+    COLORS,
+    Line,
+    Pie,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Label,
+    ResponsiveContainer,
+    BarChart,
+    Legend,
+    Bar
+} from 'recharts';
+import TimeUtil from "../../util/TimeUtil";
 
 //this component draws the aggregations (a.k.a. facets) and merely outputs the user selections to the parent component
 class AggregationList extends React.Component {
-	constructor(props) {
-		super(props);
+    constructor(props) {
+        super(props);
         this.state = {
-            showModal : false
+            showModal: false
         }
-		this.CLASS_PREFIX = 'agl';
+        this.CLASS_PREFIX = 'agl';
         this.minToShow = 2;
-	}
+    }
 
-	//communicates the selected facets back to the parent component
-	//TODO update later!!
-	onOutput(desiredFacets, selectedFacets) {
-	    // console.log(desiredFacets, selectedFacets);
-        if(this.props.onOutput) {
+    //communicates the selected facets back to the parent component
+    //TODO update later!!
+    onOutput(desiredFacets, selectedFacets) {
+        // console.log(desiredFacets, selectedFacets);
+        if (this.props.onOutput) {
             this.props.onOutput(this.constructor.name, {
-                desiredFacets : desiredFacets,
-                selectedFacets : selectedFacets
+                desiredFacets: desiredFacets,
+                selectedFacets: selectedFacets
             })
         }
-	}
+    }
 
     onComponentOutput(componentClass, data) {
-        if(componentClass == 'AggregationCreator' && data) {
+        if (componentClass == 'AggregationCreator' && data) {
             const desiredFacets = this.props.desiredFacets;
             desiredFacets.push(data);
             this.onOutput(desiredFacets, this.props.selectedFacets);
@@ -41,15 +59,15 @@ class AggregationList extends React.Component {
         this.setFacetsFolding();
     }
 
-	setFacetsFolding() {
+    setFacetsFolding() {
         let min = this.minToShow,
             selectedOpts = 0;
         Array.from(document.getElementsByClassName("checkboxGroup")).map((item, index) => {
             selectedOpts = document.querySelectorAll('#index__' + index + ' input[type="checkbox"]:checked').length;
             item.querySelectorAll("ul>li").forEach(
-                function(currentValue, currentIndex, listObj) {
+                function (currentValue, currentIndex, listObj) {
                     selectedOpts = min > selectedOpts ? min : selectedOpts;
-                    if(currentIndex >= selectedOpts) {
+                    if (currentIndex >= selectedOpts) {
                         currentValue.hidden = true;
                     }
                 }
@@ -58,15 +76,16 @@ class AggregationList extends React.Component {
     }
 
     toggleSelectedFacet(key, value, e) {
+        console.log(key, value)
         const facets = this.props.selectedFacets;
-        if(facets) {
-            if(facets[key]) {
+        if (facets) {
+            if (facets[key]) {
                 const index = facets[key].indexOf(value);
-                if(index == -1) {
+                if (index == -1) {
                     facets[key].push(value); //add the value
                 } else {
                     facets[key].splice(index, 1); // remove the value
-                    if(facets[key].length == 0) {
+                    if (facets[key].length == 0) {
                         delete facets[key];
                     }
                 }
@@ -85,17 +104,17 @@ class AggregationList extends React.Component {
         document.querySelector("#index__" + t.index + " .switchViewText").textContent = t.text;
     }
 
-    switchListView(index){
+    switchListView(index) {
         let btnText = document.querySelectorAll("#index__" + index + " .switchViewText")[0].textContent,
             jCurrentList = Array.from(document.querySelectorAll("#index__" + index + " ul>li")),
             currentlyChecked = 0;
 
-        if(btnText === "Show More") {
+        if (btnText === "Show More") {
             this.__changeBtnContext({
                 index: index,
-                text:"Show Less",
-                classToRemove:"glyphicon-plus",
-                classToAdd:"glyphicon-minus"
+                text: "Show Less",
+                classToRemove: "glyphicon-plus",
+                classToAdd: "glyphicon-minus"
             });
             jCurrentList.map((item) => {
                 item.hidden = false;
@@ -105,22 +124,23 @@ class AggregationList extends React.Component {
             currentlyChecked = document.querySelectorAll("#index__" + index + ' input[type="checkbox"]:checked').length;
             currentlyChecked = currentlyChecked > this.minToShow ? currentlyChecked : this.minToShow;
             jCurrentList.map((item, index) => {
-                if(index >= currentlyChecked) {
+                if (index >= currentlyChecked) {
                     item.hidden = true;
                 }
             });
             this.__changeBtnContext({
                 index: index,
-                text:"Show More",
-                classToRemove:"glyphicon-minus",
-                classToAdd:"glyphicon-plus"
+                text: "Show More",
+                classToRemove: "glyphicon-minus",
+                classToAdd: "glyphicon-plus"
             });
         }
-	}
+    }
+
     toggleDesiredFacet(key) {
         const desiredFacets = this.props.desiredFacets;
-        for(let i=desiredFacets.length-1;i>=0;i--) {
-            if(desiredFacets[i].field == key) {
+        for (let i = desiredFacets.length - 1; i >= 0; i--) {
+            if (desiredFacets[i].field == key) {
                 desiredFacets.splice(i, 1);
                 break;
             }
@@ -128,12 +148,23 @@ class AggregationList extends React.Component {
         this.onOutput(desiredFacets, this.props.selectedFacets);
     }
 
-	//now all types of aggregations are drawn as simple lists of checkboxes. This should be updated
-	render() {
-		const facets = [];
-        let aggregationCreatorModal = null;
+    toggleViewMode(key) {
+        return false;
+    }
+
+    pieFacetsOpt(val, selected) {
+        console.log('pie facets opts', selected, selected.key, selected.doc_count, val);
+        this.toggleSelectedFacet(val, selected.key);
+    }
+
+
+    //now all types of aggregations are drawn as simple lists of checkboxes. This should be updated
+    render() {
+        const facets = [];
+        let aggregationCreatorModal = null,
+            pieChart = null;
         //collection modal
-        if(this.state.showModal) {
+        if (this.state.showModal) {
             aggregationCreatorModal = (
                 <FlexModal
                     elementId="field_select__modal"
@@ -146,63 +177,66 @@ class AggregationList extends React.Component {
                 </FlexModal>
             )
         }
-
-		Object.keys(this.props.aggregations).forEach((key, index) => {
+        //TODO: add a condition to load a list or the pie chart based on the current set options
+        Object.keys(this.props.aggregations).forEach((key, index) => {
             let sortedOpts = [];
 
             const options = this.props.aggregations[key].map((facet, fIndex) => {
-				const value = facet.date_millis ? facet.date_millis : facet.key,
-				    facetId = key + '|' + value;
+                const value = facet.date_millis ? facet.date_millis : facet.key,
+                    facetId = key + '|' + value;
 
                 let checkedOpt = false;
 
-				if(this.props.selectedFacets[key]) {
+                if (this.props.selectedFacets[key]) {
                     checkedOpt = this.props.selectedFacets[key].indexOf(value) > -1;
                 }
-				return (
-					<li key={'facet__' + index + '__' + fIndex}
-						className={IDUtil.cssClassName('facet-item', this.CLASS_PREFIX)}>
-						<div className="checkbox">
+                return (
+                    <li key={'facet__' + index + '__' + fIndex}
+                        className={IDUtil.cssClassName('facet-item', this.CLASS_PREFIX)}>
+                        <div className="checkbox">
                             <input id={facetId}
                                    type="checkbox"
                                    checked={checkedOpt}
                                    onClick={this.toggleSelectedFacet.bind(this, key, facet.key)}/>
-							<label>
+                            <label>
                                 <span> </span>
                                 {facet.key}&nbsp;({facet.doc_count})
-							</label>
-						</div>
-					</li>
-				)
-			});
+                            </label>
+                        </div>
+                    </li>
+                )
+            });
 
             // placing checked options on top of list.
-            options.forEach(function(item) {
-                if(item.props.children.props.children[0].props.checked) {
+            options.forEach(function (item) {
+                if (item.props.children.props.children[0].props.checked) {
                     sortedOpts.unshift(item)
                 } else {
                     sortedOpts.push(item)
                 }
             });
 
-			if(sortedOpts.length > 0) {
+            if (sortedOpts.length > 0) {
                 let changeViewItems = null;
 
-                if(sortedOpts.length > this.minToShow) {
-			        changeViewItems =  (
+                if (sortedOpts.length > this.minToShow) {
+                    changeViewItems = (
                         <a className="switchView" onClick={this.switchListView.bind(this, index)}>
                             <span className="switchViewText">Show More</span>
-                            <span className="switchIcon glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            <span className="switchIcon glyphicon glyphicon-plus" aria-hidden="true"/>
                         </a>
                     );
                 }
-				facets.push((
+                facets.push((
                     <div className="checkboxGroup" key={'facet__' + index} id={'index__' + index}>
                         <h4>{ElasticsearchDataUtil.getAggregationTitle(key, this.props.facets)}
                             <span data-for={'__ci_tooltip'} data-tip={key} data-html={true}>
-							<i className="fa fa-info-circle"></i>
-						</span>
-                            <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, key)}></span>
+							    <i className="fa fa-info-circle"/>
+						    </span>
+                            <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, key)}/>
+                            <span className="glyphicon glyphicon-modal-window"
+                                  onClick={this.toggleViewMode.bind(this, key)}/>
+
                         </h4>
                         <ul className={IDUtil.cssClassName('facet-group', this.CLASS_PREFIX)}>
                             {sortedOpts}
@@ -210,22 +244,59 @@ class AggregationList extends React.Component {
                         {changeViewItems}
                         <ReactTooltip id={'__ci_tooltip'}/>
                     </div>
-				))
-			}
-		});
+                ))
+            }
 
-		return (
-			<div className={IDUtil.cssClassName('aggregation-list checkboxes')}>
+            const mrg = {"top": 0, "right": 0, "bottom": 0, "top": 0};
+            const COLORS = [
+                '#468dcb',
+                '#00C49F',
+                '#F0C873',
+                '#EC622D',
+                '#AEB7A4'
+            ];
+
+            pieChart = (
+                <div className={IDUtil.cssClassName('query-pie-chart')}>
+                    <h3>{ElasticsearchDataUtil.getAggregationTitle(key, this.props.facets)}</h3>
+                    <ResponsiveContainer width="100%" height="40%">
+
+                        <PieChart>
+                            <Pie
+                                onClick={this.pieFacetsOpt.bind(this, 'bg:keywords.bg:keyword.keyword')}
+                                data={this.props.aggregations['bg:keywords.bg:keyword.keyword']}
+                                isAnimationActive={true}
+                                margin={mrg}
+                                dataKey="doc_count"
+                                nameKey="key"
+                                outerRadius={110}
+                                fill="#8884d8"
+                            >
+                                {
+                                    this.props.aggregations[key].map((entry, index) => <Cell
+                                        fill={COLORS[index % COLORS.length]}/>)
+                                }
+                            </Pie>
+                            <Tooltip/>
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+            );
+        });
+
+        return (
+            <div className={IDUtil.cssClassName('aggregation-list checkboxes')}>
                 {aggregationCreatorModal}
                 <li key={'new__tab'} className={IDUtil.cssClassName('tab-new', this.CLASS_PREFIX)}>
                     <a href="javascript:void(0);" onClick={ComponentUtil.showModal.bind(this, this, 'showModal')}>
                         NEW&nbsp;<i className="fa fa-plus"></i>
                     </a>
                 </li>
-				{facets}
-			</div>
-		)
-	}
+                {pieChart}
+                {facets}
+            </div>
+        )
+    }
 }
 
 export default AggregationList;
