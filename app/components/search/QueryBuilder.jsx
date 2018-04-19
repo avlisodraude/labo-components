@@ -422,7 +422,10 @@ class QueryBuilder extends React.Component {
 
 	                                        <QuerySingleLineChart
 	                                            data={this.state.aggregations[this.state.query.dateRange.field]}
-	                                            comparisonId={this.state.searchId}/>
+	                                            comparisonId={this.state.searchId}
+                                                collectionConfig={this.props.collectionConfig}
+												query={this.props.query}
+                                            />
 
 	                                    </div>
 	                                );

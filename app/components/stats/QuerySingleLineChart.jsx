@@ -1,7 +1,7 @@
 import IDUtil from '../../util/IDUtil';
 import {LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Label, ResponsiveContainer, BarChart, Legend, Bar} from 'recharts';
 import TimeUtil from '../../util/TimeUtil';
-import LabelAsPoint from '../ExtendedLine';
+import LabelAsAPoint from '../LabelAsAPoint';
 /*
 See:
 	- http://rawgraphs.io/
@@ -37,7 +37,7 @@ class QuerySingleLineChart extends React.Component {
                         <YAxis/>
                         <Tooltip/>
                         <Legend />
-                        <Line type="monotone"  dataKey="count" label={ <LabelAsPoint dataKey={dataPrettyfied}/> }  stroke="#8884d8" activeDot={false}/>
+                        <Line type="monotone" dataKey="count" label={ <LabelAsAPoint query={this.props.query} collectionConfig={this.props.collectionConfig} dataKey={dataPrettyfied}/> } stroke="#8884d8" activeDot={false}/>
                     </LineChart>
                 </ResponsiveContainer>
             </div>
