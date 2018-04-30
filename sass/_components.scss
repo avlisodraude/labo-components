@@ -354,6 +354,29 @@
 
 .bg__paging {} /* Paging.jsx */
 
+//media queries to handle paging issues when too many page numbers are displayed.
+@media screen and (max-width: 638px) {
+	.bg__paging {
+		.btn-default:nth-of-type(n + 6):not(.next-last-page) {
+			display:none;
+		}
+	}
+}
+@media screen and (max-width: 719px) {
+	.bg__paging {
+		.btn-default:nth-of-type(n + 7):not(.next-last-page) {
+			display:none;
+		}
+	}
+}
+@media screen and (max-width: 1201px) {
+	.bg__paging {
+		.btn-default:nth-of-type(n + 8):not(.next-last-page) {
+			display:none;
+		}
+	}
+}
+
 .bg__query-builder { /* QueryBuilder.jsx */
 	.bg__qb__search-layers {}
 
