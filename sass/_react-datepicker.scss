@@ -313,6 +313,13 @@ height:20rem;
     position: absolute;
     top: 0;
     right: 6px;
+    z-index: -1;
+  }
+  input {
+    background: none;
+    &:disabled {
+      opacity: .6;
+    }
   }
 }
 
@@ -512,5 +519,6 @@ height:20rem;
     position: absolute;
     top: 9px;
     right: 6px;
+    z-index: -1;
   }
 }
