@@ -164,6 +164,19 @@
 	.bg__agl__tab-new {
 		list-style: none;
 	}
+	.bg__agl__selected-facets {
+		.bg__agl__selected-item {
+			background-color: #f3f3f3;
+			border: 1px solid white;
+			border-radius: 6px;
+			padding: 6px 5px 6px 1rem;
+
+			.fa-remove {
+				cursor: pointer;
+				float: right;
+			}
+		}
+	}
 	.bg__agl__facet-group {
 		margin:0;
 

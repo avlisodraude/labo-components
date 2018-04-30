@@ -129,7 +129,9 @@ class AggregationList extends React.Component {
         const facets = [],
             nonDateAggregations = this.props.desiredFacets.filter(aggr => aggr.type !== 'date_histogram');
         let aggregationCreatorModal = null,
-            nrCheckedOpts = 0;
+            selectedOpts = [],
+            nrCheckedOpts = 0,
+            opts = [];
         //collection modal
         if (this.state.showModal) {
             aggregationCreatorModal = (
@@ -156,6 +158,10 @@ class AggregationList extends React.Component {
 
                     if (this.props.selectedFacets[key['field']]) {
                         if (checkedOpt = this.props.selectedFacets[key['field']].indexOf(value) > -1) {
+                            selectedOpts.push({
+                                'name': facet.key.toUpperCase(),
+                                'hits': facet.doc_count
+                            });
                             nrCheckedOpts++;
                         }
                     }
@@ -218,8 +224,17 @@ class AggregationList extends React.Component {
                         <ReactTooltip id={'__ci_tooltip'}/>
                     </div>
                 ))
+                selectedOpts.forEach((facet, index) => {
+                    opts.push(
+                        <div className={IDUtil.cssClassName('selected-item', this.CLASS_PREFIX)}>
+                            {facet.name} ({facet.hits})
+                            <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, key['field'])}/>
+                        </div>
+                    )
+                });
             }
             nrCheckedOpts = 0;
+            selectedOpts = [];
         });
 
         return (
@@ -230,6 +245,9 @@ class AggregationList extends React.Component {
                         NEW&nbsp;<i className="fa fa-plus"/>
                     </a>
                 </li>
+                <div className={IDUtil.cssClassName('selected-facets', this.CLASS_PREFIX)}>
+                    {opts}
+                </div>
                 {facets}
             </div>
         )
