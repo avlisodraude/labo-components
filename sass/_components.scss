@@ -163,6 +163,21 @@
 .bg__aggregation-list { /* AggregationList.jsx */
 	.bg__agl__tab-new {
 		list-style: none;
+		margin-bottom: 1rem;
+	}
+	.bg__agl__selected-facets {
+		.bg__agl__selected-item {
+			border: 1px solid #f3f3f3;
+			border-radius: 6px;
+			box-shadow: 0 5px 3px -5px black;
+			margin-bottom: 3px;
+			padding: 6px 5px 6px 1rem;
+
+			.fa-remove {
+				cursor: pointer;
+				float: right;
+			}
+		}
 	}
 	.bg__agl__facet-group {
 		margin:0;
@@ -211,9 +226,10 @@
 	.checkboxGroup {
 		background-color: #ebebeb;
 		border-radius: 6px;
+		box-shadow: 0 6px 4px -6px black;
 
 		h4 {
-			padding: 8px 0 0;
+			padding: 10px 0 8px 0;
 		}
 		.fa-remove {
 			cursor: pointer;
@@ -233,7 +249,7 @@
 				font-size: 1.3rem;
 				list-style-type: none;
 				margin-bottom: 1px;
-				padding: 6px;
+				padding: 8px 6px;
 				position: relative;
 				text-transform: uppercase;
 			}
