@@ -159,7 +159,7 @@ class AggregationList extends React.Component {
                     if (this.props.selectedFacets[key['field']]) {
                         if (checkedOpt = this.props.selectedFacets[key['field']].indexOf(value) > -1) {
                             selectedOpts.push({
-                                'name': facet.key.toUpperCase(),
+                                'name': facet.key,
                                 'hits': facet.doc_count
                             });
                             nrCheckedOpts++;
@@ -227,8 +227,8 @@ class AggregationList extends React.Component {
                 selectedOpts.forEach((facet, index) => {
                     opts.push(
                         <div className={IDUtil.cssClassName('selected-item', this.CLASS_PREFIX)}>
-                            {facet.name} ({facet.hits})
-                            <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, key['field'])}/>
+                            {facet.name.toUpperCase()} ({facet.hits})
+                            <span className="fa fa-remove" onClick={this.toggleSelectedFacet.bind(this, key['field'], facet.name)}/>
                         </div>
                     )
                 });
