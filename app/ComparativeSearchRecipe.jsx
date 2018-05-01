@@ -164,7 +164,6 @@ class ComparativeSearchRecipe extends React.Component {
 		//TODO only render when there is linechart data
 		if(this.props.recipe.ingredients.output == 'lineChart') {
 			if(Object.keys(this.state.lineChartData).length > 0) {
-				console.debug(this.state.lineChartData);
 				lineChart = (
 					<QueryComparisonLineChart
 						data={this.state.lineChartData}
