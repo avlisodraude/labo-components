@@ -131,7 +131,10 @@ class AggregationList extends React.Component {
         let aggregationCreatorModal = null,
             selectedOpts = [],
             nrCheckedOpts = 0,
-            opts = [];
+            opts = [],
+            emptyAggregations = [],
+            emptyAggrBlock = [];
+
         //collection modal
         if (this.state.showModal) {
             aggregationCreatorModal = (
@@ -191,8 +194,30 @@ class AggregationList extends React.Component {
                         sortedOpts.push(item);
                     }
                 });
+            } else if (this.props.aggregations[key['field']] && this.props.aggregations[key['field']].length === 0) {
+                emptyAggregations.push(
+                    {
+                        "aggregationField": key['field'],
+                        "formattedAggregationName": ElasticsearchDataUtil.getAggregationTitle(key['field'], this.props.facets)
+                    }
+                )
             }
 
+            if(emptyAggregations.length > 0) {
+                emptyAggregations.map((key, value) => {
+                    emptyAggrBlock.push((
+                        <div className="checkboxGroup aggregation-no-results" key={'facet__' + index} id={'index__' + index}>
+                            <h4>{key.formattedAggregationName} (0)
+                                <span data-for={'tooltip__' + value} data-tip={key.aggregationField} data-html={true}>
+							    <i className="fa fa-info-circle"/>
+						    </span>
+                                <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, key.aggregationField)}/>
+                            </h4>
+                            <ReactTooltip id={'tooltip__' + value}/>
+                        </div>
+                    ))
+                })
+            }
             const totalOptsPerFacet = sortedOpts.length;
             if (totalOptsPerFacet > 0) {
                 let changeViewItems = null,
@@ -235,6 +260,7 @@ class AggregationList extends React.Component {
             }
             nrCheckedOpts = 0;
             selectedOpts = [];
+            emptyAggregations = [];
         });
 
         return (
@@ -247,6 +273,7 @@ class AggregationList extends React.Component {
                 </li>
                 <div className={IDUtil.cssClassName('selected-facets', this.CLASS_PREFIX)}>
                     {opts}
+                    {emptyAggrBlock}
                 </div>
                 {facets}
             </div>
