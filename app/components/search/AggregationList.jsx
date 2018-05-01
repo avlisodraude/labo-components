@@ -212,7 +212,7 @@ class AggregationList extends React.Component {
                 facets.push((
                     <div className="checkboxGroup" key={'facet__' + index} id={'index__' + index}>
                         <h4>{ElasticsearchDataUtil.getAggregationTitle(key['field'], this.props.facets)}
-                            <span data-for={'__ci_tooltip'} data-tip={key['field']} data-html={true}>
+                            <span data-for={'tooltip__' + index} data-tip={key['field']} data-html={true}>
 							    <i className="fa fa-info-circle"/>
 						    </span>
                             <span className="fa fa-remove" onClick={this.toggleDesiredFacet.bind(this, key['field'])}/>
@@ -221,7 +221,7 @@ class AggregationList extends React.Component {
                             {sortedOpts}
                         </ul>
                         {changeViewItems}
-                        <ReactTooltip id={'__ci_tooltip'}/>
+                        <ReactTooltip id={'tooltip__' + index}/>
                     </div>
                 ))
                 selectedOpts.forEach((facet, index) => {

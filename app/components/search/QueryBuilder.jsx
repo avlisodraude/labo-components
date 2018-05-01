@@ -359,18 +359,19 @@ class QueryBuilder extends React.Component {
 					if(this.props.aggregationView == 'box') {
 						aggrView = (
 							<AggregationBox
+								searchId={this.state.searchId} //for determining when the component should rerender
 								queryId={this.state.query.id}
 								aggregations={this.state.aggregations} //part of the search results
 								desiredFacets={this.state.query.desiredFacets} //as obtained from the collection config
 								selectedFacets={this.state.query.selectedFacets} //via AggregationBox or AggregationList
 								collectionConfig={this.props.collectionConfig} //for the aggregation creator only
-								searchId={this.state.searchId} //for determining when the component should rerender
 								onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
-								/>
+							/>
 						)
 					} else { //just show them as a conservative list
 						aggrView = (
 							<AggregationList
+								searchId={this.state.searchId} //for determining when the component should rerender
 								queryId={this.state.query.id} //TODO implement in the list component
 								aggregations={this.state.aggregations} //part of the search results
 								facets={this.state.query.desiredFacets} //as obtained from the collection config
@@ -378,7 +379,7 @@ class QueryBuilder extends React.Component {
                                 desiredFacets={this.state.query.desiredFacets}
                                 collectionConfig={this.props.collectionConfig} //for the aggregation creator only
 								onOutput={this.onComponentOutput.bind(this)} //for communicating output to the  parent component
-								/>
+							/>
 						)
 					}
 
