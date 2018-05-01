@@ -131,7 +131,6 @@ class QueryBuilder extends React.Component {
 
 	onComponentOutput(componentClass, data) {
 		if(componentClass == 'AggregationList' || componentClass == 'AggregationBox') {
-			console.debug(data);
 			let q = this.state.query;
 
 			//reset the following query params
@@ -321,7 +320,7 @@ class QueryBuilder extends React.Component {
 				const layers = Object.keys(this.state.query.searchLayers).map((layer, index) => {
 					return (
 						<label key={'layer__' + index} className="checkbox-inline">
-							<input id={layer} type="checkbox" checked={this.state.query.searchLayers[layer]}
+							<input id={layer} type="checkbox" checked={this.state.query.searchLayers[layer] === true}
 								onChange={this.toggleSearchLayer.bind(this)}/>
 								{CollectionUtil.getSearchLayerName(this.props.collectionConfig.getSearchIndex(), layer)}
 						</label>
@@ -357,7 +356,6 @@ class QueryBuilder extends React.Component {
 
 				//populate the aggregation/facet selection area/box
 				if(this.state.aggregations) {
-					console.debug(this.props.aggregationView);
 					if(this.props.aggregationView == 'box') {
 						aggrView = (
 							<AggregationBox

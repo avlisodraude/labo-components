@@ -13,7 +13,7 @@ const QueryModel = {
 			collectionId : (collectionConfig ? collectionConfig.getSearchIndex() : obj.collectionId) || null,
 
 			//what layers to search through (always check them with the collection config)
-			searchLayers: QueryModel.getInitialSearchLayers(obj, collectionConfig),
+			searchLayers: QueryModel.determineSearchLayers(obj, collectionConfig),
 
 			//the search term entered by the user
 			term: obj.term || '',
@@ -57,14 +57,18 @@ const QueryModel = {
 		}
 	},
 
-	getInitialSearchLayers(query, config) {
+	determineSearchLayers(query, config) {
 		let searchLayers = null;
 		if(config && config.getCollectionIndices()) {
 			searchLayers = {};
 			config.getCollectionIndices().forEach((layer) => {
-				if(query && query.searchLayers && query.searchLayers.length > 0) {
-					searchLayers[layer] = query.searchLayers.indexOf(layer) != -1;
-				} else {
+				if(query && query.searchLayers) {
+					if(query.searchLayers[layer] !== undefined) {
+						searchLayers[layer] = query.searchLayers[layer];
+					} else {
+						searchLayers[layer] = false;
+					}
+				} else { //include all default layers
 					searchLayers[layer] = true;
 				}
 			});
@@ -103,6 +107,7 @@ const QueryModel = {
 
 	//TODO add support for missing params such as: desiredFacets
 	toUrlParams(query) {
+		console.debug(query)
 		const params = {
 			fr : query.offset,
 			sz : query.size,
@@ -157,6 +162,7 @@ const QueryModel = {
 
 	//TODO probably better to return a default query instead of null whenever the urlParams are null
 	urlParamsToQuery : function(urlParams, collectionConfig) {
+		console.debug('THE URL PARAMS', urlParams)
 		if(urlParams) {
 			const numParams = Object.keys(urlParams).length;
 			if(numParams == 0) {
@@ -218,8 +224,12 @@ const QueryModel = {
 		//populate the search layers
 		let searchLayers = []
 		if(sl) {
-			searchLayers = sl.split(',');
+			searchLayers = {}
+			sl.split(',').forEach(layer => {
+				searchLayers[layer] = true;
+			});
 		}
+		console.debug(searchLayers)
 
 		//populate the date range TODO think of a way to include min/max :s
 		let dateRange = null;
