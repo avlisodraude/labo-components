@@ -8,7 +8,7 @@ import VimeoPlayer from './VimeoPlayer';
 import JWPlayer from './JWPlayer';
 import YouTubePlayer from './YouTubePlayer';
 
-import VideoTimeBar from '../segmentation/SegmentationTimeline';
+import SegmentationTimeline from '../segmentation/SegmentationTimeline';
 import SegmentationControls from '../segmentation/SegmentationControls';
 
 import Transcriber from '../transcription/Transcriber';
@@ -279,7 +279,7 @@ class FlexPlayer extends React.Component {
 	}
 
 	//Note: for now the fragment mode only enables the user to inspect the current
-	//fragment in isolation (only the VideoTimeBar is changed to show only the active segment)
+	//fragment in isolation (only the SegmentationTimeline is changed to show only the active segment)
 	switchMode() {
 		if(this.state.segmentStart != -1 && this.state.segmentEnd != -1) {
 			if(this.state.fragmentMode === false) {
@@ -571,7 +571,7 @@ class FlexPlayer extends React.Component {
 						end={this.state.segmentEnd}/>
 				);
 				segmentationBar = (
-					<VideoTimeBar
+					<SegmentationTimeline
 						mediaObject={this.props.mediaObject}
 						duration={this.state.duration}
 						curPosition={this.state.curPosition}

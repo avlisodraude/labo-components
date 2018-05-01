@@ -17,12 +17,12 @@ class Transcriber extends React.PureComponent {
 
     componentDidMount() {
         //make sure the user can still scroll through the transcript
-        const transcriptWindow = document.getElementById(this.GUID),
-            searchHitscontainer = document.querySelector('.numberOfMatches');
+        const transcriptWindow = document.getElementById(this.GUID);
+        const searchHitscontainer = document.querySelector('.numberOfMatches');
 
         if (transcriptWindow) {
             transcriptWindow.onscroll = (e) => {
-                if (this.alertTimerId === null) {
+                if (this.alertTimerId == null) {
                     this.alertTimerId = setTimeout(() => {
                         this.userHasScrolled = false;
                     }, 2000);
@@ -160,7 +160,7 @@ class Transcriber extends React.PureComponent {
 
         //FIXME currently there can only be one transcriber on the screen...
         return (
-            <div id={this.GUID} className={IDUtil.cssClassName('transcriber')}>
+            <div className={IDUtil.cssClassName('transcriber')}>
                 <div className="transcript_search_box">
                     <span className="glyphicon glyphicon-search"></span>
                     <input data-transcriberSearch="search-transcriptLine" type="text"
@@ -173,7 +173,7 @@ class Transcriber extends React.PureComponent {
                                 aria-label="Close"></button>
                     </span>
                 </div>
-                <div className="transcriptsList">{transcriptContainer}</div>
+                <div id={this.GUID} className="transcriptsList">{transcriptContainer}</div>
             </div>
         )
     }

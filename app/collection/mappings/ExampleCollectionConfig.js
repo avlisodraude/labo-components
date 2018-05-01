@@ -30,7 +30,7 @@ class ExampleCollectionConfig extends CollectionConfig {
 				id : 'CLIENT SIDE ID',
 				operator : 'AND/OR',
 				size : 10,
-				type : 'string/date',
+				type : 'string/date_histogram/nested',
 				display: true
 			}
 		];

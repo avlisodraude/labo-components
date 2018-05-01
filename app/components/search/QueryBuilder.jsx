@@ -116,7 +116,7 @@ class QueryBuilder extends React.Component {
 	//this resets the paging
 	toggleSearchLayer(e) {
 		let q = this.state.query;
-		const searchLayers = this.state.searchLayers;
+		const searchLayers = this.state.query.searchLayers;
 		searchLayers[e.target.id] = !searchLayers[e.target.id];
 
 		//reset certain query properties
@@ -131,6 +131,7 @@ class QueryBuilder extends React.Component {
 
 	onComponentOutput(componentClass, data) {
 		if(componentClass == 'AggregationList' || componentClass == 'AggregationBox') {
+			console.debug(data);
 			let q = this.state.query;
 
 			//reset the following query params
@@ -356,6 +357,7 @@ class QueryBuilder extends React.Component {
 
 				//populate the aggregation/facet selection area/box
 				if(this.state.aggregations) {
+					console.debug(this.props.aggregationView);
 					if(this.props.aggregationView == 'box') {
 						aggrView = (
 							<AggregationBox
@@ -643,7 +645,7 @@ class QueryBuilder extends React.Component {
 							</form>
 						</div>
 					</div>
-					{/*layerOptions*/}
+					{layerOptions}
 					<div className="separator"></div>
 					{resultBlock}
 				</div>
