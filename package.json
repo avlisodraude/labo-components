@@ -34,7 +34,7 @@
     "mousetrap": "^1.6.1",
     "openseadragon": "^2.3.0",
     "react-autosuggest": "^9.3.3",
-    "react-datepicker": "^1.1.0",
+    "react-datepicker": "^1.2.1",
     "react-power-select": "^1.0.0-beta.11",
     "react-tooltip": "^3.3.0",
     "react-transition-group": "^2.2.1",
